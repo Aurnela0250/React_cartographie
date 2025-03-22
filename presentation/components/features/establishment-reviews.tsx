@@ -1,12 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/presentation/components/ui/button"
+import { Textarea } from "@/presentation/components/ui/textarea"
+import { Avatar, AvatarFallback, AvatarImage } from "@/presentation/components/ui/avatar"
+import { Card, CardContent } from "@/presentation/components/ui/card"
 import { Star, ThumbsUp, Flag } from "lucide-react"
-import { useUser } from "@/contexts/user-context"
+import { useUser } from "@/presentation/contexts/user-context"
 
 // Mock data for reviews
 const mockReviews = [

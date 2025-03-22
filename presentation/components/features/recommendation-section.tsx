@@ -1,10 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/presentation/components/ui/card"
+import { Button } from "@/presentation/components/ui/button"
+import { Badge } from "@/presentation/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/presentation/components/ui/tabs"
 import { BookOpen, GraduationCap, MapPin, Sparkles } from "lucide-react"
 import Link from "next/link"
 

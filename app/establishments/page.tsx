@@ -1,8 +1,8 @@
-import { EstablishmentList } from "@/components/establishment-list"
-import { SearchFilters } from "@/components/search-filters"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Pagination } from "@/components/ui/pagination"
+import { EstablishmentList } from "@/presentation/components/features/establishment-list"
+import { SearchFilters } from "@/presentation/components/features/search-filters"
+import { Button } from "@/presentation/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/presentation/components/ui/card"
+import { Pagination } from "@/presentation/components/ui/pagination"
 
 export default function EstablishmentsPage() {
   return (

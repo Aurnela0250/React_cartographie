@@ -3,8 +3,8 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from "@/presentation/components/ui/button"
+import { Input } from "@/presentation/components/ui/input"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,12 +12,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ModeToggle } from "@/components/mode-toggle"
-import { useUser } from "@/contexts/user-context"
+} from "@/presentation/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/presentation/components/ui/avatar"
+import { ModeToggle } from "@/presentation/components/features/mode-toggle"
+import { useUser } from "@/presentation/contexts/user-context"
 import { Bell, Menu, Search, X } from "lucide-react"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger } from "@/presentation/components/ui/sheet"
 
 export default function Navbar() {
   const pathname = usePathname()

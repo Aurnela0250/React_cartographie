@@ -1,11 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/presentation/components/ui/table"
+import { Button } from "@/presentation/components/ui/button"
+import { Badge } from "@/presentation/components/ui/badge"
+import { Input } from "@/presentation/components/ui/input"
+import { Avatar, AvatarFallback, AvatarImage } from "@/presentation/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +13,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/presentation/components/ui/dropdown-menu"
 import { MoreHorizontal, Search, ArrowUpDown } from "lucide-react"
 
 // Mock data for users

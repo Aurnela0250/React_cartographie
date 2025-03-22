@@ -1,8 +1,8 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ChartContainer, ChartTooltip, ChartLegend, ChartTitle } from "@/components/ui/chart"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/presentation/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/presentation/components/ui/tabs"
+import { ChartContainer, ChartTooltip, ChartLegend, ChartTitle } from "@/presentation/components/ui/chart"
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
 
 // Mock data for statistics

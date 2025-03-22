@@ -1,11 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "@/presentation/components/ui/button"
+import { Input } from "@/presentation/components/ui/input"
+import { Badge } from "@/presentation/components/ui/badge"
+import { Card, CardContent } from "@/presentation/components/ui/card"
+import { Tabs, TabsList, TabsTrigger } from "@/presentation/components/ui/tabs"
 import { Search, Clock, Calendar, Users } from "lucide-react"
 
 // Mock data for programs

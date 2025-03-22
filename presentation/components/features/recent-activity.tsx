@@ -1,5 +1,5 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/presentation/components/ui/avatar"
+import { Badge } from "@/presentation/components/ui/badge"
 
 // Mock data for recent activity
 const activities = [

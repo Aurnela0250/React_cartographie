@@ -1,6 +1,6 @@
 "use client"
 
-import { ChartContainer, ChartTooltip, ChartLegend } from "@/components/ui/chart"
+import { ChartContainer, ChartTooltip, ChartLegend } from "@/presentation/components/ui/chart"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
 
 // Mock data for charts

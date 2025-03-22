@@ -2,8 +2,8 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { useUser } from "@/contexts/user-context"
+import { cn } from "@/shared/utils"
+import { useUser } from "@/presentation/contexts/user-context"
 import { BarChart3, Building, Settings, Users, BookOpen, LayoutDashboard, FileText, Shield } from "lucide-react"
 
 export default function Sidebar() {

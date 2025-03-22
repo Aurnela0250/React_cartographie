@@ -1,8 +1,8 @@
-import { MapExplorer } from "@/components/map-explorer"
-import { SearchFilters } from "@/components/search-filters"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { EstablishmentList } from "@/components/establishment-list"
+import { MapExplorer } from "@/presentation/components/features/map-explorer"
+import { SearchFilters } from "@/presentation/components/features/search-filters"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/presentation/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/presentation/components/ui/tabs"
+import { EstablishmentList } from "@/presentation/components/features/establishment-list"
 
 export default function MapPage() {
   return (

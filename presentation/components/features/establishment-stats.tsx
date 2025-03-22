@@ -1,8 +1,8 @@
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
+import { Card, CardContent } from "@/presentation/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/presentation/components/ui/tabs"
+import { ChartContainer, ChartTooltip } from "@/presentation/components/ui/chart"
 import {
   BarChart,
   Bar,

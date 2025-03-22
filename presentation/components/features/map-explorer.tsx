@@ -1,11 +1,11 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { Card } from "@/presentation/components/ui/card"
+import { Button } from "@/presentation/components/ui/button"
+import { Badge } from "@/presentation/components/ui/badge"
 import { Loader2, MapPin, Plus, Minus, Layers } from "lucide-react"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/presentation/components/ui/dropdown-menu"
 import Link from "next/link"
 
 const mockEstablishments = [

@@ -1,6 +1,6 @@
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/presentation/components/ui/card"
+import { Badge } from "@/presentation/components/ui/badge"
+import { Button } from "@/presentation/components/ui/button"
 import { MapPin, Users, Star } from "lucide-react"
 import Link from "next/link"
 

@@ -1,11 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Avatar } from "@/components/ui/avatar"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Button } from "@/presentation/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/presentation/components/ui/card"
+import { Input } from "@/presentation/components/ui/input"
+import { Avatar } from "@/presentation/components/ui/avatar"
+import { ScrollArea } from "@/presentation/components/ui/scroll-area"
 import { Send, Bot, User, Info, Loader2 } from "lucide-react"
 
 type Message = {

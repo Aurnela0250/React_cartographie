@@ -1,10 +1,10 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { MapExplorer } from "@/components/map-explorer"
-import { SearchFilters } from "@/components/search-filters"
-import { FeaturedEstablishments } from "@/components/featured-establishments"
-import { RecommendationSection } from "@/components/recommendation-section"
-import { Stats } from "@/components/stats"
+import { Button } from "@/presentation/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/presentation/components/ui/card"
+import { MapExplorer } from "@/presentation/components/features/map-explorer"
+import { SearchFilters } from "@/presentation/components/features/search-filters"
+import { FeaturedEstablishments } from "@/presentation/components/features/featured-establishments"
+import { RecommendationSection } from "@/presentation/components/features/recommendation-section"
+import { Stats } from "@/presentation/components/features/stats"
 import Link from "next/link"
 
 export default function HomePage() {
