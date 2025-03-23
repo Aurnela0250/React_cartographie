@@ -1,0 +1,16 @@
+{
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "search.exclude": {
+        "**/node_modules": false
+    },
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit",
+        "source.organizeImports": "never"
+    },
+    "[javascript][typescript][javascriptreact][typescriptreact][json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
+}

@@ -1,12 +1,13 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/presentation/components/ui/button"
-import { Input } from "@/presentation/components/ui/input"
-import { Badge } from "@/presentation/components/ui/badge"
-import { Card, CardContent } from "@/presentation/components/ui/card"
-import { Tabs, TabsList, TabsTrigger } from "@/presentation/components/ui/tabs"
-import { Search, Clock, Calendar, Users } from "lucide-react"
+import { Calendar, Clock, Search, Users } from "lucide-react";
+import { useState } from "react";
+
+import { Badge } from "@/presentation/components/ui/badge";
+import { Button } from "@/presentation/components/ui/button";
+import { Card, CardContent } from "@/presentation/components/ui/card";
+import { Input } from "@/presentation/components/ui/input";
+import { Tabs, TabsList, TabsTrigger } from "@/presentation/components/ui/tabs";
 
 // Mock data for programs
 const mockPrograms = [
@@ -82,36 +83,38 @@ const mockPrograms = [
       "Formation interdisciplinaire combinant statistiques, informatique et mathématiques pour l'analyse et l'interprétation des données massives.",
     tags: ["Big Data", "Statistiques", "Visualisation"],
   },
-]
+];
 
 interface ProgramsListProps {
-  establishmentId: string
+  establishmentId: string;
 }
 
 export function ProgramsList({ establishmentId }: ProgramsListProps) {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [activeTab, setActiveTab] = useState("all")
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState("all");
 
   const filteredPrograms = mockPrograms.filter((program) => {
     const matchesSearch =
       program.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       program.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      program.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      program.tags.some((tag) =>
+        tag.toLowerCase().includes(searchTerm.toLowerCase())
+      );
 
-    if (activeTab === "all") return matchesSearch
+    if (activeTab === "all") return matchesSearch;
 
     const levelMap: Record<string, string[]> = {
       licence: ["Bac+3"],
       master: ["Bac+5"],
       doctorat: ["Bac+8"],
-    }
+    };
 
-    return matchesSearch && levelMap[activeTab]?.includes(program.level)
-  })
+    return matchesSearch && levelMap[activeTab]?.includes(program.level);
+  });
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
@@ -122,7 +125,11 @@ export function ProgramsList({ establishmentId }: ProgramsListProps) {
           />
         </div>
 
-        <Tabs defaultValue="all" className="w-full sm:w-auto" onValueChange={setActiveTab}>
+        <Tabs
+          defaultValue="all"
+          className="w-full sm:w-auto"
+          onValueChange={setActiveTab}
+        >
           <TabsList>
             <TabsTrigger value="all">Tous</TabsTrigger>
             <TabsTrigger value="licence">Licence</TabsTrigger>
@@ -134,46 +141,58 @@ export function ProgramsList({ establishmentId }: ProgramsListProps) {
 
       <div className="space-y-4">
         {filteredPrograms.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">Aucune formation trouvée</div>
+          <div className="py-8 text-center text-muted-foreground">
+            Aucune formation trouvée
+          </div>
         ) : (
           filteredPrograms.map((program) => (
             <Card key={program.id}>
               <CardContent className="p-4 sm:p-6">
-                <div className="flex flex-col sm:flex-row justify-between gap-2 mb-2">
+                <div className="mb-2 flex flex-col justify-between gap-2 sm:flex-row">
                   <div>
                     <h3 className="text-lg font-semibold">{program.name}</h3>
-                    <p className="text-sm text-muted-foreground">{program.department}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {program.department}
+                    </p>
                   </div>
                   <Badge>{program.level}</Badge>
                 </div>
 
-                <p className="text-sm text-muted-foreground mb-4">{program.description}</p>
+                <p className="mb-4 text-sm text-muted-foreground">
+                  {program.description}
+                </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
                   <div className="flex items-center">
-                    <Clock className="h-4 w-4 text-muted-foreground mr-2" />
+                    <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
                     <div className="text-sm">
                       <p className="font-medium">Durée</p>
-                      <p className="text-muted-foreground">{program.duration}</p>
+                      <p className="text-muted-foreground">
+                        {program.duration}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center">
-                    <Calendar className="h-4 w-4 text-muted-foreground mr-2" />
+                    <Calendar className="mr-2 h-4 w-4 text-muted-foreground" />
                     <div className="text-sm">
                       <p className="font-medium">Rentrée</p>
-                      <p className="text-muted-foreground">{program.startDate}</p>
+                      <p className="text-muted-foreground">
+                        {program.startDate}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center">
-                    <Users className="h-4 w-4 text-muted-foreground mr-2" />
+                    <Users className="mr-2 h-4 w-4 text-muted-foreground" />
                     <div className="text-sm">
                       <p className="font-medium">Admission</p>
-                      <p className="text-muted-foreground">{program.admissionRate}</p>
+                      <p className="text-muted-foreground">
+                        {program.admissionRate}
+                      </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap gap-2 mb-4">
+                <div className="mb-4 flex flex-wrap gap-2">
                   {program.tags.map((tag) => (
                     <Badge key={tag} variant="secondary" className="text-xs">
                       {tag}
@@ -190,6 +209,5 @@ export function ProgramsList({ establishmentId }: ProgramsListProps) {
         )}
       </div>
     </div>
-  )
+  );
 }
-

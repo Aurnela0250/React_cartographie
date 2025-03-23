@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { getEtablissements } from '@/infrastructure/api/apiEtablissements'; // Import API
+import { useEffect, useState } from "react";
+
+import { getEtablissements } from "@/infrastructure/api/apiEtablissements"; // Import API
 
 const Etablissements = () => {
   const [data, setData] = useState([]);

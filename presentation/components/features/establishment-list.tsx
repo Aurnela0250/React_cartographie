@@ -1,12 +1,13 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent } from "@/presentation/components/ui/card"
-import { Badge } from "@/presentation/components/ui/badge"
-import { Button } from "@/presentation/components/ui/button"
-import { MapPin, Users, BookOpen, Star, Building } from "lucide-react"
-import Link from "next/link"
-import Etablissements from '@/presentation/components/features/ListeEtablissements';
+import { BookOpen, Building, MapPin, Star, Users } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+
+import Etablissements from "@/presentation/components/features/ListeEtablissements";
+import { Badge } from "@/presentation/components/ui/badge";
+import { Button } from "@/presentation/components/ui/button";
+import { Card, CardContent } from "@/presentation/components/ui/card";
 
 const mockEstablishments = [
   {
@@ -64,10 +65,10 @@ const mockEstablishments = [
     rating: 4.3,
     image: "/placeholder.svg?height=100&width=150",
   },
-]
+];
 
 export function EstablishmentList() {
-  const [establishments] = useState(mockEstablishments)
+  const [establishments] = useState(mockEstablishments);
 
   return (
     <div className="space-y-4">
@@ -75,61 +76,73 @@ export function EstablishmentList() {
         <Card key={establishment.id} className="overflow-hidden">
           <CardContent className="p-0">
             <div className="flex flex-col md:flex-row">
-              <div className="w-full md:w-1/4 h-40 md:h-auto">
+              <div className="h-40 w-full md:h-auto md:w-1/4">
                 <div
                   className="h-full w-full bg-cover bg-center"
                   style={{ backgroundImage: `url(${establishment.image})` }}
                 />
               </div>
               <div className="flex-1 p-4 md:p-6">
-                <div className="flex flex-col md:flex-row justify-between">
+                <div className="flex flex-col justify-between md:flex-row">
                   <div>
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="mb-1 flex items-center gap-2">
                       <Badge variant="outline">{establishment.type}</Badge>
                       <Badge variant="secondary">{establishment.region}</Badge>
                     </div>
-                    <h3 className="text-xl font-semibold mb-2">{establishment.name}</h3>
-                    <div className="flex items-center text-muted-foreground mb-4">
-                      <MapPin className="h-4 w-4 mr-1" />
+                    <h3 className="mb-2 text-xl font-semibold">
+                      {establishment.name}
+                    </h3>
+                    <div className="mb-4 flex items-center text-muted-foreground">
+                      <MapPin className="mr-1 h-4 w-4" />
                       <span className="text-sm">{establishment.address}</span>
                     </div>
                   </div>
-                  <div className="flex items-start gap-1 mt-2 md:mt-0">
-                    <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
+                  <div className="mt-2 flex items-start gap-1 md:mt-0">
+                    <Star className="h-5 w-5 fill-yellow-500 text-yellow-500" />
                     <span className="font-medium">{establishment.rating}</span>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
                   <div className="flex items-center">
-                    <Building className="h-5 w-5 text-muted-foreground mr-2" />
+                    <Building className="mr-2 h-5 w-5 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Type</p>
-                      <p className="text-sm text-muted-foreground">{establishment.type}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {establishment.type}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center">
-                    <BookOpen className="h-5 w-5 text-muted-foreground mr-2" />
+                    <BookOpen className="mr-2 h-5 w-5 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Formations</p>
-                      <p className="text-sm text-muted-foreground">{establishment.programs} programmes</p>
+                      <p className="text-sm text-muted-foreground">
+                        {establishment.programs} programmes
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center">
-                    <Users className="h-5 w-5 text-muted-foreground mr-2" />
+                    <Users className="mr-2 h-5 w-5 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Étudiants</p>
-                      <p className="text-sm text-muted-foreground">{establishment.students.toLocaleString()}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {establishment.students.toLocaleString()}
+                      </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-2 mt-2">
+                <div className="mt-2 flex flex-col gap-2 sm:flex-row">
                   <Button variant="outline" className="sm:flex-1" asChild>
-                    <Link href={`/map?id=${establishment.id}`}>Voir sur la carte</Link>
+                    <Link href={`/map?id=${establishment.id}`}>
+                      Voir sur la carte
+                    </Link>
                   </Button>
                   <Button className="sm:flex-1" asChild>
-                    <Link href={`/establishments/${establishment.id}`}>Détails de l'établissement</Link>
+                    <Link href={`/establishments/${establishment.id}`}>
+                      Détails de l'établissement
+                    </Link>
                   </Button>
                 </div>
               </div>
@@ -140,10 +153,7 @@ export function EstablishmentList() {
             </div>
           </CardContent>
         </Card>
-
-        
       ))}
     </div>
-  )
+  );
 }
-

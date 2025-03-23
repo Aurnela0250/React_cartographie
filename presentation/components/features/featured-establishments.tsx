@@ -1,8 +1,9 @@
-import { Card, CardContent } from "@/presentation/components/ui/card"
-import { Badge } from "@/presentation/components/ui/badge"
-import { Button } from "@/presentation/components/ui/button"
-import { MapPin, Users, Star } from "lucide-react"
-import Link from "next/link"
+import { MapPin, Star, Users } from "lucide-react";
+import Link from "next/link";
+
+import { Badge } from "@/presentation/components/ui/badge";
+import { Button } from "@/presentation/components/ui/button";
+import { Card, CardContent } from "@/presentation/components/ui/card";
 
 const featuredEstablishments = [
   {
@@ -32,19 +33,19 @@ const featuredEstablishments = [
     rating: 4.5,
     image: "/placeholder.svg?height=200&width=300",
   },
-]
+];
 
 export function FeaturedEstablishments() {
   return (
     <section className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Établissements à la une</h2>
         <Button variant="ghost" asChild>
           <Link href="/establishments">Voir tous</Link>
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {featuredEstablishments.map((establishment) => (
           <Card key={establishment.id} className="overflow-hidden">
             <div
@@ -52,34 +53,41 @@ export function FeaturedEstablishments() {
               style={{ backgroundImage: `url(${establishment.image})` }}
             />
             <CardContent className="p-4">
-              <div className="flex justify-between items-start mb-2">
+              <div className="mb-2 flex items-start justify-between">
                 <Badge variant="outline">{establishment.type}</Badge>
                 <div className="flex items-center gap-1">
-                  <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                  <span className="text-sm font-medium">{establishment.rating}</span>
+                  <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
+                  <span className="text-sm font-medium">
+                    {establishment.rating}
+                  </span>
                 </div>
               </div>
 
-              <h3 className="font-semibold text-lg mb-1">{establishment.name}</h3>
+              <h3 className="mb-1 text-lg font-semibold">
+                {establishment.name}
+              </h3>
 
-              <div className="flex items-center text-muted-foreground mb-2">
-                <MapPin className="h-3 w-3 mr-1" />
+              <div className="mb-2 flex items-center text-muted-foreground">
+                <MapPin className="mr-1 h-3 w-3" />
                 <span className="text-sm">{establishment.address}</span>
               </div>
 
-              <div className="flex items-center text-muted-foreground mb-4">
-                <Users className="h-3 w-3 mr-1" />
-                <span className="text-sm">{establishment.students.toLocaleString()} étudiants</span>
+              <div className="mb-4 flex items-center text-muted-foreground">
+                <Users className="mr-1 h-3 w-3" />
+                <span className="text-sm">
+                  {establishment.students.toLocaleString()} étudiants
+                </span>
               </div>
 
               <Button className="w-full" asChild>
-                <Link href={`/establishments/${establishment.id}`}>Découvrir</Link>
+                <Link href={`/establishments/${establishment.id}`}>
+                  Découvrir
+                </Link>
               </Button>
             </CardContent>
           </Card>
         ))}
       </div>
     </section>
-  )
+  );
 }
-

@@ -1,36 +1,48 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/presentation/components/ui/button"
-import { Input } from "@/presentation/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/presentation/components/ui/select"
-import { Slider } from "@/presentation/components/ui/slider"
-import { Checkbox } from "@/presentation/components/ui/checkbox"
-import { Label } from "@/presentation/components/ui/label"
-import { Search, X } from "lucide-react"
-import { Badge } from "@/presentation/components/ui/badge"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/presentation/components/ui/accordion"
+import { Search, X } from "lucide-react";
+import { useState } from "react";
+
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/presentation/components/ui/accordion";
+import { Badge } from "@/presentation/components/ui/badge";
+import { Button } from "@/presentation/components/ui/button";
+import { Checkbox } from "@/presentation/components/ui/checkbox";
+import { Input } from "@/presentation/components/ui/input";
+import { Label } from "@/presentation/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/presentation/components/ui/select";
+import { Slider } from "@/presentation/components/ui/slider";
 
 interface SearchFiltersProps {
-  compact?: boolean
+  compact?: boolean;
 }
 
 export function SearchFilters({ compact = false }: SearchFiltersProps) {
-  const [activeFilters, setActiveFilters] = useState<string[]>([])
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
   const addFilter = (filter: string) => {
     if (!activeFilters.includes(filter)) {
-      setActiveFilters([...activeFilters, filter])
+      setActiveFilters([...activeFilters, filter]);
     }
-  }
+  };
 
   const removeFilter = (filter: string) => {
-    setActiveFilters(activeFilters.filter((f) => f !== filter))
-  }
+    setActiveFilters(activeFilters.filter((f) => f !== filter));
+  };
 
   const clearFilters = () => {
-    setActiveFilters([])
-  }
+    setActiveFilters([]);
+  };
 
   if (compact) {
     return (
@@ -66,7 +78,7 @@ export function SearchFilters({ compact = false }: SearchFiltersProps) {
           </SelectContent>
         </Select>
       </div>
-    )
+    );
   }
 
   return (
@@ -74,7 +86,10 @@ export function SearchFilters({ compact = false }: SearchFiltersProps) {
       <div className="space-y-4">
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Rechercher un établissement..." className="pl-8" />
+          <Input
+            placeholder="Rechercher un établissement..."
+            className="pl-8"
+          />
         </div>
 
         {activeFilters.length > 0 && (
@@ -91,7 +106,12 @@ export function SearchFilters({ compact = false }: SearchFiltersProps) {
                 </button>
               </Badge>
             ))}
-            <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={clearFilters}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 px-2 text-xs"
+              onClick={clearFilters}
+            >
               Effacer tout
             </Button>
           </div>
@@ -109,8 +129,12 @@ export function SearchFilters({ compact = false }: SearchFiltersProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Île-de-France">Antananarivo</SelectItem>
-                  <SelectItem value="Auvergne-Rhône-Alpes">Antananarivo</SelectItem>
-                  <SelectItem value="Nouvelle-Aquitaine">Antananarivo</SelectItem>
+                  <SelectItem value="Auvergne-Rhône-Alpes">
+                    Antananarivo
+                  </SelectItem>
+                  <SelectItem value="Nouvelle-Aquitaine">
+                    Antananarivo
+                  </SelectItem>
                   <SelectItem value="Occitanie">Antananarivo</SelectItem>
                   <SelectItem value="Hauts-de-France">Antananarivo</SelectItem>
                 </SelectContent>
@@ -144,23 +168,29 @@ export function SearchFilters({ compact = false }: SearchFiltersProps) {
           <AccordionTrigger>Type d'établissement</AccordionTrigger>
           <AccordionContent>
             <div className="space-y-2 pt-2">
-              {["Université", "Grande École", "Institut", "École de commerce", "IUT", "BTS", "CPGE"].map(
-                (type) => (
-                  <div key={type} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`type-${type}`}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          addFilter(`Type: ${type}`)
-                        } else {
-                          removeFilter(`Type: ${type}`)
-                        }
-                      }}
-                    />
-                    <Label htmlFor={`type-${type}`}>{type}</Label>
-                  </div>
-                ),
-              )}
+              {[
+                "Université",
+                "Grande École",
+                "Institut",
+                "École de commerce",
+                "IUT",
+                "BTS",
+                "CPGE",
+              ].map((type) => (
+                <div key={type} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`type-${type}`}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        addFilter(`Type: ${type}`);
+                      } else {
+                        removeFilter(`Type: ${type}`);
+                      }
+                    }}
+                  />
+                  <Label htmlFor={`type-${type}`}>{type}</Label>
+                </div>
+              ))}
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -207,7 +237,9 @@ export function SearchFilters({ compact = false }: SearchFiltersProps) {
                   <SelectItem value="BUT">BUT</SelectItem>
                   <SelectItem value="Licence">Licence</SelectItem>
                   <SelectItem value="Master">Master</SelectItem>
-                  <SelectItem value="Diplôme d'ingénieur">Diplôme d'ingénieur</SelectItem>
+                  <SelectItem value="Diplôme d'ingénieur">
+                    Diplôme d'ingénieur
+                  </SelectItem>
                   <SelectItem value="Doctorat">Doctorat</SelectItem>
                 </SelectContent>
               </Select>
@@ -224,9 +256,9 @@ export function SearchFilters({ compact = false }: SearchFiltersProps) {
                   id="accessible"
                   onCheckedChange={(checked) => {
                     if (checked) {
-                      addFilter("Accessible PMR")
+                      addFilter("Accessible PMR");
                     } else {
-                      removeFilter("Accessible PMR")
+                      removeFilter("Accessible PMR");
                     }
                   }}
                 />
@@ -238,9 +270,9 @@ export function SearchFilters({ compact = false }: SearchFiltersProps) {
                   id="international"
                   onCheckedChange={(checked) => {
                     if (checked) {
-                      addFilter("Programmes internationaux")
+                      addFilter("Programmes internationaux");
                     } else {
-                      removeFilter("Programmes internationaux")
+                      removeFilter("Programmes internationaux");
                     }
                   }}
                 />
@@ -252,9 +284,9 @@ export function SearchFilters({ compact = false }: SearchFiltersProps) {
                   id="apprenticeship"
                   onCheckedChange={(checked) => {
                     if (checked) {
-                      addFilter("Alternance")
+                      addFilter("Alternance");
                     } else {
-                      removeFilter("Alternance")
+                      removeFilter("Alternance");
                     }
                   }}
                 />
@@ -266,9 +298,9 @@ export function SearchFilters({ compact = false }: SearchFiltersProps) {
                   id="residence"
                   onCheckedChange={(checked) => {
                     if (checked) {
-                      addFilter("Résidence étudiante")
+                      addFilter("Résidence étudiante");
                     } else {
-                      removeFilter("Résidence étudiante")
+                      removeFilter("Résidence étudiante");
                     }
                   }}
                 />
@@ -281,6 +313,5 @@ export function SearchFilters({ compact = false }: SearchFiltersProps) {
 
       <Button className="w-full">Appliquer les filtres</Button>
     </div>
-  )
+  );
 }
-

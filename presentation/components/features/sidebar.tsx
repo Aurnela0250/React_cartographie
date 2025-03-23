@@ -1,22 +1,32 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/shared/utils"
-import { useUser } from "@/presentation/contexts/user-context"
-import { BarChart3, Building, Settings, Users, BookOpen, LayoutDashboard, FileText, Shield } from "lucide-react"
+import {
+  BarChart3,
+  BookOpen,
+  Building,
+  FileText,
+  LayoutDashboard,
+  Settings,
+  Shield,
+  Users,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+import { useUser } from "@/presentation/contexts/user-context";
+import { cn } from "@/shared/utils";
 
 export default function Sidebar() {
-  const pathname = usePathname()
-  const { user } = useUser()
+  const pathname = usePathname();
+  const { user } = useUser();
 
   // Only show sidebar on dashboard pages
   if (!pathname.startsWith("/dashboard")) {
-    return null
+    return null;
   }
 
-  const isAdmin = user?.role === "admin" || user?.role === "superadmin"
-  const isSuperAdmin = user?.role === "superadmin"
+  const isAdmin = user?.role === "admin" || user?.role === "superadmin";
+  const isSuperAdmin = user?.role === "superadmin";
 
   const navItems = [
     {
@@ -67,14 +77,16 @@ export default function Sidebar() {
       icon: Shield,
       superAdminOnly: true,
     },
-  ]
+  ];
 
   return (
-    <div className="hidden md:flex h-screen w-64 flex-col border-r bg-background">
+    <div className="hidden h-screen w-64 flex-col border-r bg-background md:flex">
       <div className="flex h-14 items-center border-b px-4">
         <Link href="/" className="flex items-center gap-2">
-          <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground text-xs font-bold">PS</span>
+          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary">
+            <span className="text-xs font-bold text-primary-foreground">
+              PS
+            </span>
           </div>
           <span className="font-bold">Parcours Sup</span>
         </Link>
@@ -83,9 +95,9 @@ export default function Sidebar() {
         <nav className="grid items-start px-2 text-sm">
           {navItems.map((item) => {
             // Skip items that require admin privileges if user is not admin
-            if (item.adminOnly && !isAdmin) return null
+            if (item.adminOnly && !isAdmin) return null;
             // Skip items that require superadmin privileges if user is not superadmin
-            if (item.superAdminOnly && !isSuperAdmin) return null
+            if (item.superAdminOnly && !isSuperAdmin) return null;
 
             return (
               <Link
@@ -93,28 +105,33 @@ export default function Sidebar() {
                 href={item.href}
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-foreground",
-                  pathname === item.href ? "bg-muted text-foreground" : "text-muted-foreground",
+                  pathname === item.href
+                    ? "bg-muted text-foreground"
+                    : "text-muted-foreground"
                 )}
               >
                 <item.icon className="h-4 w-4" />
                 <span>{item.title}</span>
               </Link>
-            )
+            );
           })}
         </nav>
       </div>
-      <div className="mt-auto p-4 border-t">
+      <div className="mt-auto border-t p-4">
         <div className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2">
-          <div className="flex flex-col flex-1 space-y-1">
-            <p className="text-sm font-medium leading-none">{user?.name || "Utilisateur"}</p>
-            <p className="text-xs text-muted-foreground">{user?.role || "Rôle"}</p>
+          <div className="flex flex-1 flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">
+              {user?.name || "Utilisateur"}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {user?.role || "Rôle"}
+            </p>
           </div>
           <Link href="/profile">
-            <Settings className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+            <Settings className="h-4 w-4 text-muted-foreground transition-colors hover:text-foreground" />
           </Link>
         </div>
       </div>
     </div>
-  )
+  );
 }
-

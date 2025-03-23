@@ -1,5 +1,9 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/presentation/components/ui/avatar"
-import { Badge } from "@/presentation/components/ui/badge"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/presentation/components/ui/avatar";
+import { Badge } from "@/presentation/components/ui/badge";
 
 // Mock data for recent activity
 const activities = [
@@ -58,13 +62,16 @@ const activities = [
     target: "3 utilisateurs",
     time: "Il y a 5 heures",
   },
-]
+];
 
 export function RecentActivity() {
   return (
     <div className="space-y-4">
       {activities.map((activity) => (
-        <div key={activity.id} className="flex items-start gap-4 pb-4 border-b last:border-0 last:pb-0">
+        <div
+          key={activity.id}
+          className="flex items-start gap-4 border-b pb-4 last:border-0 last:pb-0"
+        >
           <Avatar className="h-8 w-8">
             <AvatarImage src={activity.user.avatar} alt={activity.user.name} />
             <AvatarFallback>{activity.user.name.charAt(0)}</AvatarFallback>
@@ -77,13 +84,15 @@ export function RecentActivity() {
               </Badge>
             </div>
             <p className="text-sm text-muted-foreground">
-              {activity.action} <span className="font-medium text-foreground">{activity.target}</span>
+              {activity.action}{" "}
+              <span className="font-medium text-foreground">
+                {activity.target}
+              </span>
             </p>
             <p className="text-xs text-muted-foreground">{activity.time}</p>
           </div>
         </div>
       ))}
     </div>
-  )
+  );
 }
-

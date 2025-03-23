@@ -1,5 +1,17 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/presentation/components/ui/card"
-import { ArrowUpRight, Building, GraduationCap, Users, UserPlus } from "lucide-react"
+import {
+  ArrowUpRight,
+  Building,
+  GraduationCap,
+  UserPlus,
+  Users,
+} from "lucide-react";
+
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/presentation/components/ui/card";
 
 export function DashboardStats() {
   return (
@@ -11,7 +23,9 @@ export function DashboardStats() {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">1,248</div>
-          <p className="text-xs text-muted-foreground">+12 depuis le mois dernier</p>
+          <p className="text-xs text-muted-foreground">
+            +12 depuis le mois dernier
+          </p>
           <div className="mt-4 h-1 w-full rounded-full bg-muted">
             <div className="h-1 w-[75%] rounded-full bg-primary"></div>
           </div>
@@ -25,7 +39,9 @@ export function DashboardStats() {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">12,546</div>
-          <p className="text-xs text-muted-foreground">+124 depuis le mois dernier</p>
+          <p className="text-xs text-muted-foreground">
+            +124 depuis le mois dernier
+          </p>
           <div className="mt-4 h-1 w-full rounded-full bg-muted">
             <div className="h-1 w-[65%] rounded-full bg-primary"></div>
           </div>
@@ -52,18 +68,21 @@ export function DashboardStats() {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Nouveaux inscrits</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            Nouveaux inscrits
+          </CardTitle>
           <UserPlus className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">1,893</div>
-          <p className="text-xs text-muted-foreground">+10.2% depuis la semaine dernière</p>
+          <p className="text-xs text-muted-foreground">
+            +10.2% depuis la semaine dernière
+          </p>
           <div className="mt-4 h-1 w-full rounded-full bg-muted">
             <div className="h-1 w-[45%] rounded-full bg-primary"></div>
           </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-

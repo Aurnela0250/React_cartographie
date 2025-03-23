@@ -1,12 +1,17 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/presentation/components/ui/button"
-import { Textarea } from "@/presentation/components/ui/textarea"
-import { Avatar, AvatarFallback, AvatarImage } from "@/presentation/components/ui/avatar"
-import { Card, CardContent } from "@/presentation/components/ui/card"
-import { Star, ThumbsUp, Flag } from "lucide-react"
-import { useUser } from "@/presentation/contexts/user-context"
+import { Flag, Star, ThumbsUp } from "lucide-react";
+import { useState } from "react";
+
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/presentation/components/ui/avatar";
+import { Button } from "@/presentation/components/ui/button";
+import { Card, CardContent } from "@/presentation/components/ui/card";
+import { Textarea } from "@/presentation/components/ui/textarea";
+import { useUser } from "@/presentation/contexts/user-context";
 
 // Mock data for reviews
 const mockReviews = [
@@ -62,34 +67,36 @@ const mockReviews = [
     likes: 32,
     liked: false,
   },
-]
+];
 
 interface EstablishmentReviewsProps {
-  establishmentId: string
+  establishmentId: string;
 }
 
-export function EstablishmentReviews({ establishmentId }: EstablishmentReviewsProps) {
-  const { user } = useUser()
-  const [reviews, setReviews] = useState(mockReviews)
-  const [newReview, setNewReview] = useState("")
-  const [rating, setRating] = useState(0)
-  const [hoveredRating, setHoveredRating] = useState(0)
+export function EstablishmentReviews({
+  establishmentId,
+}: EstablishmentReviewsProps) {
+  const { user } = useUser();
+  const [reviews, setReviews] = useState(mockReviews);
+  const [newReview, setNewReview] = useState("");
+  const [rating, setRating] = useState(0);
+  const [hoveredRating, setHoveredRating] = useState(0);
 
   const handleLike = (reviewId: string) => {
     setReviews(
       reviews.map((review) => {
         if (review.id === reviewId) {
-          const newLiked = !review.liked
+          const newLiked = !review.liked;
           return {
             ...review,
             likes: newLiked ? review.likes + 1 : review.likes - 1,
             liked: newLiked,
-          }
+          };
         }
-        return review
-      }),
-    )
-  }
+        return review;
+      })
+    );
+  };
 
   const handleSubmitReview = () => {
     if (newReview.trim() && rating > 0) {
@@ -100,27 +107,31 @@ export function EstablishmentReviews({ establishmentId }: EstablishmentReviewsPr
           avatar: "/placeholder.svg?height=40&width=40",
         },
         rating,
-        date: new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }),
+        date: new Date().toLocaleDateString("fr-FR", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }),
         content: newReview,
         likes: 0,
         liked: false,
-      }
+      };
 
-      setReviews([newReviewObj, ...reviews])
-      setNewReview("")
-      setRating(0)
+      setReviews([newReviewObj, ...reviews]);
+      setNewReview("");
+      setRating(0);
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
       {user && (
         <Card>
           <CardContent className="p-4 sm:p-6">
-            <h3 className="font-medium mb-4">Partagez votre expérience</h3>
+            <h3 className="mb-4 font-medium">Partagez votre expérience</h3>
 
-            <div className="flex items-center mb-4">
-              <p className="text-sm mr-2">Votre note :</p>
+            <div className="mb-4 flex items-center">
+              <p className="mr-2 text-sm">Votre note :</p>
               <div className="flex">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -133,7 +144,9 @@ export function EstablishmentReviews({ establishmentId }: EstablishmentReviewsPr
                   >
                     <Star
                       className={`h-5 w-5 ${
-                        star <= (hoveredRating || rating) ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground"
+                        star <= (hoveredRating || rating)
+                          ? "fill-yellow-500 text-yellow-500"
+                          : "text-muted-foreground"
                       }`}
                     />
                   </button>
@@ -149,7 +162,10 @@ export function EstablishmentReviews({ establishmentId }: EstablishmentReviewsPr
             />
 
             <div className="flex justify-end">
-              <Button onClick={handleSubmitReview} disabled={!newReview.trim() || rating === 0}>
+              <Button
+                onClick={handleSubmitReview}
+                disabled={!newReview.trim() || rating === 0}
+              >
                 Publier
               </Button>
             </div>
@@ -163,12 +179,15 @@ export function EstablishmentReviews({ establishmentId }: EstablishmentReviewsPr
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-start gap-4">
                 <Avatar className="h-10 w-10">
-                  <AvatarImage src={review.user.avatar} alt={review.user.name} />
+                  <AvatarImage
+                    src={review.user.avatar}
+                    alt={review.user.name}
+                  />
                   <AvatarFallback>{review.user.name.charAt(0)}</AvatarFallback>
                 </Avatar>
 
                 <div className="flex-1">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                  <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <h4 className="font-medium">{review.user.name}</h4>
                       <div className="flex items-center gap-2">
@@ -177,17 +196,21 @@ export function EstablishmentReviews({ establishmentId }: EstablishmentReviewsPr
                             <Star
                               key={star}
                               className={`h-4 w-4 ${
-                                star <= review.rating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground"
+                                star <= review.rating
+                                  ? "fill-yellow-500 text-yellow-500"
+                                  : "text-muted-foreground"
                               }`}
                             />
                           ))}
                         </div>
-                        <span className="text-sm text-muted-foreground">{review.date}</span>
+                        <span className="text-sm text-muted-foreground">
+                          {review.date}
+                        </span>
                       </div>
                     </div>
                   </div>
 
-                  <p className="text-sm mb-4">{review.content}</p>
+                  <p className="mb-4 text-sm">{review.content}</p>
 
                   <div className="flex items-center gap-4">
                     <button
@@ -212,6 +235,5 @@ export function EstablishmentReviews({ establishmentId }: EstablishmentReviewsPr
         ))}
       </div>
     </div>
-  )
+  );
 }
-

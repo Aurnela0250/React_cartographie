@@ -1,12 +1,24 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/presentation/components/ui/card"
-import { Button } from "@/presentation/components/ui/button"
-import { Badge } from "@/presentation/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/presentation/components/ui/tabs"
-import { BookOpen, GraduationCap, MapPin, Sparkles } from "lucide-react"
-import Link from "next/link"
+import { BookOpen, GraduationCap, MapPin, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+
+import { Badge } from "@/presentation/components/ui/badge";
+import { Button } from "@/presentation/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/presentation/components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/presentation/components/ui/tabs";
 
 // Mock data for recommendations
 const recommendedEstablishments = [
@@ -34,7 +46,7 @@ const recommendedEstablishments = [
     match: 88,
     programs: ["Génie électrique", "Informatique", "Télécommunications"],
   },
-]
+];
 
 const recommendedPrograms = [
   {
@@ -58,10 +70,10 @@ const recommendedPrograms = [
     level: "Bac+5",
     match: 91,
   },
-]
+];
 
 export function RecommendationSection() {
-  const [activeTab, setActiveTab] = useState("establishments")
+  const [activeTab, setActiveTab] = useState("establishments");
 
   return (
     <Card>
@@ -70,7 +82,9 @@ export function RecommendationSection() {
           <Sparkles className="h-5 w-5 text-primary" />
           <CardTitle>Recommandations IA</CardTitle>
         </div>
-        <CardDescription>Suggestions personnalisées basées sur votre profil</CardDescription>
+        <CardDescription>
+          Suggestions personnalisées basées sur votre profil
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="establishments" onValueChange={setActiveTab}>
@@ -80,8 +94,11 @@ export function RecommendationSection() {
           </TabsList>
           <TabsContent value="establishments" className="mt-4 space-y-4">
             {recommendedEstablishments.map((establishment) => (
-              <div key={establishment.id} className="border rounded-lg p-3 hover:bg-muted/50 transition-colors">
-                <div className="flex justify-between items-start mb-1">
+              <div
+                key={establishment.id}
+                className="rounded-lg border p-3 transition-colors hover:bg-muted/50"
+              >
+                <div className="mb-1 flex items-start justify-between">
                   <div>
                     <h4 className="font-medium">{establishment.name}</h4>
                     <div className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -93,7 +110,7 @@ export function RecommendationSection() {
                     {establishment.match}% match
                   </Badge>
                 </div>
-                <div className="flex flex-wrap gap-1 mt-2 mb-3">
+                <div className="mb-3 mt-2 flex flex-wrap gap-1">
                   {establishment.programs.map((program) => (
                     <Badge key={program} variant="outline" className="text-xs">
                       {program}
@@ -101,18 +118,25 @@ export function RecommendationSection() {
                   ))}
                 </div>
                 <Button size="sm" variant="outline" className="w-full" asChild>
-                  <Link href={`/establishments/${establishment.id}`}>Voir l'établissement</Link>
+                  <Link href={`/establishments/${establishment.id}`}>
+                    Voir l'établissement
+                  </Link>
                 </Button>
               </div>
             ))}
             <Button className="w-full" asChild>
-              <Link href="/recommendations">Voir toutes les recommandations</Link>
+              <Link href="/recommendations">
+                Voir toutes les recommandations
+              </Link>
             </Button>
           </TabsContent>
           <TabsContent value="programs" className="mt-4 space-y-4">
             {recommendedPrograms.map((program) => (
-              <div key={program.id} className="border rounded-lg p-3 hover:bg-muted/50 transition-colors">
-                <div className="flex justify-between items-start mb-1">
+              <div
+                key={program.id}
+                className="rounded-lg border p-3 transition-colors hover:bg-muted/50"
+              >
+                <div className="mb-1 flex items-start justify-between">
                   <div>
                     <h4 className="font-medium">{program.name}</h4>
                     <div className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -124,9 +148,11 @@ export function RecommendationSection() {
                     {program.match}% match
                   </Badge>
                 </div>
-                <div className="flex items-center gap-1 mt-2 mb-3">
+                <div className="mb-3 mt-2 flex items-center gap-1">
                   <GraduationCap className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">{program.level}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {program.level}
+                  </span>
                 </div>
                 <Button size="sm" variant="outline" className="w-full">
                   Voir la formation
@@ -134,12 +160,13 @@ export function RecommendationSection() {
               </div>
             ))}
             <Button className="w-full" asChild>
-              <Link href="/recommendations">Voir toutes les recommandations</Link>
+              <Link href="/recommendations">
+                Voir toutes les recommandations
+              </Link>
             </Button>
           </TabsContent>
         </Tabs>
       </CardContent>
     </Card>
-  )
+  );
 }
-

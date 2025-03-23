@@ -1,23 +1,31 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/presentation/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/presentation/components/ui/card"
-import { Input } from "@/presentation/components/ui/input"
-import { Avatar } from "@/presentation/components/ui/avatar"
-import { ScrollArea } from "@/presentation/components/ui/scroll-area"
-import { Send, Bot, User, Info, Loader2 } from "lucide-react"
+import { Bot, Info, Loader2, Send, User } from "lucide-react";
+import { useState } from "react";
+
+import { Avatar } from "@/presentation/components/ui/avatar";
+import { Button } from "@/presentation/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/presentation/components/ui/card";
+import { Input } from "@/presentation/components/ui/input";
+import { ScrollArea } from "@/presentation/components/ui/scroll-area";
 
 type Message = {
-  id: string
-  content: string
-  sender: "user" | "bot"
-  timestamp: Date
-}
+  id: string;
+  content: string;
+  sender: "user" | "bot";
+  timestamp: Date;
+};
 
 export default function ChatbotPage() {
-  const [input, setInput] = useState("")
-  const [loading, setLoading] = useState(false)
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -26,10 +34,10 @@ export default function ChatbotPage() {
       sender: "bot",
       timestamp: new Date(),
     },
-  ])
+  ]);
 
   const handleSendMessage = () => {
-    if (!input.trim()) return
+    if (!input.trim()) return;
 
     // Add user message
     const userMessage: Message = {
@@ -37,11 +45,11 @@ export default function ChatbotPage() {
       content: input,
       sender: "user",
       timestamp: new Date(),
-    }
+    };
 
-    setMessages((prev) => [...prev, userMessage])
-    setInput("")
-    setLoading(true)
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+    setLoading(true);
 
     // Simulate bot response
     setTimeout(() => {
@@ -54,16 +62,16 @@ export default function ChatbotPage() {
           "Pour les bourses, vous devez constituer un Dossier Social Étudiant (DSE) sur le site du CROUS. La demande doit être faite entre janvier et mai.",
         logement:
           "De nombreux établissements proposent des résidences universitaires. Vous pouvez également consulter les offres du CROUS ou les plateformes de logement étudiant.",
-      }
+      };
 
       let botResponse =
-        "Je ne suis pas sûr de comprendre votre question. Pouvez-vous préciser ce que vous recherchez concernant l'orientation ou les établissements d'enseignement supérieur ?"
+        "Je ne suis pas sûr de comprendre votre question. Pouvez-vous préciser ce que vous recherchez concernant l'orientation ou les établissements d'enseignement supérieur ?";
 
       // Simple keyword matching
       for (const [keyword, response] of Object.entries(botResponses)) {
         if (userMessage.content.toLowerCase().includes(keyword)) {
-          botResponse = response
-          break
+          botResponse = response;
+          break;
         }
       }
 
@@ -72,15 +80,15 @@ export default function ChatbotPage() {
         content: botResponse,
         sender: "bot",
         timestamp: new Date(),
-      }
+      };
 
-      setMessages((prev) => [...prev, newBotMessage])
-      setLoading(false)
-    }, 1000)
-  }
+      setMessages((prev) => [...prev, newBotMessage]);
+      setLoading(false);
+    }, 1000);
+  };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="mx-auto max-w-4xl">
       <Card className="h-[calc(100vh-120px)]">
         <CardHeader>
           <div className="flex items-center gap-2">
@@ -89,12 +97,14 @@ export default function ChatbotPage() {
             </Avatar>
             <div>
               <CardTitle>Assistant Parcours Sup</CardTitle>
-              <CardDescription>Posez vos questions sur l'orientation et les formations</CardDescription>
+              <CardDescription>
+                Posez vos questions sur l'orientation et les formations
+              </CardDescription>
             </div>
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="border-t border-b h-[calc(100vh-280px)]">
+          <div className="h-[calc(100vh-280px)] border-b border-t">
             <ScrollArea className="h-full p-4">
               <div className="space-y-4">
                 {messages.map((message) => (
@@ -103,11 +113,15 @@ export default function ChatbotPage() {
                     className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`flex gap-2 max-w-[80%] ${
-                        message.sender === "user" ? "flex-row-reverse" : "flex-row"
+                      className={`flex max-w-[80%] gap-2 ${
+                        message.sender === "user"
+                          ? "flex-row-reverse"
+                          : "flex-row"
                       }`}
                     >
-                      <Avatar className={`h-8 w-8 ${message.sender === "user" ? "bg-secondary" : "bg-primary"}`}>
+                      <Avatar
+                        className={`h-8 w-8 ${message.sender === "user" ? "bg-secondary" : "bg-primary"}`}
+                      >
                         {message.sender === "user" ? (
                           <User className="h-4 w-4" />
                         ) : (
@@ -116,11 +130,13 @@ export default function ChatbotPage() {
                       </Avatar>
                       <div
                         className={`rounded-lg p-3 ${
-                          message.sender === "user" ? "bg-primary text-primary-foreground" : "bg-muted"
+                          message.sender === "user"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted"
                         }`}
                       >
                         <p>{message.content}</p>
-                        <p className="text-xs opacity-70 mt-1">
+                        <p className="mt-1 text-xs opacity-70">
                           {message.timestamp.toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
@@ -132,12 +148,12 @@ export default function ChatbotPage() {
                 ))}
                 {loading && (
                   <div className="flex justify-start">
-                    <div className="flex gap-2 max-w-[80%]">
+                    <div className="flex max-w-[80%] gap-2">
                       <Avatar className="h-8 w-8 bg-primary">
                         <Bot className="h-4 w-4 text-primary-foreground" />
                       </Avatar>
-                      <div className="rounded-lg p-3 bg-muted flex items-center">
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      <div className="flex items-center rounded-lg bg-muted p-3">
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         <p>L'assistant réfléchit...</p>
                       </div>
                     </div>
@@ -148,10 +164,13 @@ export default function ChatbotPage() {
           </div>
         </CardContent>
         <CardFooter className="p-4">
-          <div className="flex flex-col w-full gap-4">
+          <div className="flex w-full flex-col gap-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Info className="h-4 w-4" />
-              <p>L'assistant utilise l'IA pour répondre à vos questions sur l'orientation</p>
+              <p>
+                L'assistant utilise l'IA pour répondre à vos questions sur
+                l'orientation
+              </p>
             </div>
             <div className="flex gap-2">
               <Input
@@ -160,12 +179,15 @@ export default function ChatbotPage() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault()
-                    handleSendMessage()
+                    e.preventDefault();
+                    handleSendMessage();
                   }
                 }}
               />
-              <Button onClick={handleSendMessage} disabled={loading || !input.trim()}>
+              <Button
+                onClick={handleSendMessage}
+                disabled={loading || !input.trim()}
+              >
                 <Send className="h-4 w-4" />
               </Button>
             </div>
@@ -173,6 +195,5 @@ export default function ChatbotPage() {
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }
-

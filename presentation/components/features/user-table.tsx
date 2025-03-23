@@ -1,11 +1,15 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/presentation/components/ui/table"
-import { Button } from "@/presentation/components/ui/button"
-import { Badge } from "@/presentation/components/ui/badge"
-import { Input } from "@/presentation/components/ui/input"
-import { Avatar, AvatarFallback, AvatarImage } from "@/presentation/components/ui/avatar"
+import { ArrowUpDown, MoreHorizontal, Search } from "lucide-react";
+import { useState } from "react";
+
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/presentation/components/ui/avatar";
+import { Badge } from "@/presentation/components/ui/badge";
+import { Button } from "@/presentation/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,8 +17,16 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/presentation/components/ui/dropdown-menu"
-import { MoreHorizontal, Search, ArrowUpDown } from "lucide-react"
+} from "@/presentation/components/ui/dropdown-menu";
+import { Input } from "@/presentation/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/presentation/components/ui/table";
 
 // Mock data for users
 const mockUsers = [
@@ -81,48 +93,50 @@ const mockUsers = [
     lastActive: "Jamais",
     avatar: "/placeholder.svg?height=32&width=32",
   },
-]
+];
 
 const roleLabels: Record<string, string> = {
   superadmin: "Super Admin",
   admin: "Admin",
   admin_establishment: "Admin Établissement",
   visitor: "Visiteur",
-}
+};
 
 export function UserTable() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [sortField, setSortField] = useState<string | null>(null)
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortField, setSortField] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   const handleSort = (field: string) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc")
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
-      setSortField(field)
-      setSortDirection("asc")
+      setSortField(field);
+      setSortDirection("asc");
     }
-  }
+  };
 
   const filteredUsers = mockUsers.filter(
     (user) =>
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      roleLabels[user.role].toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+      roleLabels[user.role].toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const sortedUsers = [...filteredUsers].sort((a, b) => {
-    if (!sortField) return 0
+    if (!sortField) return 0;
 
-    const fieldA = a[sortField as keyof typeof a]
-    const fieldB = b[sortField as keyof typeof b]
+    const fieldA = a[sortField as keyof typeof a];
+    const fieldB = b[sortField as keyof typeof b];
 
     if (typeof fieldA === "string" && typeof fieldB === "string") {
-      return sortDirection === "asc" ? fieldA.localeCompare(fieldB) : fieldB.localeCompare(fieldA)
+      return sortDirection === "asc"
+        ? fieldA.localeCompare(fieldB)
+        : fieldB.localeCompare(fieldA);
     }
 
-    return 0
-  })
+    return 0;
+  });
 
   return (
     <div className="space-y-4">
@@ -143,31 +157,51 @@ export function UserTable() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[250px]">
-                <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("name")}>
+                <Button
+                  variant="ghost"
+                  className="p-0 font-medium"
+                  onClick={() => handleSort("name")}
+                >
                   Utilisateur
                   <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
               <TableHead>
-                <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("email")}>
+                <Button
+                  variant="ghost"
+                  className="p-0 font-medium"
+                  onClick={() => handleSort("email")}
+                >
                   Email
                   <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
               <TableHead>
-                <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("role")}>
+                <Button
+                  variant="ghost"
+                  className="p-0 font-medium"
+                  onClick={() => handleSort("role")}
+                >
                   Rôle
                   <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
               <TableHead>
-                <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("status")}>
+                <Button
+                  variant="ghost"
+                  className="p-0 font-medium"
+                  onClick={() => handleSort("status")}
+                >
                   Statut
                   <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
               <TableHead>
-                <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("lastActive")}>
+                <Button
+                  variant="ghost"
+                  className="p-0 font-medium"
+                  onClick={() => handleSort("lastActive")}
+                >
                   Dernière activité
                   <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
@@ -178,7 +212,10 @@ export function UserTable() {
           <TableBody>
             {sortedUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                <TableCell
+                  colSpan={6}
+                  className="py-8 text-center text-muted-foreground"
+                >
                   Aucun utilisateur trouvé
                 </TableCell>
               </TableRow>
@@ -201,13 +238,23 @@ export function UserTable() {
                   <TableCell>
                     <Badge
                       variant={
-                        user.status === "active" ? "default" : user.status === "inactive" ? "secondary" : "outline"
+                        user.status === "active"
+                          ? "default"
+                          : user.status === "inactive"
+                            ? "secondary"
+                            : "outline"
                       }
                     >
-                      {user.status === "active" ? "Actif" : user.status === "inactive" ? "Inactif" : "En attente"}
+                      {user.status === "active"
+                        ? "Actif"
+                        : user.status === "inactive"
+                          ? "Inactif"
+                          : "En attente"}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">{user.lastActive}</TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {user.lastActive}
+                  </TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -222,7 +269,9 @@ export function UserTable() {
                         <DropdownMenuItem>Modifier</DropdownMenuItem>
                         <DropdownMenuItem>Changer le rôle</DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive">Désactiver le compte</DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive">
+                          Désactiver le compte
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -233,6 +282,5 @@ export function UserTable() {
         </Table>
       </div>
     </div>
-  )
+  );
 }
-

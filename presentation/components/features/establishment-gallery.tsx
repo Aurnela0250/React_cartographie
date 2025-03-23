@@ -1,28 +1,33 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/presentation/components/ui/button"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
+
+import { Button } from "@/presentation/components/ui/button";
 
 interface EstablishmentGalleryProps {
-  images: string[]
+  images: string[];
 }
 
 export function EstablishmentGallery({ images }: EstablishmentGalleryProps) {
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const goToPrevious = () => {
-    setCurrentIndex((prevIndex) => (prevIndex === 0 ? images.length - 1 : prevIndex - 1))
-  }
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    );
+  };
 
   const goToNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex === images.length - 1 ? 0 : prevIndex + 1))
-  }
+    setCurrentIndex((prevIndex) =>
+      prevIndex === images.length - 1 ? 0 : prevIndex + 1
+    );
+  };
 
   return (
-    <div className="relative rounded-lg overflow-hidden">
+    <div className="relative overflow-hidden rounded-lg">
       <div
-        className="h-[300px] md:h-[400px] w-full bg-cover bg-center transition-all duration-500 ease-in-out"
+        className="h-[300px] w-full bg-cover bg-center transition-all duration-500 ease-in-out md:h-[400px]"
         style={{ backgroundImage: `url(${images[currentIndex]})` }}
       />
 
@@ -59,6 +64,5 @@ export function EstablishmentGallery({ images }: EstablishmentGalleryProps) {
         ))}
       </div>
     </div>
-  )
+  );
 }
-

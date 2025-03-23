@@ -10,9 +10,9 @@
 │   │   ├── dto
 │   │   └── services
 │   └── domain
-│       ├── entities
-│       ├── repositories
-│       └── usecases
+│   ├── entities
+│   ├── repositories
+│   └── usecases
 ├── infrastructure
 │   ├── api
 │   ├── repositories
@@ -26,6 +26,6 @@
 │   └── layouts
 ├── public
 └── shared
-    ├── constants
-    ├── types
-    └── utils
+   ├── constants
+   ├── types
+   └── utils
