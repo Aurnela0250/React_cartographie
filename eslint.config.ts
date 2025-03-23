@@ -2,6 +2,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import oxlint from "eslint-plugin-oxlint";
 import tseslint from "typescript-eslint";
 
 import { FlatCompat } from "@eslint/eslintrc";
@@ -20,6 +21,32 @@ const compat = new FlatCompat({
 export default tseslint.config(
     eslint.configs.recommended,
     tseslint.configs.recommended,
+    oxlint.buildFromOxlintConfigFile("./.oxlintrc.json"),
+    {
+        ignores: [
+            ".now/*",
+            "*.css",
+            ".changeset",
+            "dist",
+            "esm/*",
+            "public/*",
+            "tests/*",
+            "scripts/*",
+            "*.config.js",
+            ".DS_Store",
+            "node_modules",
+            "coverage",
+            ".next",
+            "build",
+            // Exclusions des fichiers à ne pas ignorer
+            "!.commitlintrc.cjs",
+            "!.lintstagedrc.cjs",
+            "!jest.config.js",
+            "!plopfile.js",
+            "!react-shim.js",
+            "!tsup.config.ts",
+        ],
+    },
     ...compat.config({
         extends: [
             "next/core-web-vitals",
@@ -31,6 +58,7 @@ export default tseslint.config(
             "plugin:tailwindcss/recommended",
             "next",
             "prettier",
+            "next/typescript",
         ],
         plugins: [
             "react",
@@ -62,13 +90,15 @@ export default tseslint.config(
             },
         },
         rules: {
-            indent: ["warn", 4],
+            // indent: ["warn", 4],
             "no-console": "warn",
             "react/jsx-key": "off",
             "react/prop-types": "off",
             "react/jsx-uses-react": "off",
             "react/react-in-jsx-scope": "off",
             "react-hooks/exhaustive-deps": "off",
+            "react/no-unescaped-entities": "off",
+            "@next/next/no-page-custom-font": "off",
             "tailwindcss/no-custom-classname": "off",
             "@next/next/no-html-link-for-pages": "off",
             "jsx-a11y/click-events-have-key-events": "warn",
