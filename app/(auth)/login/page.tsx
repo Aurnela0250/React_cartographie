@@ -8,7 +8,6 @@ import { useUser } from "@/presentation/contexts/user-context";
 import { useToast } from "@/presentation/hooks/use-toast";
 
 export default function LoginPage() {
-    console.log("");
     const router = useRouter();
     const { toast } = useToast();
     const { login } = useUser();
@@ -53,7 +52,7 @@ export default function LoginPage() {
     return (
         <div className="flex h-screen w-full">
             {/* Partie gauche - Formulaire */}
-            <div className="bg-background flex w-full flex-col items-center justify-center p-8 md:w-1/2">
+            <div className="flex w-full flex-col items-center justify-center bg-background p-8 md:w-1/2">
                 <div className="w-full max-w-md">
                     <div className="mb-8">
                         <h1 className="mb-1 text-3xl font-bold">OrientaMada</h1>
@@ -110,7 +109,7 @@ export default function LoginPage() {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center">
                                 <input
-                                    className="text-primary focus:ring-primary size-4 rounded border-gray-300"
+                                    className="size-4 rounded border-gray-300 text-primary focus:ring-primary"
                                     id="remember-me"
                                     type="checkbox"
                                 />
@@ -166,7 +165,7 @@ export default function LoginPage() {
                         </button>
                     </form>
 
-                    <div className="text-muted-foreground mt-8 text-center text-xs">
+                    <div className="mt-8 text-center text-xs text-muted-foreground">
                         <p>© 2025 OrientaMada. Tous droits réservés.</p>
                         <div className="mt-2 space-x-4">
                             <a className="hover:underline" href="#">

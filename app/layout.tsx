@@ -2,9 +2,10 @@ import "@/styles/globals.css";
 
 import { Inter } from "next/font/google";
 
-import { ThemeProvider } from "@/presentation/components/features/theme-provider";
 import { Toaster } from "@/presentation/components/ui/toaster";
 import { UserProvider } from "@/presentation/contexts/user-context";
+import SessionProvider from "@/presentation/providers/session-provider";
+import { ThemeProvider } from "@/presentation/providers/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,17 +23,19 @@ export default function RootLayout({
     return (
         <html suppressHydrationWarning lang="fr">
             <body className={inter.className}>
-                <ThemeProvider
-                    disableTransitionOnChange
-                    enableSystem
-                    attribute="class"
-                    defaultTheme="light"
-                >
-                    <UserProvider>
-                        {children}
-                        <Toaster />
-                    </UserProvider>
-                </ThemeProvider>
+                <SessionProvider>
+                    <ThemeProvider
+                        disableTransitionOnChange
+                        enableSystem
+                        attribute="class"
+                        defaultTheme="light"
+                    >
+                        <UserProvider>
+                            {children}
+                            <Toaster />
+                        </UserProvider>
+                    </ThemeProvider>
+                </SessionProvider>
             </body>
         </html>
     );
