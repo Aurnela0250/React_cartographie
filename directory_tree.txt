@@ -1,0 +1,60 @@
+├── app/
+│   ├── (auth)/
+│   │   ├── login/
+│   │   │   └── page.tsx
+│   │   └── layout.tsx
+│   ├── (dashboard)/
+│   │   ├── dashboard
+│   │   │   └── page.tsx
+│   │   └── layout.tsx
+│   ├── (default)/
+│   │   ├── chatbot
+│   │   │   └── page.tsx
+│   │   ├── establishments/
+│   │   │   ├── [id]
+│   │   │   │   └── page.tsx
+│   │   │   ├── loading.tsx
+│   │   │   └── page.tsx
+│   │   ├── map/
+│   │   │   ├── loading.tsx
+│   │   │   └── page.tsx
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── layout.tsx
+│   └── loading.tsx
+├── core/
+│   ├── domain/
+│   │   └── entities/
+│   │       └── **.entity.ts
+│   ├── interfaces/
+│   │   └── **.interface.ts
+│   └── use-cases/
+│       └── **.use-case.ts
+├── infrastructure/
+│   ├── repositories/
+│   │   └── **.repository.ts
+│   ├── store/
+│   │   └── container.ts
+├── presentation/
+│   ├── components/
+│   │   ├── features/
+│   │   └── ui/
+│   ├── hooks/
+│   │   └── use-**.ts
+│   └── server-actions/
+│       └── **.action.ts
+├── public/
+├── shared/
+│   ├── constants/
+│   ├── lib/
+│   ├── types/
+│   └── utils/
+│       └── index.ts
+├── styles
+│   └── globals.css
+├── components.json
+├── next-env.d.ts
+├── next.config.mjs
+├── package.json
+├── tailwind.config.ts
+└── tsconfig.json
