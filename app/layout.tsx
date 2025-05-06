@@ -4,7 +4,7 @@ import { Inter } from "next/font/google";
 
 import { Toaster } from "@/presentation/components/ui/toaster";
 import { UserProvider } from "@/presentation/contexts/user-context";
-import SessionProvider from "@/presentation/providers/session-provider";
+import QueryProvider from "@/presentation/providers/query-provider";
 import { ThemeProvider } from "@/presentation/providers/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -23,7 +23,7 @@ export default function RootLayout({
     return (
         <html suppressHydrationWarning lang="fr">
             <body className={inter.className}>
-                <SessionProvider>
+                <QueryProvider>
                     <ThemeProvider
                         disableTransitionOnChange
                         enableSystem
@@ -35,7 +35,7 @@ export default function RootLayout({
                             <Toaster />
                         </UserProvider>
                     </ThemeProvider>
-                </SessionProvider>
+                </QueryProvider>
             </body>
         </html>
     );

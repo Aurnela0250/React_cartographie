@@ -1,6 +1,6 @@
 // src/infrastructure/store/container.ts
 
-import { AuthUseCase } from "@/core/use-cases/auth.use-case";
+import { AuthUseCase } from "@/core/domain/use-cases/auth.use-case";
 
 import { AuthRepository } from "../repositories/auth.repository";
 

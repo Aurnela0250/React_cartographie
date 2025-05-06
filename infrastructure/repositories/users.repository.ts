@@ -1,13 +1,13 @@
-import { UserEntity } from "@/core/domain/entities/users.entity";
-import { IUserRepository } from "@/core/interfaces/users.repository.interface";
+import { User } from "@/core/domain/entities/users.entity";
+import { IUserRepository } from "@/core/domain/interfaces/users.repository.interface";
 import { AuthenticationError, NotFoundError } from "@/shared/errors/errors";
 
 export class UserRepository implements IUserRepository {
-    createUser(data: { email: string; password: string }): Promise<UserEntity> {
+    createUser(data: { email: string; password: string }): Promise<User> {
         throw new Error("Method not implemented.");
     }
 
-    async getUserByEmail(email: string): Promise<UserEntity | null> {
+    async getUserByEmail(email: string): Promise<User | null> {
         const response = await fetch(`${process.env.INTERNAL_API_URL}/user`, {
             body: JSON.stringify({ email }),
             method: "GET",
@@ -23,7 +23,7 @@ export class UserRepository implements IUserRepository {
 
         const data = await response.json();
 
-        const user: UserEntity = {
+        const user: User = {
             email: data.email,
             id: data.id,
             name: data.name,
@@ -32,7 +32,7 @@ export class UserRepository implements IUserRepository {
         return user;
     }
 
-    async getUserById(id: string): Promise<UserEntity | null> {
+    async getUserById(id: number): Promise<User | null> {
         const response = await fetch(
             `${process.env.INTERNAL_API_URL}/users/${id}`,
             {
@@ -50,7 +50,7 @@ export class UserRepository implements IUserRepository {
 
         const data = await response.json();
 
-        const user: UserEntity = {
+        const user: User = {
             email: data.email,
             id: data.id,
             name: data.name,

@@ -1,4 +1,3 @@
-import { auth } from "@/auth";
 import { EstablishmentList } from "@/presentation/components/features/establishment-list";
 import { SearchFilters } from "@/presentation/components/features/search-filters";
 import { Button } from "@/presentation/components/ui/button";
@@ -12,10 +11,6 @@ import {
 import { Pagination } from "@/presentation/components/ui/pagination";
 
 export default async function EstablishmentsPage() {
-    const session = await auth();
-
-    console.log("session :", session);
-
     return (
         <div className="space-y-6">
             <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">

@@ -19,10 +19,32 @@ const nextConfig = {
         unoptimized: true,
     },
     experimental: {
-        webpackBuildWorker: true,
         parallelServerBuildTraces: true,
         parallelServerCompiles: true,
     },
+    // Ignorer le dossier packages lors de la compilation
+    transpilePackages: [],
+    webpack: (config, { isServer }) => {
+        // Ignorer les fichiers dans packages/session-auth
+        config.watchOptions = {
+            ...config.watchOptions,
+            ignored: [
+                ...(config.watchOptions?.ignored || []),
+                "**/packages/**",
+            ],
+        };
+
+        return config;
+    },
+    // turbo: {
+    //     root: process.cwd(),
+    //     rules: {
+    //         // Exclure le dossier /packages/** ainsi que node_modules de la compilation Turbopack
+    //         "**/*.{js,ts,jsx,tsx}": {
+    //             // exclude: ["**/packages/**", "**/node_modules/**"],
+    //         },
+    //     },
+    // },
 };
 
 mergeConfig(nextConfig, userConfig);

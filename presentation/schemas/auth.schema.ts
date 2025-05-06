@@ -12,7 +12,7 @@ export const loginSchema = z.object({
     }),
 });
 
-export type login = z.infer<typeof loginSchema>;
+export type LoginInput = z.infer<typeof loginSchema>;
 
 export const AccessTokenSchema = z.object({
     access_token: z.string(),

@@ -2,7 +2,6 @@
 
 import { AuthError } from "next-auth";
 
-import { signIn, signOut } from "@/auth";
 import { Container } from "@/infrastructure/store/container";
 import {
     loginSchema,
