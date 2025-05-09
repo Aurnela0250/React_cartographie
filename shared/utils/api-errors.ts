@@ -9,6 +9,11 @@ import {
 
 export async function handleApiResponse<T>(response: Response): Promise<T> {
     if (response.ok) {
+        // Vérifier si la réponse a un statut 204 (No Content)
+        if (response.status === 204) {
+            return undefined as T; // Pas de contenu à parser
+        }
+
         return (await response.json()) as T;
     }
 

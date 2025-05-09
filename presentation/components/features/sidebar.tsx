@@ -13,20 +13,18 @@ import {
     Users,
 } from "lucide-react";
 
-import { useUser } from "@/presentation/contexts/user-context";
 import { cn } from "@/shared/utils";
 
 export default function Sidebar() {
     const pathname = usePathname();
-    const { user } = useUser();
 
     // Only show sidebar on dashboard pages
     if (!pathname.startsWith("/dashboard")) {
         return null;
     }
 
-    const isAdmin = user?.role === "admin" || user?.role === "superadmin";
-    const isSuperAdmin = user?.role === "superadmin";
+    // const isAdmin = user?.role === "admin" || user?.role === "superadmin";
+    // const isSuperAdmin = user?.role === "superadmin";
 
     const navItems = [
         {
@@ -83,7 +81,7 @@ export default function Sidebar() {
         <div className="hidden h-screen w-64 flex-col border-r bg-background md:flex">
             <div className="flex h-14 items-center border-b px-4">
                 <Link className="flex items-center gap-2" href="/">
-                    <div className="bg-primary flex size-6 items-center justify-center rounded-full">
+                    <div className="flex size-6 items-center justify-center rounded-full bg-primary">
                         <span className="text-xs font-bold text-primary-foreground">
                             PS
                         </span>
@@ -95,15 +93,15 @@ export default function Sidebar() {
                 <nav className="grid items-start px-2 text-sm">
                     {navItems.map((item) => {
                         // Skip items that require admin privileges if user is not admin
-                        if (item.adminOnly && !isAdmin) return null;
+                        // if (item.adminOnly && !isAdmin) return null;
                         // Skip items that require superadmin privileges if user is not superadmin
-                        if (item.superAdminOnly && !isSuperAdmin) return null;
+                        // if (item.superAdminOnly && !isSuperAdmin) return null;
 
                         return (
                             <Link
                                 key={item.href}
                                 className={cn(
-                                    "hover:text-foreground flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
+                                    "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-foreground",
                                     pathname === item.href
                                         ? "bg-muted text-foreground"
                                         : "text-muted-foreground"
@@ -128,7 +126,7 @@ export default function Sidebar() {
                         </p>
                     </div>
                     <Link href="/profile">
-                        <Settings className="text-muted-foreground hover:text-foreground size-4 transition-colors" />
+                        <Settings className="size-4 text-muted-foreground transition-colors hover:text-foreground" />
                     </Link>
                 </div>
             </div>

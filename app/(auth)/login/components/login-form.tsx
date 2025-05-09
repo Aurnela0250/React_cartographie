@@ -44,15 +44,17 @@ export function LoginForm() {
         // Vérification du résultat pour les erreurs
         if (
             result?.data &&
-            "success" in result.data &&
             result.data.success === false &&
-            "error" in result.data
+            result.data.error
         ) {
-            setErrorMessage(result.data.error as string);
+            setErrorMessage(result.data.error);
+
+            return;
         }
 
-        if (result && "success" in result && result?.success) {
-            router.push(result?.data?.redirectTo ?? "/");
+        // Si le résultat contient des données de succès et une URL de redirection
+        if (result?.data && result.data.success === true) {
+            router.push(result.data.redirectTo || "/");
         }
     };
 

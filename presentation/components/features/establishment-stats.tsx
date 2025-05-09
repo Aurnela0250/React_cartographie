@@ -92,7 +92,7 @@ export function EstablishmentStats({
                                 </ResponsiveContainer>
                             </ChartContainer>
 
-                            <div className="text-muted-foreground mt-4 text-sm">
+                            <div className="mt-4 text-sm text-muted-foreground">
                                 <p>
                                     L'établissement a connu une croissance
                                     constante de ses effectifs étudiants au
@@ -141,7 +141,7 @@ export function EstablishmentStats({
                                 </ResponsiveContainer>
                             </ChartContainer>
 
-                            <div className="text-muted-foreground mt-4 text-sm">
+                            <div className="mt-4 text-sm text-muted-foreground">
                                 <p>
                                     La majorité des étudiants (60%) sont
                                     inscrits en Licence, suivis par les
@@ -177,7 +177,7 @@ export function EstablishmentStats({
                                 </ResponsiveContainer>
                             </ChartContainer>
 
-                            <div className="text-muted-foreground mt-4 text-sm">
+                            <div className="mt-4 text-sm text-muted-foreground">
                                 <p>
                                     Les taux de réussite augmentent
                                     progressivement avec le niveau d'études,
@@ -194,26 +194,26 @@ export function EstablishmentStats({
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 <Card>
                     <CardContent className="p-4 text-center">
-                        <h3 className="text-primary text-2xl font-bold">
+                        <h3 className="text-2xl font-bold text-primary">
                             48 000
                         </h3>
-                        <p className="text-muted-foreground text-sm">
+                        <p className="text-sm text-muted-foreground">
                             Étudiants inscrits
                         </p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardContent className="p-4 text-center">
-                        <h3 className="text-primary text-2xl font-bold">350</h3>
-                        <p className="text-muted-foreground text-sm">
+                        <h3 className="text-2xl font-bold text-primary">350</h3>
+                        <p className="text-sm text-muted-foreground">
                             Formations proposées
                         </p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardContent className="p-4 text-center">
-                        <h3 className="text-primary text-2xl font-bold">87%</h3>
-                        <p className="text-muted-foreground text-sm">
+                        <h3 className="text-2xl font-bold text-primary">87%</h3>
+                        <p className="text-sm text-muted-foreground">
                             Taux d'insertion professionnelle
                         </p>
                     </CardContent>

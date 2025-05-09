@@ -4,6 +4,7 @@ import { AuthDjangoApiRepository } from "@/infrastructure/repositories/auth.repo
 import { actionClient } from "@/infrastructure/services/safe-action";
 import { loginSchema } from "@/presentation/schemas/auth.schema";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
+import { UnauthorizedError } from "@/shared/utils/api-errors.types";
 // Plus besoin d'importer ces erreurs car on retourne directement des objets d'erreur
 // import {
 //     InternalServerError,
@@ -55,12 +56,11 @@ export const login = actionClient
         } catch (error: unknown) {
             // Nous gardons une trace de l'erreur en mode développement
             if (process.env.NODE_ENV === "development") {
-                // eslint-disable-next-line no-console
                 console.error("Erreur Login Action:", error);
             }
 
             // Gérer les erreurs spécifiques
-            if (error instanceof Error && error.message.includes("401")) {
+            if (error instanceof UnauthorizedError) {
                 return {
                     success: false,
                     error: "Email ou mot de passe incorrect",

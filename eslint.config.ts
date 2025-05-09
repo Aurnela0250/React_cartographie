@@ -91,7 +91,7 @@ export default tseslint.config(
         },
         rules: {
             // indent: ["warn", 4],
-            "no-console": "warn",
+            "no-console": "off",
             "react/jsx-key": "off",
             "react/prop-types": "off",
             "react/jsx-uses-react": "off",

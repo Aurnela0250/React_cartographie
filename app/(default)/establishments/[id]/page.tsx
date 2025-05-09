@@ -1,20 +1,19 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
     Award,
-    BookOpen,
     Building,
     Calendar,
     Globe,
     Mail,
     MapPin,
     Phone,
+    Star,
     Users,
 } from "lucide-react";
 
+import { Establishment } from "@/core/domain/entities/establishment.entity";
 import { EstablishmentGallery } from "@/presentation/components/features/establishment-gallery";
-import { EstablishmentReviews } from "@/presentation/components/features/establishment-reviews";
-import { EstablishmentStats } from "@/presentation/components/features/establishment-stats";
-import { ProgramsList } from "@/presentation/components/features/programs-list";
 import { Badge } from "@/presentation/components/ui/badge";
 import { Button } from "@/presentation/components/ui/button";
 import {
@@ -31,55 +30,90 @@ import {
     TabsTrigger,
 } from "@/presentation/components/ui/tabs";
 
-export default function EstablishmentPage({
+// S'assurer que l'URL de l'API est bien définie
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
+
+async function getEstablishmentById(id: string): Promise<Establishment> {
+    // Vérification que l'ID est bien fourni
+    if (!id) {
+        throw new Error("ID d'établissement non fourni");
+    }
+
+    // Cette fonction sera exécutée côté serveur
+    const res = await fetch(`${API_URL}/api/establishments/${id}`, {
+        cache: "no-store",
+        // On ajoute next.js 13 fetch options
+        next: {
+            revalidate: 60, // Revalidate every 60 seconds
+        },
+    });
+
+    if (!res.ok) {
+        throw new Error(
+            "Erreur lors de la récupération des détails de l'établissement"
+        );
+    }
+
+    return res.json();
+}
+
+export default async function EstablishmentPage({
     params,
 }: {
     params: { id: string };
 }) {
-    // In a real app, you would fetch the establishment data based on the ID
-    const establishment = {
-        id: params.id,
-        name: "Université d'Antananarivo",
-        type: "Université",
-        address: "Ankatso",
-        phone: "+261 38 91 600 07",
-        website: "https://www.universite-ankatso.mg",
-        email: "contact@universite-ankatso.mg",
-        description:
-            "L'Université d'Ankatso est une université publique malgache située dans la capitale de Madagascar qui est Antananarivo. Elle est classée parmi les meilleures universités de Madagascar dans plusieurs disciplines.",
-        students: 48000,
-        programs: 350,
-        founded: 2019,
-        accreditations: ["CTI", "HCERES", "EUR-ACE"],
-        facilities: [
-            "Bibliothèque",
-            "Laboratoires",
-            "Résidences",
-            "Restaurants",
-            "Installations sportives",
-        ],
-        coordinates: { lat: 48.712, lng: 2.213 },
-        images: [
-            "/placeholder.svg?height=400&width=600",
-            "/placeholder.svg?height=400&width=600",
-            "/placeholder.svg?height=400&width=600",
-        ],
-    };
+    // Récupérer les données de l'établissement à partir de l'API
+    // Utilisation de try/catch pour gérer les erreurs potentielles
+    let establishment: Establishment;
+
+    try {
+        establishment = await getEstablishmentById(params.id);
+    } catch (error) {
+        console.error(
+            "Erreur lors de la récupération de l'établissement:",
+            error
+        );
+        // Fournir un objet vide en cas d'erreur
+        establishment = new Establishment({});
+    }
+
+    // Images pour la galerie (placeholder pour l'instant)
+    const images = [
+        "/images/establishment-placeholder.jpg",
+        "/images/establishment-placeholder.jpg",
+        "/images/establishment-placeholder.jpg",
+    ];
+
+    // Facilités (à adapter selon les données réelles)
+    const facilities = [
+        "Bibliothèque",
+        "Laboratoires",
+        "Résidences",
+        "Restaurants",
+        "Installations sportives",
+    ];
 
     return (
         <div className="space-y-6">
             <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
                 <div>
                     <div className="mb-2 flex items-center gap-2">
-                        <Badge variant="outline">{establishment.type}</Badge>
+                        <Badge variant="outline">
+                            {establishment.establishment_type?.name ||
+                                "Établissement"}
+                        </Badge>
                         <Link
-                            className="text-muted-foreground text-sm hover:underline"
+                            className="text-sm text-muted-foreground hover:underline"
                             href="/map"
                         >
                             Retour à la carte
                         </Link>
                     </div>
-                    <h1 className="text-3xl font-bold">{establishment.name}</h1>
+                    <h1 className="text-3xl font-bold">
+                        {establishment.name || "Établissement non trouvé"}
+                        {establishment.acronyme &&
+                            ` (${establishment.acronyme})`}
+                    </h1>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline">Ajouter aux favoris</Button>
@@ -89,7 +123,7 @@ export default function EstablishmentPage({
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 <div className="space-y-6 lg:col-span-2">
-                    <EstablishmentGallery images={establishment.images} />
+                    <EstablishmentGallery images={images} />
 
                     <Card>
                         <CardContent className="p-6">
@@ -97,51 +131,58 @@ export default function EstablishmentPage({
                                 À propos
                             </h2>
                             <p className="text-muted-foreground">
-                                {establishment.description}
+                                {establishment.description ||
+                                    "Aucune description disponible pour cet établissement."}
                             </p>
 
                             <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-                                <div className="flex items-center gap-2">
-                                    <Users className="text-muted-foreground size-5" />
-                                    <span>
-                                        {establishment.students.toLocaleString()}{" "}
-                                        étudiants
-                                    </span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <BookOpen className="text-muted-foreground size-5" />
-                                    <span>
-                                        {establishment.programs} formations
-                                    </span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Calendar className="text-muted-foreground size-5" />
-                                    <span>
-                                        Fondé en {establishment.founded}
-                                    </span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Award className="text-muted-foreground size-5" />
-                                    <span>
-                                        {establishment.accreditations.join(
-                                            ", "
-                                        )}
-                                    </span>
-                                </div>
+                                {establishment.formations && (
+                                    <div className="flex items-center gap-2">
+                                        <Users className="size-5 text-muted-foreground" />
+                                        <span>
+                                            {establishment.formations.length ||
+                                                0}{" "}
+                                            formations
+                                        </span>
+                                    </div>
+                                )}
+                                {establishment.rating && (
+                                    <div className="flex items-center gap-2">
+                                        <Star className="size-5 text-muted-foreground" />
+                                        <span>{establishment.rating} / 5</span>
+                                    </div>
+                                )}
+                                {establishment.created_at && (
+                                    <div className="flex items-center gap-2">
+                                        <Calendar className="size-5 text-muted-foreground" />
+                                        <span>
+                                            Ajouté le{" "}
+                                            {new Date(
+                                                establishment.created_at
+                                            ).toLocaleDateString()}
+                                        </span>
+                                    </div>
+                                )}
+                                {establishment.sector && (
+                                    <div className="flex items-center gap-2">
+                                        <Award className="size-5 text-muted-foreground" />
+                                        <span>
+                                            Secteur: {establishment.sector.name}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
 
                             <h3 className="mb-2 mt-6 text-xl font-semibold">
                                 Équipements
                             </h3>
                             <div className="flex flex-wrap gap-2">
-                                {establishment.facilities.map(
-                                    (facility, index) => (
-                                        <Badge key={index} variant="secondary">
-                                            <Building className="mr-1 size-3" />
-                                            {facility}
-                                        </Badge>
-                                    )
-                                )}
+                                {facilities.map((facility, index) => (
+                                    <Badge key={index} variant="secondary">
+                                        <Building className="mr-1 size-3" />
+                                        {facility}
+                                    </Badge>
+                                ))}
                             </div>
                         </CardContent>
                     </Card>
@@ -157,17 +198,19 @@ export default function EstablishmentPage({
                             <TabsTrigger value="reviews">Avis</TabsTrigger>
                         </TabsList>
                         <TabsContent className="mt-4" value="programs">
-                            <ProgramsList establishmentId={establishment.id} />
+                            {/* <ProgramsList
+                                establishmentId={establishment.id || 0}
+                            /> */}
                         </TabsContent>
                         <TabsContent className="mt-4" value="stats">
-                            <EstablishmentStats
-                                establishmentId={establishment.id}
-                            />
+                            {/* <EstablishmentStats
+                                establishmentId={establishment.id || 0}
+                            /> */}
                         </TabsContent>
                         <TabsContent className="mt-4" value="reviews">
-                            <EstablishmentReviews
-                                establishmentId={establishment.id}
-                            />
+                            {/* <EstablishmentReviews
+                                establishmentId={establishment.id || 0}
+                            /> */}
                         </TabsContent>
                     </Tabs>
                 </div>
@@ -179,55 +222,71 @@ export default function EstablishmentPage({
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="flex items-start gap-3">
-                                <MapPin className="text-muted-foreground mt-0.5 size-5" />
+                                <MapPin className="mt-0.5 size-5 text-muted-foreground" />
                                 <div>
-                                    <p>{establishment.address}</p>
-                                    <Button
-                                        asChild
-                                        className="h-auto p-0"
-                                        variant="link"
-                                    >
-                                        <Link
-                                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(establishment.address)}`}
-                                            target="_blank"
+                                    <p>
+                                        {establishment.address ||
+                                            "Adresse non disponible"}
+                                    </p>
+                                    {establishment.address && (
+                                        <Button
+                                            asChild
+                                            className="h-auto p-0"
+                                            variant="link"
                                         >
-                                            Voir sur Google Maps
-                                        </Link>
-                                    </Button>
+                                            <Link
+                                                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                                    establishment.address
+                                                )}`}
+                                                target="_blank"
+                                            >
+                                                Voir sur Google Maps
+                                            </Link>
+                                        </Button>
+                                    )}
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-3">
-                                <Phone className="text-muted-foreground size-5" />
-                                <a
-                                    className="hover:underline"
-                                    href={`tel:${establishment.phone}`}
-                                >
-                                    {establishment.phone}
-                                </a>
-                            </div>
+                            {establishment.contacts &&
+                                establishment.contacts[0] && (
+                                    <div className="flex items-center gap-3">
+                                        <Phone className="size-5 text-muted-foreground" />
+                                        <a
+                                            className="hover:underline"
+                                            href={`tel:${establishment.contacts[0]}`}
+                                        >
+                                            {establishment.contacts[0]}
+                                        </a>
+                                    </div>
+                                )}
 
-                            <div className="flex items-center gap-3">
-                                <Globe className="text-muted-foreground size-5" />
-                                <a
-                                    className="hover:underline"
-                                    href={establishment.website}
-                                    rel="noopener noreferrer"
-                                    target="_blank"
-                                >
-                                    Site web officiel
-                                </a>
-                            </div>
+                            {establishment.site_url && (
+                                <div className="flex items-center gap-3">
+                                    <Globe className="size-5 text-muted-foreground" />
+                                    <a
+                                        className="hover:underline"
+                                        href={establishment.site_url}
+                                        rel="noopener noreferrer"
+                                        target="_blank"
+                                    >
+                                        Site web officiel
+                                    </a>
+                                </div>
+                            )}
 
-                            <div className="flex items-center gap-3">
-                                <Mail className="text-muted-foreground size-5" />
-                                <a
-                                    className="hover:underline"
-                                    href={`mailto:${establishment.email}`}
-                                >
-                                    {establishment.email}
-                                </a>
-                            </div>
+                            {/* Contact email - s'il existe dans l'API */}
+                            {establishment.contacts &&
+                                establishment.contacts.length > 1 && (
+                                    <div className="flex items-center gap-3">
+                                        <Mail className="size-5 text-muted-foreground" />
+                                        <a
+                                            className="hover:underline"
+                                            href={`mailto:${establishment.contacts[1]}`}
+                                        >
+                                            {establishment.contacts[1]}
+                                        </a>
+                                    </div>
+                                )}
                         </CardContent>
                     </Card>
 
@@ -236,15 +295,31 @@ export default function EstablishmentPage({
                             <CardTitle>Localisation</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="relative h-[200px] overflow-hidden rounded-md bg-muted">
-                                <div className="absolute inset-0 bg-[url('/placeholder.svg?height=200&width=400')] bg-cover bg-center" />
+                            <div className="relative h-[200px] overflow-hidden rounded-md">
+                                {establishment.latitude &&
+                                establishment.longitude ? (
+                                    <Image
+                                        fill
+                                        alt="Carte de localisation"
+                                        className="object-cover"
+                                        src={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-l+f00(${establishment.longitude},${establishment.latitude})/${establishment.longitude},${establishment.latitude},13,0/400x200?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}`}
+                                    />
+                                ) : (
+                                    <div className="flex size-full items-center justify-center bg-muted">
+                                        <p className="text-muted-foreground">
+                                            Localisation non disponible
+                                        </p>
+                                    </div>
+                                )}
                                 <div className="absolute bottom-2 right-2">
                                     <Button
                                         asChild
                                         size="sm"
                                         variant="secondary"
                                     >
-                                        <Link href="/map">
+                                        <Link
+                                            href={`/map?id=${establishment.id}`}
+                                        >
                                             Voir sur la carte
                                         </Link>
                                     </Button>
@@ -253,35 +328,49 @@ export default function EstablishmentPage({
                         </CardContent>
                     </Card>
 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Formations recommandées</CardTitle>
-                            <CardDescription>
-                                Basées sur votre profil
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            {[1, 2, 3].map((i) => (
-                                <div
-                                    key={i}
-                                    className="rounded-lg border p-3 transition-colors hover:bg-muted/50"
-                                >
-                                    <h4 className="font-medium">
-                                        Master en Informatique
-                                    </h4>
-                                    <p className="text-sm text-muted-foreground">
-                                        Spécialité Intelligence Artificielle
-                                    </p>
-                                    <div className="mt-2 flex items-center justify-between">
-                                        <Badge variant="outline">Bac+5</Badge>
-                                        <Button size="sm" variant="ghost">
-                                            Détails
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
-                        </CardContent>
-                    </Card>
+                    {establishment.formations &&
+                        establishment.formations.length > 0 && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Formations populaires</CardTitle>
+                                    <CardDescription>
+                                        Les formations les plus demandées
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    {establishment.formations
+                                        .slice(0, 3)
+                                        .map((formation, i) => (
+                                            <div
+                                                key={i}
+                                                className="rounded-lg border p-3 transition-colors hover:bg-muted/50"
+                                            >
+                                                <h4 className="font-medium">
+                                                    {formation.intitule}
+                                                </h4>
+                                                <p className="text-sm text-muted-foreground">
+                                                    {formation.description?.substring(
+                                                        0,
+                                                        60
+                                                    )}
+                                                    ...
+                                                </p>
+                                                <div className="mt-2 flex items-center justify-between">
+                                                    <Badge variant="outline">
+                                                        Formation
+                                                    </Badge>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                    >
+                                                        Détails
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                </CardContent>
+                            </Card>
+                        )}
                 </div>
             </div>
         </div>

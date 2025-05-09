@@ -3,7 +3,6 @@ import "@/styles/globals.css";
 import { Inter } from "next/font/google";
 
 import { Toaster } from "@/presentation/components/ui/toaster";
-import { UserProvider } from "@/presentation/contexts/user-context";
 import QueryProvider from "@/presentation/providers/query-provider";
 import { ThemeProvider } from "@/presentation/providers/theme-provider";
 
@@ -30,10 +29,8 @@ export default function RootLayout({
                         attribute="class"
                         defaultTheme="light"
                     >
-                        <UserProvider>
-                            {children}
-                            <Toaster />
-                        </UserProvider>
+                        {children}
+                        <Toaster />
                     </ThemeProvider>
                 </QueryProvider>
             </body>

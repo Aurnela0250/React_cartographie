@@ -22,6 +22,9 @@ const nextConfig = {
         parallelServerBuildTraces: true,
         parallelServerCompiles: true,
     },
+    devIndicators: {
+        position: "bottom-right",
+    },
     // Ignorer le dossier packages lors de la compilation
     transpilePackages: [],
     webpack: (config, { isServer }) => {
@@ -36,15 +39,6 @@ const nextConfig = {
 
         return config;
     },
-    // turbo: {
-    //     root: process.cwd(),
-    //     rules: {
-    //         // Exclure le dossier /packages/** ainsi que node_modules de la compilation Turbopack
-    //         "**/*.{js,ts,jsx,tsx}": {
-    //             // exclude: ["**/packages/**", "**/node_modules/**"],
-    //         },
-    //     },
-    // },
 };
 
 mergeConfig(nextConfig, userConfig);

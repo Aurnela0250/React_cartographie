@@ -2,15 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Bell, Menu, Search, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Bell, LogOut, Menu, Search, X } from "lucide-react";
 
+// Nous utilisons maintenant un fetch direct vers l'API au lieu du server-action
 import { ModeToggle } from "@/presentation/components/features/mode-toggle";
-import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-} from "@/presentation/components/ui/avatar";
 import { Button } from "@/presentation/components/ui/button";
 import {
     DropdownMenu,
@@ -26,12 +22,16 @@ import {
     SheetContent,
     SheetTrigger,
 } from "@/presentation/components/ui/sheet";
-import { useUser } from "@/presentation/contexts/user-context";
+import { useSession } from "@/presentation/hooks/use-session";
+
+import UserAvatar from "../user-avatar";
 
 export default function Navbar() {
+    const router = useRouter();
     const pathname = usePathname();
-    const { user, logout } = useUser();
+    const { user, isLoggedIn } = useSession();
     const [showSearch, setShowSearch] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     return (
         <header className="sticky top-0 z-30 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -73,14 +73,20 @@ export default function Navbar() {
                                 >
                                     Assistant IA
                                 </Link>
-                                {user?.role !== "visitor" && (
+                                <Link
+                                    className={`rounded-md px-2 py-1 ${pathname === "/chatbot" ? "bg-muted font-medium" : ""}`}
+                                    href="/admin"
+                                >
+                                    Admin
+                                </Link>
+                                {/* {user?.role !== "visitor" && (
                                     <Link
                                         className={`rounded-md px-2 py-1 ${pathname === "/dashboard" ? "bg-muted font-medium" : ""}`}
                                         href="/dashboard"
                                     >
                                         Tableau de bord
                                     </Link>
-                                )}
+                                )} */}
                             </nav>
                         </SheetContent>
                     </Sheet>
@@ -88,7 +94,7 @@ export default function Navbar() {
 
                 <div className="mr-4 flex items-center gap-2">
                     <Link className="flex items-center gap-2" href="/">
-                        <div className="bg-primary flex size-8 items-center justify-center rounded-full">
+                        <div className="flex size-8 items-center justify-center rounded-full bg-primary">
                             <span className="font-bold text-primary-foreground">
                                 PS
                             </span>
@@ -105,7 +111,7 @@ export default function Navbar() {
                             pathname === "/"
                                 ? "text-foreground"
                                 : "text-muted-foreground"
-                        } hover:text-foreground transition-colors`}
+                        } transition-colors hover:text-foreground`}
                         href="/"
                     >
                         Accueil
@@ -115,7 +121,7 @@ export default function Navbar() {
                             pathname === "/map"
                                 ? "text-foreground"
                                 : "text-muted-foreground"
-                        } hover:text-foreground transition-colors`}
+                        } transition-colors hover:text-foreground`}
                         href="/map"
                     >
                         Carte
@@ -125,7 +131,7 @@ export default function Navbar() {
                             pathname === "/establishments"
                                 ? "text-foreground"
                                 : "text-muted-foreground"
-                        } hover:text-foreground transition-colors`}
+                        } transition-colors hover:text-foreground`}
                         href="/establishments"
                     >
                         Établissements
@@ -135,30 +141,39 @@ export default function Navbar() {
                             pathname === "/chatbot"
                                 ? "text-foreground"
                                 : "text-muted-foreground"
-                        } hover:text-foreground transition-colors`}
+                        } transition-colors hover:text-foreground`}
                         href="/chatbot"
                     >
                         Assistant IA
                     </Link>
-                    {user?.role !== "visitor" && (
+                    <Link
+                        className={`text-sm font-medium ${
+                            pathname === "/chatbot"
+                                ? "text-foreground"
+                                : "text-muted-foreground"
+                        } transition-colors hover:text-foreground`}
+                        href="/admin"
+                    >
+                        Admin
+                    </Link>
+                    {/* {user?.role !== "visitor" && (
                         <Link
                             className={`text-sm font-medium ${
                                 pathname === "/dashboard"
                                     ? "text-foreground"
                                     : "text-muted-foreground"
-                            } hover:text-foreground transition-colors`}
+                            } transition-colors hover:text-foreground`}
                             href="/dashboard"
                         >
                             Tableau de bord
                         </Link>
-                    )}
+                    )} */}
                 </nav>
 
                 <div className="ml-auto flex items-center gap-2">
                     {showSearch ? (
                         <div className="relative">
                             <Input
-                                autoFocus
                                 className="w-[200px] md:w-[300px]"
                                 placeholder="Rechercher..."
                             />
@@ -181,45 +196,40 @@ export default function Navbar() {
                             <span className="sr-only">Rechercher</span>
                         </Button>
                     )}
-
                     <ModeToggle />
-
                     <Button size="icon" variant="ghost">
                         <Bell className="size-5" />
                         <span className="sr-only">Notifications</span>
                     </Button>
-
-                    {user ? (
+                    {user && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button
                                     className="relative size-8 rounded-full"
                                     variant="ghost"
                                 >
-                                    <Avatar className="size-8">
-                                        <AvatarImage
-                                            alt={user.name}
-                                            src="/placeholder.svg?height=32&width=32"
-                                        />
-                                        <AvatarFallback>
-                                            {user.name.charAt(0)}
-                                        </AvatarFallback>
-                                    </Avatar>
+                                    <UserAvatar email={user.email ?? "USER"} />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
-                                forceMount
                                 align="end"
-                                className="w-56"
+                                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                                side="bottom"
+                                sideOffset={4}
                             >
                                 <DropdownMenuLabel className="font-normal">
-                                    <div className="flex flex-col space-y-1">
-                                        <p className="text-sm font-medium leading-none">
-                                            {user.name}
-                                        </p>
-                                        <p className="text-xs leading-none text-muted-foreground">
-                                            {user.email}
-                                        </p>
+                                    <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                                        <UserAvatar
+                                            email={user.email ?? "USER"}
+                                        />
+                                        <div className="grid flex-1 text-left text-sm leading-tight">
+                                            <span className="truncate font-semibold">
+                                                {user?.name ?? "Utilisateur"}
+                                            </span>
+                                            <span className="truncate text-xs">
+                                                {user?.email}
+                                            </span>
+                                        </div>
                                     </div>
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
@@ -229,20 +239,54 @@ export default function Navbar() {
                                 <DropdownMenuItem asChild>
                                     <Link href="/favorites">Mes favoris</Link>
                                 </DropdownMenuItem>
-                                {user.role !== "visitor" && (
+                                {/* {user.role !== "visitor" && (
                                     <DropdownMenuItem asChild>
                                         <Link href="/dashboard">
                                             Tableau de bord
                                         </Link>
                                     </DropdownMenuItem>
-                                )}
+                                )} */}
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={logout}>
-                                    Se déconnecter
+                                <DropdownMenuItem asChild>
+                                    <button
+                                        className="flex w-full items-center"
+                                        disabled={isLoggingOut}
+                                        type="button"
+                                        onClick={async () => {
+                                            setIsLoggingOut(true);
+                                            try {
+                                                await fetch("/api/logout", {
+                                                    method: "POST",
+                                                    headers: {
+                                                        "Content-Type":
+                                                            "application/json",
+                                                    },
+                                                });
+                                            } catch (error) {
+                                                console.error(
+                                                    "Erreur lors de la déconnexion:",
+                                                    error
+                                                );
+                                            } finally {
+                                                // Toujours rediriger côté client, car fetch ne suit pas la redirection Next.js côté client
+                                                router.push("/login");
+                                                router.refresh();
+                                                setIsLoggingOut(false);
+                                            }
+                                        }}
+                                    >
+                                        <LogOut className="mr-2 size-4" />
+                                        <span>
+                                            {isLoggingOut
+                                                ? "Déconnexion..."
+                                                : "Déconnexion"}
+                                        </span>
+                                    </button>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                    ) : (
+                    )}
+                    {!isLoggedIn && (
                         <div className="flex items-center gap-2">
                             <Button asChild variant="ghost">
                                 <Link href="/login">Connexion</Link>

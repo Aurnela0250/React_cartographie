@@ -1,19 +1,7 @@
-import { useEffect, useState } from "react";
-
-import { getEtablissements } from "@/infrastructure/api/apiEtablissements"; // Import API
+import { useState } from "react";
 
 const Etablissements = () => {
     const [data, setData] = useState([]);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const etablissements = await getEtablissements();
-
-            setData(etablissements);
-        };
-
-        fetchData();
-    }, []);
 
     return (
         <div>

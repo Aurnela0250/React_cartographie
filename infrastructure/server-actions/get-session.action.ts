@@ -12,12 +12,6 @@ export async function getServerActionSession(): Promise<
     try {
         const cookieStore = await cookies();
 
-        // --- DEBUG ---
-        console.log("Session Options au moment de l'appel:", sessionOptions);
-        console.log("Password dans les options:", sessionOptions?.password);
-        console.log("Cookie:", cookieStore);
-        // --- FIN DEBUG ---
-
         if (!sessionOptions || !sessionOptions.password) {
             console.error(
                 "ERREUR: sessionOptions ou son mot de passe est manquant!"
@@ -29,6 +23,7 @@ export async function getServerActionSession(): Promise<
             cookieStore,
             sessionOptions
         );
+
         return session;
     } catch (error) {
         console.error(error);

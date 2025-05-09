@@ -1,37 +1,26 @@
 "use server";
 
-import { AuthDjangoApiRepository } from "@/infrastructure/repositories/auth.repository";
 import { actionClient } from "@/infrastructure/services/safe-action";
 import { InternalServerError } from "@/shared/utils/app-errors";
 
-import { getServerActionSession } from "./get-session.action";
-
-const authRepository = new AuthDjangoApiRepository();
-
 export const logout = actionClient.action(async () => {
     try {
-        const session = await getServerActionSession();
+        const response = await fetch("/api/logout", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
 
-        // Récupérer le refreshToken pour le déconnexion backend
-        const refreshToken = session.token?.refreshToken;
-        const accessToken = session.token?.accessToken;
+        if (!response.ok) {
+            const error = await response.json();
 
-        // Appel au backend pour invalider la session si possible
-        if (accessToken && refreshToken) {
-            try {
-                await authRepository.logout(accessToken, refreshToken);
-            } catch (backendError) {
-                console.warn(
-                    "Échec de déconnexion backend, poursuite avec destruction de session côté client:",
-                    backendError
-                );
-            }
+            throw new Error(error.error || "Échec de la déconnexion");
         }
 
-        // Détruire la session
-        session.destroy();
+        const result = await response.json();
 
-        return { success: true };
+        return { success: result.success };
     } catch (error) {
         console.error("Erreur Action Logout:", error);
         throw new InternalServerError(

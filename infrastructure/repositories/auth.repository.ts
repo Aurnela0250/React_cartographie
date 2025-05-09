@@ -23,7 +23,7 @@ export class AuthDjangoApiRepository implements IAuthRepository {
             }),
         });
 
-        const data = await handleApiResponse<any>(response);
+        const data = await handleApiResponse<unknown>(response);
         const token = Token.fromUnknown(toCamelCaseRecursive(data));
 
         return token;
@@ -44,7 +44,7 @@ export class AuthDjangoApiRepository implements IAuthRepository {
             }),
         });
 
-        const data = await handleApiResponse<any>(response);
+        const data = await handleApiResponse<unknown>(response);
         const user = User.fromUnknown(toCamelCaseRecursive(data));
 
         return user;
@@ -61,7 +61,7 @@ export class AuthDjangoApiRepository implements IAuthRepository {
                 },
             });
 
-            const data = await handleApiResponse<any>(response);
+            const data = await handleApiResponse<unknown>(response);
             const token = Token.fromUnknown(toCamelCaseRecursive(data));
 
             return token;
@@ -114,7 +114,7 @@ export class AuthDjangoApiRepository implements IAuthRepository {
             },
         });
 
-        await handleApiResponse<any>(response);
+        await handleApiResponse<unknown>(response);
     }
 
     me(token: string): Promise<User> {

@@ -1,9 +1,9 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { FeaturedEstablishments } from "@/presentation/components/features/featured-establishments";
 import { MapExplorer } from "@/presentation/components/features/map-explorer";
 import { RecommendationSection } from "@/presentation/components/features/recommendation-section";
-import { SearchFilters } from "@/presentation/components/features/search-filters";
 import { Stats } from "@/presentation/components/features/stats";
 import { Button } from "@/presentation/components/ui/button";
 import {
@@ -18,8 +18,15 @@ export default function HomePage() {
     return (
         <div className="space-y-8">
             <section className="relative h-[500px] overflow-hidden rounded-lg">
-                <div className="from-primary/80 to-primary/40 absolute inset-0 z-10 bg-gradient-to-r" />
-                <div className="absolute inset-0 bg-[url('/placeholder.svg?height=500&width=1200')] bg-cover bg-center" />
+                <div className="absolute inset-0 z-10 bg-gradient-to-r from-primary/80 to-primary/40" />
+                <Image
+                    fill
+                    priority
+                    alt="Enseignement supérieur background"
+                    className="absolute inset-0 size-full object-cover object-center"
+                    sizes="100vw"
+                    src="http://www.tresorpublic.mg/tresorpublic/wp-content/uploads/2016/12/mesupres.jpg"
+                />
                 <div className="relative z-20 flex h-full flex-col items-center justify-center p-6 text-center">
                     <h1 className="mb-4 text-4xl font-bold text-white md:text-6xl">
                         Trouvez votre voie dans l'enseignement supérieur
@@ -46,8 +53,8 @@ export default function HomePage() {
                 </div>
             </section>
 
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                <Card>
+            <div className="">
+                {/* <Card>
                     <CardHeader>
                         <CardTitle>Recherche avancée</CardTitle>
                         <CardDescription>
@@ -60,7 +67,7 @@ export default function HomePage() {
                             <Link href="/search">Recherche complète</Link>
                         </Button>
                     </CardContent>
-                </Card>
+                </Card> */}
 
                 <Card className="md:col-span-2">
                     <CardHeader>

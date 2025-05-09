@@ -24,12 +24,15 @@ export function toCamelCaseRecursive<T>(obj: T): T {
 
     if (isObject(obj)) {
         const newObj: Record<string, unknown> = {};
+
         for (const key in obj) {
             if (Object.prototype.hasOwnProperty.call(obj, key)) {
                 const camelKey = camelCase(key);
+
                 newObj[camelKey] = toCamelCaseRecursive(obj[key]);
             }
         }
+
         return newObj as T;
     }
 
@@ -49,12 +52,15 @@ export function toSnakeCaseRecursive<T>(obj: T): T {
 
     if (isObject(obj)) {
         const newObj: Record<string, unknown> = {};
+
         for (const key in obj) {
             if (Object.prototype.hasOwnProperty.call(obj, key)) {
                 const snakeKey = snakeCase(key);
+
                 newObj[snakeKey] = toSnakeCaseRecursive(obj[key]);
             }
         }
+
         return newObj as T;
     }
 

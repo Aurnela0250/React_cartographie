@@ -1,14 +1,4 @@
 import { EstablishmentList } from "@/presentation/components/features/establishment-list";
-import { SearchFilters } from "@/presentation/components/features/search-filters";
-import { Button } from "@/presentation/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/presentation/components/ui/card";
-import { Pagination } from "@/presentation/components/ui/pagination";
 
 export default async function EstablishmentsPage() {
     return (
@@ -21,26 +11,9 @@ export default async function EstablishmentsPage() {
                         supérieur
                     </p>
                 </div>
-                <Button>Exporter les résultats</Button>
             </div>
-
-            <Card>
-                <CardHeader>
-                    <CardTitle>Filtres de recherche</CardTitle>
-                    <CardDescription>
-                        Affinez votre recherche selon vos critères
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <SearchFilters />
-                </CardContent>
-            </Card>
 
             <EstablishmentList />
-
-            <div className="flex justify-center">
-                <Pagination />
-            </div>
         </div>
     );
 }
