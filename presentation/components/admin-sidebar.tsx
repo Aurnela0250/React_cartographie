@@ -48,7 +48,7 @@ const data = {
         },
         {
             title: "Domaines",
-            url: "/admin/domaines",
+            url: "/admin/domains",
             icon: BookOpen,
             items: [],
         },

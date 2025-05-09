@@ -3,7 +3,7 @@ import { Save, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { Region } from "@/core/domain/entities/region.entity";
+import { Domain } from "@/core/domain/entities/domain.entity";
 import { Button } from "@/presentation/components/ui/button";
 import {
     Dialog,
@@ -25,12 +25,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 const formSchema = z.object({
     name: z.string().min(1, "Le nom est requis"),
-    code: z.string().optional(),
+    description: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-export function RegionDialog({
+export function DomainDialog({
     open,
     onClose,
     onSubmit,
@@ -39,15 +39,15 @@ export function RegionDialog({
 }: {
     open: boolean;
     onClose: () => void;
-    onSubmit: (data: { name: string; code?: string | null }) => void;
-    initialData?: Partial<Region>;
+    onSubmit: (data: { name: string; description?: string | null }) => void;
+    initialData?: Partial<Domain>;
     error?: string | null;
 }) {
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: initialData?.name || "",
-            code: initialData?.code || "",
+            description: initialData?.description || "",
         },
     });
 
@@ -57,7 +57,7 @@ export function RegionDialog({
         if (open) {
             form.reset({
                 name: initialData?.name || "",
-                code: initialData?.code || "",
+                description: initialData?.description || "",
             });
         }
     }, [initialData, open, form]);
@@ -65,7 +65,10 @@ export function RegionDialog({
     function handleSubmit(data: FormValues) {
         const payload = {
             ...data,
-            code: data.code && data.code.trim() !== "" ? data.code : null,
+            description:
+                data.description && data.description.trim() !== ""
+                    ? data.description
+                    : null,
         };
 
         onSubmit(payload);
@@ -77,8 +80,8 @@ export function RegionDialog({
                 <DialogHeader>
                     <DialogTitle>
                         {isEditing
-                            ? "Modifier la région"
-                            : "Ajouter une nouvelle région"}
+                            ? "Modifier le domaine"
+                            : "Ajouter un nouveau domaine"}
                     </DialogTitle>
                 </DialogHeader>
                 {error && (
@@ -99,7 +102,7 @@ export function RegionDialog({
                                     <FormLabel>Nom</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="Nom de la région"
+                                            placeholder="Nom du domaine"
                                             {...field}
                                         />
                                     </FormControl>
@@ -109,13 +112,13 @@ export function RegionDialog({
                         />
                         <FormField
                             control={form.control}
-                            name="code"
+                            name="description"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Code</FormLabel>
+                                    <FormLabel>Description</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="Code de la région"
+                                            placeholder="Description du domaine"
                                             {...field}
                                         />
                                     </FormControl>

@@ -3,12 +3,12 @@
 import React, { useState } from "react";
 import { Plus } from "lucide-react";
 
-import { Level } from "@/core/domain/entities/level.entity";
+import { Domain } from "@/core/domain/entities/domain.entity";
 import {
-    createLevel,
-    deleteLevel,
-    updateLevel,
-} from "@/infrastructure/server-action/level.actions";
+    createDomain,
+    deleteDomain,
+    updateDomain,
+} from "@/infrastructure/server-action/domain.actions";
 import { Button } from "@/presentation/components/ui/button";
 import {
     Card,
@@ -18,29 +18,29 @@ import {
 } from "@/presentation/components/ui/card";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { LevelDeleteDialog } from "./components/LevelDeleteDialog";
-import { LevelDialog } from "./components/LevelDialog";
-import { LevelList } from "./components/LevelList";
+import { DomainDeleteDialog } from "./components/DomainDeleteDialog";
+import { DomainDialog } from "./components/DomainDialog";
+import { DomainList } from "./components/DomainList";
 
-export default function LevelPage() {
+export default function DomainPage() {
     const queryClient = useQueryClient();
     const [isAddEditDialogOpen, setIsAddEditDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-    const [selectedLevel, setSelectedLevel] = React.useState<Level | null>(
+    const [selectedDomain, setSelectedDomain] = React.useState<Domain | null>(
         null
     );
-    const [deleteLevelData, setDeleteLevelData] = React.useState<Level | null>(
-        null
-    );
+    const [deleteDomainData, setDeleteDomainData] =
+        React.useState<Domain | null>(null);
     const [formError, setFormError] = useState<string | null>(null);
 
     type MutationError =
         | { statusCode?: number; name?: string; message?: string }
         | unknown;
+
     const createMutation = useMutation({
-        mutationFn: createLevel,
+        mutationFn: createDomain,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["levels"] });
+            queryClient.invalidateQueries({ queryKey: ["domains"] });
             setIsAddEditDialogOpen(false);
             setFormError(null);
         },
@@ -57,12 +57,12 @@ export default function LevelPage() {
                 };
 
                 if (err.statusCode === 409 || err.name === "ConflictError") {
-                    setFormError(err.message || "Ce niveau existe déjà.");
+                    setFormError(err.message || "Ce domaine existe déjà.");
 
                     return;
                 }
             }
-            setFormError("Erreur lors de la création du niveau.");
+            setFormError("Erreur lors de la création du domaine.");
         },
     });
 
@@ -72,12 +72,12 @@ export default function LevelPage() {
             data,
         }: {
             id: number;
-            data: { name?: string; code?: string };
-        }) => updateLevel(id, data),
+            data: { name?: string; description?: string };
+        }) => updateDomain(id, data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["levels"] });
+            queryClient.invalidateQueries({ queryKey: ["domains"] });
             setIsAddEditDialogOpen(false);
-            setSelectedLevel(null);
+            setSelectedDomain(null);
             setFormError(null);
         },
         onError: (error: MutationError) => {
@@ -93,54 +93,63 @@ export default function LevelPage() {
                 };
 
                 if (err.statusCode === 409 || err.name === "ConflictError") {
-                    setFormError(err.message || "Ce niveau existe déjà.");
+                    setFormError(err.message || "Ce domaine existe déjà.");
 
                     return;
                 }
             }
-            setFormError("Erreur lors de la modification du niveau.");
+            setFormError("Erreur lors de la modification du domaine.");
         },
     });
 
     const deleteMutation = useMutation({
-        mutationFn: (id: number) => deleteLevel(id),
+        mutationFn: (id: number) => deleteDomain(id),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["levels"] });
+            queryClient.invalidateQueries({ queryKey: ["domains"] });
             setIsDeleteDialogOpen(false);
-            setDeleteLevelData(null);
+            setDeleteDomainData(null);
         },
     });
 
     const handleAdd = () => {
         setFormError(null);
-        setSelectedLevel(null);
+        setSelectedDomain(null);
         setIsAddEditDialogOpen(true);
     };
 
-    const handleEdit = (level: Level) => {
+    const handleEdit = (domain: Domain) => {
         setFormError(null);
-        setSelectedLevel(level);
+        setSelectedDomain(domain);
         setIsAddEditDialogOpen(true);
     };
 
-    const handleDelete = (level: Level) => {
+    const handleDelete = (domain: Domain) => {
         setFormError(null);
-        setDeleteLevelData(level);
+        setDeleteDomainData(domain);
         setIsDeleteDialogOpen(true);
     };
 
-    const handleDialogSubmit = (data: { name: string; code?: string }) => {
+    const handleDialogSubmit = (data: {
+        name: string;
+        description?: string | null;
+    }) => {
         setFormError(null);
-        if (selectedLevel?.id) {
-            updateMutation.mutate({ id: selectedLevel.id, data });
+        // Nettoyage du champ description pour éviter de passer null
+        const cleanData = {
+            ...data,
+            description: data.description ?? undefined,
+        };
+
+        if (selectedDomain?.id) {
+            updateMutation.mutate({ id: selectedDomain.id, data: cleanData });
         } else {
-            createMutation.mutate(data);
+            createMutation.mutate(cleanData);
         }
     };
 
     const handleDeleteConfirm = () => {
-        if (deleteLevelData?.id) {
-            deleteMutation.mutate(deleteLevelData.id);
+        if (deleteDomainData?.id) {
+            deleteMutation.mutate(deleteDomainData.id);
         }
     };
 
@@ -149,31 +158,31 @@ export default function LevelPage() {
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-2xl font-bold">
-                        Niveaux
+                        Domaines
                     </CardTitle>
                     <Button
                         className="bg-primary hover:bg-primary/90"
                         onClick={handleAdd}
                     >
                         <Plus className="mr-2 size-4" />
-                        Ajouter un niveau
+                        Ajouter un domaine
                     </Button>
                 </CardHeader>
                 <CardContent className="max-h-[60vh] overflow-auto">
-                    <LevelList onDelete={handleDelete} onEdit={handleEdit} />
+                    <DomainList onDelete={handleDelete} onEdit={handleEdit} />
                 </CardContent>
             </Card>
 
-            <LevelDialog
+            <DomainDialog
                 error={formError}
-                initialData={selectedLevel || undefined}
+                initialData={selectedDomain || undefined}
                 open={isAddEditDialogOpen}
                 onClose={() => setIsAddEditDialogOpen(false)}
                 onSubmit={handleDialogSubmit}
             />
 
-            <LevelDeleteDialog
-                levelName={deleteLevelData?.name || ""}
+            <DomainDeleteDialog
+                domainName={deleteDomainData?.name || ""}
                 open={isDeleteDialogOpen}
                 onClose={() => setIsDeleteDialogOpen(false)}
                 onConfirm={handleDeleteConfirm}
