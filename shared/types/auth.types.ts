@@ -1,0 +1,85 @@
+import { z } from "zod";
+
+import { User } from "@/core/domain/entities/users.entity";
+import {
+    loginSchema,
+    newPasswordSchema,
+    registerSchema,
+    resetPasswordSchema,
+    userLoggedSchema,
+} from "@/presentation/schemas/auth.schema";
+
+/**
+ * Type for login credentials
+ */
+export type LoginCredentials = z.infer<typeof loginSchema>;
+
+/**
+ * Type for user logged in response
+ */
+export type UserLogged = z.infer<typeof userLoggedSchema>;
+
+/**
+ * Type for registration data
+ */
+export type RegisterData = z.infer<typeof registerSchema>;
+
+/**
+ * Type for password reset request
+ */
+export type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
+
+/**
+ * Type for new password data
+ */
+export type NewPasswordData = z.infer<typeof newPasswordSchema>;
+
+/**
+ * Type for authentication result
+ */
+export type AuthResult = {
+    success?: boolean;
+    error?: string;
+    details?: Record<string, string[]>;
+};
+
+/**
+ * Extended user type with tokens
+ */
+export type AuthUser = User & {
+    access_token: string;
+    refresh_token: string;
+    token_type: string;
+};
+
+/**
+ * Type for JWT token
+ */
+export type JWTToken = {
+    id: string;
+    name?: string;
+    email?: string;
+    role?: string;
+    access_token: string;
+    refresh_token: string;
+    token_type: string;
+    accessTokenExpires?: number;
+    error?: string;
+};
+
+/**
+ * Type for session data
+ */
+export type SessionData = {
+    user: {
+        id: string;
+        name: string;
+        email: string;
+        role?: string;
+    };
+    access_token: string;
+    refresh_token: string;
+    token_type: string;
+    expires: string;
+    error?: string;
+};
