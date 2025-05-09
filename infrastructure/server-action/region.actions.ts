@@ -17,8 +17,9 @@ async function getTokenServerSide(): Promise<string> {
 
 export async function createRegion(data: { name: string; code?: string }) {
     const token = await getTokenServerSide();
+    const region = await repo.create(token, data);
 
-    return repo.create(token, data);
+    return { ...region };
 }
 
 export async function updateRegion(
@@ -26,8 +27,9 @@ export async function updateRegion(
     data: { name?: string; code?: string }
 ) {
     const token = await getTokenServerSide();
+    const region = await repo.update(token, id, data);
 
-    return repo.update(token, id, data);
+    return { ...region };
 }
 
 export async function deleteRegion(id: number) {

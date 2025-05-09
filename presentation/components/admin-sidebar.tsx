@@ -42,7 +42,7 @@ const data = {
         },
         {
             title: "Niveaux",
-            url: "/admin/niveaux",
+            url: "/admin/levels",
             icon: CircleGauge,
             items: [],
         },
@@ -93,7 +93,7 @@ export function AdminSidebar({
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild size="lg">
                             <a href="/">
-                                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                                     <Command className="size-4" />
                                 </div>
                                 <div className="grid flex-1 text-left text-sm leading-tight">

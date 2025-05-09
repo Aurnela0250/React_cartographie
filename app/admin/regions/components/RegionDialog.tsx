@@ -35,11 +35,13 @@ export function RegionDialog({
     onClose,
     onSubmit,
     initialData,
+    error,
 }: {
     open: boolean;
     onClose: () => void;
     onSubmit: (data: { name: string; code?: string }) => void;
     initialData?: Partial<Region>;
+    error?: string | null;
 }) {
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
@@ -76,6 +78,11 @@ export function RegionDialog({
                             : "Ajouter une nouvelle région"}
                     </DialogTitle>
                 </DialogHeader>
+                {error && (
+                    <div className="mb-2 rounded-md bg-destructive/15 p-3 text-center text-destructive">
+                        {error}
+                    </div>
+                )}
                 <Form {...form}>
                     <form
                         className="space-y-4"

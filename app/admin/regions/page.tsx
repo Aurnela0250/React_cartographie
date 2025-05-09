@@ -32,11 +32,37 @@ export default function RegionPage() {
     const [deleteRegionData, setDeleteRegionData] =
         React.useState<Region | null>(null);
 
+    const [formError, setFormError] = useState<string | null>(null);
+
+    type MutationError =
+        | { statusCode?: number; name?: string; message?: string }
+        | unknown;
     const createMutation = useMutation({
         mutationFn: createRegion,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["regions"] });
             setIsAddEditDialogOpen(false); // Assure la fermeture du dialogue après création
+            setFormError(null);
+        },
+        onError: (error: MutationError) => {
+            if (
+                typeof error === "object" &&
+                error !== null &&
+                ("statusCode" in error || "name" in error)
+            ) {
+                const err = error as {
+                    statusCode?: number;
+                    name?: string;
+                    message?: string;
+                };
+
+                if (err.statusCode === 409 || err.name === "ConflictError") {
+                    setFormError(err.message || "Cette région existe déjà.");
+
+                    return;
+                }
+            }
+            setFormError("Erreur lors de la création de la région.");
         },
     });
 
@@ -50,8 +76,29 @@ export default function RegionPage() {
         }) => updateRegion(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["regions"] });
-            setIsAddEditDialogOpen(false); // Assure la fermeture du dialogue après mise à jour
+            setIsAddEditDialogOpen(false);
             setSelectedRegion(null);
+            setFormError(null);
+        },
+        onError: (error: MutationError) => {
+            if (
+                typeof error === "object" &&
+                error !== null &&
+                ("statusCode" in error || "name" in error)
+            ) {
+                const err = error as {
+                    statusCode?: number;
+                    name?: string;
+                    message?: string;
+                };
+
+                if (err.statusCode === 409 || err.name === "ConflictError") {
+                    setFormError(err.message || "Cette région existe déjà.");
+
+                    return;
+                }
+            }
+            setFormError("Erreur lors de la modification de la région.");
         },
     });
 
@@ -65,21 +112,25 @@ export default function RegionPage() {
     });
 
     const handleAdd = () => {
+        setFormError(null);
         setSelectedRegion(null);
         setIsAddEditDialogOpen(true);
     };
 
     const handleEdit = (region: Region) => {
+        setFormError(null);
         setSelectedRegion(region);
         setIsAddEditDialogOpen(true);
     };
 
     const handleDelete = (region: Region) => {
+        setFormError(null);
         setDeleteRegionData(region);
         setIsDeleteDialogOpen(true);
     };
 
     const handleDialogSubmit = (data: { name: string; code?: string }) => {
+        setFormError(null);
         if (selectedRegion?.id) {
             updateMutation.mutate({ id: selectedRegion.id, data });
         } else {
@@ -108,12 +159,13 @@ export default function RegionPage() {
                         Ajouter une région
                     </Button>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="max-h-[60vh] overflow-auto">
                     <RegionList onDelete={handleDelete} onEdit={handleEdit} />
                 </CardContent>
             </Card>
 
             <RegionDialog
+                error={formError}
                 initialData={selectedRegion || undefined}
                 open={isAddEditDialogOpen}
                 onClose={() => setIsAddEditDialogOpen(false)}

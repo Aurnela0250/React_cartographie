@@ -1,10 +1,10 @@
-import "@/styles/globals.css";
-
 import { Inter } from "next/font/google";
 
 import { Toaster } from "@/presentation/components/ui/toaster";
 import QueryProvider from "@/presentation/providers/query-provider";
 import { ThemeProvider } from "@/presentation/providers/theme-provider";
+
+import "@/styles/globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 

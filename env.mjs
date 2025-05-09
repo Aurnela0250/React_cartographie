@@ -5,12 +5,12 @@ import { createEnv } from "@t3-oss/env-nextjs";
 export const env = createEnv({
     server: {
         NODE_ENV: z.string().optional(),
-        API_PREFIX_URL: z.string().default("http://localhost:8080"),
+        API_PREFIX_URL: z.string().default("http://localhost:8000/api"),
         API_VERSION: z.string().default("v1"),
         IRON_SESSION_PASSWORD: z.string().optional(),
     },
     client: {
-        API_PREFIX_URL: z.string().default("http://localhost:8080"),
+        API_PREFIX_URL: z.string().default("http://localhost:8000/api"),
         API_VERSION: z.string().default("v1"),
     },
     runtimeEnv: {

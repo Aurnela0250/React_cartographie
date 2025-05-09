@@ -63,7 +63,18 @@ export class NotFoundError extends ApiError {
     }
 }
 
-// Vous pouvez ajouter d'autres erreurs selon vos besoins (403, 422, etc.)
+// Vous pouvez ajouter d'autres erreurs selon vos besoins (403, 409, 422, etc.)
+export class ConflictError extends ApiError {
+    constructor(
+        message: string = "Conflit de ressources : l'entité existe déjà",
+        details: ApiErrorDetail[] = []
+    ) {
+        super(message, details, 409);
+        this.name = "ConflictError";
+        Object.setPrototypeOf(this, ConflictError.prototype);
+    }
+}
+
 export class InternalServerError extends ApiError {
     constructor(message: string, details: ApiErrorDetail[] = []) {
         super(message, details, 500);

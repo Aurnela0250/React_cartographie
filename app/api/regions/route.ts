@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { instanceToPlain } from "class-transformer";
 
 import { RegionApiRepository } from "@/infrastructure/repositories/region.repository";
 import { getRouteHandlerSession } from "@/shared/utils/auth";
@@ -44,7 +45,7 @@ export async function POST(req: NextRequest) {
         const region = await repo.create(token, body);
 
         // Convertir l'instance de classe en objet simple
-        const plainRegion = JSON.parse(JSON.stringify(region));
+        const plainRegion = instanceToPlain(region);
 
         return NextResponse.json(plainRegion);
     } catch (error) {

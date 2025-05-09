@@ -26,6 +26,8 @@ export default tseslint.config(
         ignores: [
             ".now/*",
             "*.css",
+            "*.mjs",
+            "*.js",
             ".changeset",
             "dist",
             "esm/*",

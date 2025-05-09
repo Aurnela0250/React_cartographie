@@ -11,6 +11,8 @@ export class AuthDjangoApiRepository implements IAuthRepository {
     async login(email: string, password: string): Promise<Token> {
         const apiUrl = `${env.API_PREFIX_URL}/${env.API_VERSION}/auth/login`;
 
+        console.log("Login API URL:", apiUrl);
+
         const response = await fetch(apiUrl, {
             method: "POST",
             headers: {

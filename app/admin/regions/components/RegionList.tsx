@@ -16,23 +16,32 @@ export function RegionList({
     onEdit: (region: Region) => void;
     onDelete: (region: Region) => void;
 }) {
+    // Ajout du paramètre per_page=10 pour la pagination
     const fetchRegions = async ({
         pageParam = 1,
     }): Promise<PaginatedResult<Region>> => {
-        const res = await fetch(`/api/regions?page=${pageParam}`);
+        const res = await fetch(`/api/regions?page=${pageParam}&per_page=5`);
 
         return res.json();
     };
 
-    const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-        useInfiniteQuery({
-            queryKey: ["regions"],
-            queryFn: fetchRegions,
-            getNextPageParam: (lastPage: PaginatedResult<Region>) =>
-                lastPage.nextPage ? lastPage.nextPage : undefined,
-            initialPageParam: 1,
-        });
+    const {
+        data,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        isFetching,
+        isError,
+        error,
+    } = useInfiniteQuery({
+        queryKey: ["regions"],
+        queryFn: fetchRegions,
+        getNextPageParam: (lastPage: PaginatedResult<Region>) =>
+            lastPage.nextPage ? lastPage.nextPage : undefined,
+        initialPageParam: 1,
+    });
 
+    // Correction: observer ne doit pas déclencher au premier rendu, mais seulement quand on scroll jusqu'au dernier élément
     const observer = useRef<IntersectionObserver | null>(null);
     const lastRegionRef = useCallback(
         (node: HTMLElement | null) => {
@@ -40,10 +49,15 @@ export function RegionList({
             if (observer.current) observer.current.disconnect();
             observer.current = new IntersectionObserver(
                 (entries: IntersectionObserverEntry[]) => {
-                    if (entries[0].isIntersecting && hasNextPage) {
+                    if (
+                        entries[0].isIntersecting &&
+                        hasNextPage &&
+                        !isFetchingNextPage
+                    ) {
                         fetchNextPage();
                     }
-                }
+                },
+                { threshold: 1.0 }
             );
             if (node) observer.current.observe(node);
         },
@@ -51,7 +65,7 @@ export function RegionList({
     );
 
     return (
-        <div className="space-y-2">
+        <div className="max-h-full space-y-2 overflow-auto">
             {data?.pages.map((page, i) =>
                 page.items.map((region: Region, idx: number) => {
                     const isLast =
@@ -71,7 +85,6 @@ export function RegionList({
                                 </div>
                             </div>
                             <div className="flex gap-2">
-                                {/* MODIFIÉ: Bouton Modifier avec icône */}
                                 <Button
                                     size="icon"
                                     variant="outline"
@@ -79,7 +92,6 @@ export function RegionList({
                                 >
                                     <Edit className="size-4" />
                                 </Button>
-                                {/* MODIFIÉ: Bouton Supprimer avec icône */}
                                 <Button
                                     size="icon"
                                     variant="destructive"

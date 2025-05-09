@@ -3,6 +3,7 @@ import {
     ApiErrorDetail,
     ApiErrorResponse,
     BadRequestError,
+    ConflictError,
     NotFoundError,
     UnauthorizedError,
 } from "./api-errors.types";
@@ -48,6 +49,11 @@ function createErrorByStatusCode(
             return new UnauthorizedError(message, details);
         case 404:
             return new NotFoundError(message, details);
+        case 409:
+            return new ConflictError(
+                "Une entité avec ces informations existe déjà.",
+                details
+            );
         // Ajoutez d'autres cas selon vos besoins
         default:
             return new ApiError(message, details, statusCode);
