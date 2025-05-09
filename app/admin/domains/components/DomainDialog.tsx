@@ -25,7 +25,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 const formSchema = z.object({
     name: z.string().min(1, "Le nom est requis"),
-    description: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -39,7 +38,7 @@ export function DomainDialog({
 }: {
     open: boolean;
     onClose: () => void;
-    onSubmit: (data: { name: string; description?: string | null }) => void;
+    onSubmit: (data: { name: string }) => void;
     initialData?: Partial<Domain>;
     error?: string | null;
 }) {
@@ -47,7 +46,6 @@ export function DomainDialog({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: initialData?.name || "",
-            description: initialData?.description || "",
         },
     });
 
@@ -57,21 +55,12 @@ export function DomainDialog({
         if (open) {
             form.reset({
                 name: initialData?.name || "",
-                description: initialData?.description || "",
             });
         }
     }, [initialData, open, form]);
 
     function handleSubmit(data: FormValues) {
-        const payload = {
-            ...data,
-            description:
-                data.description && data.description.trim() !== ""
-                    ? data.description
-                    : null,
-        };
-
-        onSubmit(payload);
+        onSubmit(data);
     }
 
     return (
@@ -110,22 +99,7 @@ export function DomainDialog({
                                 </FormItem>
                             )}
                         />
-                        <FormField
-                            control={form.control}
-                            name="description"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Description</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            placeholder="Description du domaine"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                        {/* Description supprimée */}
                         <DialogFooter>
                             <Button
                                 type="button"

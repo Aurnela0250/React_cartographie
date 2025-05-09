@@ -15,20 +15,14 @@ async function getTokenServerSide(): Promise<string> {
     return session.token.accessToken;
 }
 
-export async function createDomain(data: {
-    name: string;
-    description?: string;
-}) {
+export async function createDomain(data: { name: string }) {
     const token = await getTokenServerSide();
     const domain = await repo.create(token, data);
 
     return { ...domain };
 }
 
-export async function updateDomain(
-    id: number,
-    data: { name?: string; description?: string }
-) {
+export async function updateDomain(id: number, data: { name?: string }) {
     const token = await getTokenServerSide();
     const domain = await repo.update(token, id, data);
 

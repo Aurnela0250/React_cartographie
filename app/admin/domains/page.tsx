@@ -67,13 +67,8 @@ export default function DomainPage() {
     });
 
     const updateMutation = useMutation({
-        mutationFn: ({
-            id,
-            data,
-        }: {
-            id: number;
-            data: { name?: string; description?: string };
-        }) => updateDomain(id, data),
+        mutationFn: ({ id, data }: { id: number; data: { name?: string } }) =>
+            updateDomain(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["domains"] });
             setIsAddEditDialogOpen(false);
@@ -129,21 +124,12 @@ export default function DomainPage() {
         setIsDeleteDialogOpen(true);
     };
 
-    const handleDialogSubmit = (data: {
-        name: string;
-        description?: string | null;
-    }) => {
+    const handleDialogSubmit = (data: { name: string }) => {
         setFormError(null);
-        // Nettoyage du champ description pour éviter de passer null
-        const cleanData = {
-            ...data,
-            description: data.description ?? undefined,
-        };
-
         if (selectedDomain?.id) {
-            updateMutation.mutate({ id: selectedDomain.id, data: cleanData });
+            updateMutation.mutate({ id: selectedDomain.id, data });
         } else {
-            createMutation.mutate(cleanData);
+            createMutation.mutate(data);
         }
     };
 
