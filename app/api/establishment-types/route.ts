@@ -24,10 +24,7 @@ export async function GET(req: NextRequest) {
 
         const data = await repo.getAll(token, { page, perPage });
 
-        // Convertir l'instance de classe en objet JavaScript simple
-        const plainData = JSON.parse(JSON.stringify(data));
-
-        return NextResponse.json(plainData);
+        return NextResponse.json(data);
     } catch (error) {
         return NextResponse.json(
             { message: "Non authentifié" },

@@ -1,35 +1,35 @@
 export type AnnualHeadcountArgs = {
     id: number;
-    academic_year: number;
+    academicYear: number;
     students: number;
-    formation_id: number;
-    created_at: string;
-    updated_at: string;
-    created_by: number;
-    updated_by: number;
+    formationId: number;
+    createdAt: string;
+    updatedAt: string;
+    createdBy: number;
+    updatedBy: number;
 };
 
 export type IAnnualHeadcount = Partial<AnnualHeadcountArgs>;
 
 export class AnnualHeadcount implements IAnnualHeadcount {
     id?: number;
-    academic_year?: number;
+    academicYear?: number;
     students?: number;
-    formation_id?: number;
-    created_at?: string;
-    updated_at?: string;
-    created_by?: number;
-    updated_by?: number;
+    formationId?: number;
+    createdAt?: string;
+    updatedAt?: string;
+    createdBy?: number;
+    updatedBy?: number;
 
     constructor(args: IAnnualHeadcount) {
         this.id = args.id;
-        this.academic_year = args.academic_year;
+        this.academicYear = args.academicYear;
         this.students = args.students;
-        this.formation_id = args.formation_id;
-        this.created_at = args.created_at;
-        this.updated_at = args.updated_at;
-        this.created_by = args.created_by;
-        this.updated_by = args.updated_by;
+        this.formationId = args.formationId;
+        this.createdAt = args.createdAt;
+        this.updatedAt = args.updatedAt;
+        this.createdBy = args.createdBy;
+        this.updatedBy = args.updatedBy;
     }
 
     static fromUnknown(data: unknown): AnnualHeadcount {

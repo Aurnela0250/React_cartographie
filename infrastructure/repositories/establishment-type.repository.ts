@@ -6,7 +6,7 @@ import {
 } from "@/core/domain/entities/pagination";
 import { IEstablishmentTypeRepository } from "@/core/interfaces/establishment-type.repository.interface";
 import { env } from "@/env.mjs";
-import { toCamelCaseRecursive } from "@/shared/utils";
+import { toCamelCaseRecursive, toSnakeCaseRecursive } from "@/shared/utils";
 import { handleApiResponse } from "@/shared/utils/api-errors";
 
 export class EstablishmentTypeApiRepository
@@ -47,13 +47,14 @@ export class EstablishmentTypeApiRepository
         data: { name: string; description?: string }
     ): Promise<EstablishmentType> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/establishment-types`;
+        const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(payload),
         });
         const res = await handleApiResponse<unknown>(response);
 
@@ -65,13 +66,14 @@ export class EstablishmentTypeApiRepository
         data: { name?: string; description?: string }
     ): Promise<EstablishmentType> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/establishment-types/${id}`;
+        const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(payload),
         });
         const res = await handleApiResponse<unknown>(response);
 

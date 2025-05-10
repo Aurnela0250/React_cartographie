@@ -6,7 +6,7 @@ import {
 import { Sector } from "@/core/domain/entities/sector.entity";
 import { ISectorRepository } from "@/core/interfaces/sector.repository.interface";
 import { env } from "@/env.mjs";
-import { toCamelCaseRecursive } from "@/shared/utils";
+import { toCamelCaseRecursive, toSnakeCaseRecursive } from "@/shared/utils";
 import { handleApiResponse } from "@/shared/utils/api-errors";
 
 export class SectorApiRepository implements ISectorRepository {
@@ -41,13 +41,14 @@ export class SectorApiRepository implements ISectorRepository {
         data: { name: string; city_id: number }
     ): Promise<Sector> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/sectors`;
+        const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(payload),
         });
         const res = await handleApiResponse<unknown>(response);
 
@@ -59,13 +60,14 @@ export class SectorApiRepository implements ISectorRepository {
         data: { name?: string; city_id?: number }
     ): Promise<Sector> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/sectors/${id}`;
+        const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(payload),
         });
         const res = await handleApiResponse<unknown>(response);
 

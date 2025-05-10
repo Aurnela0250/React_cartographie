@@ -1,6 +1,5 @@
 "use server";
 
-import { Establishment } from "@/core/domain/entities/establishment.entity";
 import { EstablishmentApiRepository } from "@/infrastructure/repositories/establishment.repository";
 import { getServerActionSession } from "@/infrastructure/server-actions/get-session.action";
 
@@ -26,11 +25,13 @@ export async function createEstablishment(data: {
     longitude?: number;
     establishment_type_id: number;
     sector_id: number;
-}): Promise<Establishment> {
+}) {
     try {
         const token = await getTokenServerSide();
 
-        return await repository.create(token, data);
+        const establishment = await repository.create(token, data);
+
+        return { ...establishment };
     } catch (error) {
         console.error("Error creating establishment:", error);
         throw new Error("Failed to create establishment");
@@ -51,11 +52,13 @@ export async function updateEstablishment(
         establishment_type_id?: number;
         sector_id?: number;
     }
-): Promise<Establishment> {
+) {
     try {
         const token = await getTokenServerSide();
 
-        return await repository.update(token, id, data);
+        const establishment = await repository.update(token, id, data);
+
+        return { ...establishment };
     } catch (error) {
         console.error("Error updating establishment:", error);
         throw new Error("Failed to update establishment");

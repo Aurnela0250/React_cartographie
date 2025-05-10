@@ -75,9 +75,6 @@ export function DomainList({
                         >
                             <div>
                                 <div className="font-bold">{domain.name}</div>
-                                <div className="text-xs text-gray-500">
-                                    {domain.description}
-                                </div>
                             </div>
                             <div className="flex gap-2">
                                 <Button

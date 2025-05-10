@@ -8,20 +8,20 @@ export type EstablishmentArgs = {
     acronyme: string;
     address: string;
     contacts: string[];
-    site_url: string;
+    siteUrl: string;
     description: string;
     latitude: number;
     longitude: number;
-    establishment_type_id: number;
-    sector_id: number;
-    establishment_type?: IEstablishmentType;
+    establishmentTypeId: number;
+    sectorId: number;
+    establishmentType?: IEstablishmentType;
     sector?: ISector;
     formations?: IFormation[];
     rating: number;
-    created_at: string;
-    updated_at: string;
-    created_by: number;
-    updated_by: number;
+    createdAt: string;
+    updatedAt: string;
+    createdBy: number;
+    updatedBy: number;
 };
 
 export type IEstablishment = Partial<EstablishmentArgs>;
@@ -32,20 +32,20 @@ export class Establishment implements IEstablishment {
     acronyme?: string;
     address?: string;
     contacts?: string[];
-    site_url?: string;
+    siteUrl?: string;
     description?: string;
     latitude?: number;
     longitude?: number;
-    establishment_type_id?: number;
-    sector_id?: number;
-    establishment_type?: IEstablishmentType;
+    establishmentTypeId?: number;
+    sectorId?: number;
+    establishmentType?: IEstablishmentType;
     sector?: ISector;
     formations?: IFormation[];
     rating?: number;
-    created_at?: string;
-    updated_at?: string;
-    created_by?: number;
-    updated_by?: number;
+    createdAt?: string;
+    updatedAt?: string;
+    createdBy?: number;
+    updatedBy?: number;
 
     constructor(args: IEstablishment) {
         this.id = args.id;
@@ -53,20 +53,32 @@ export class Establishment implements IEstablishment {
         this.acronyme = args.acronyme;
         this.address = args.address;
         this.contacts = args.contacts;
-        this.site_url = args.site_url;
+        this.siteUrl = args.siteUrl;
         this.description = args.description;
         this.latitude = args.latitude;
         this.longitude = args.longitude;
-        this.establishment_type_id = args.establishment_type_id;
-        this.sector_id = args.sector_id;
-        this.establishment_type = args.establishment_type;
-        this.sector = args.sector;
-        this.formations = args.formations;
+        this.establishmentTypeId = args.establishmentTypeId;
+        this.sectorId = args.sectorId;
+        this.setEstablishmentType(args.establishmentType);
+        this.setSector(args.sector);
+        this.setFormations(args.formations);
         this.rating = args.rating;
-        this.created_at = args.created_at;
-        this.updated_at = args.updated_at;
-        this.created_by = args.created_by;
-        this.updated_by = args.updated_by;
+        this.createdAt = args.createdAt;
+        this.updatedAt = args.updatedAt;
+        this.createdBy = args.createdBy;
+        this.updatedBy = args.updatedBy;
+    }
+
+    setEstablishmentType(establishmentType?: IEstablishmentType) {
+        this.establishmentType = establishmentType;
+    }
+
+    setSector(sector?: ISector) {
+        this.sector = sector;
+    }
+
+    setFormations(formations?: IFormation[]) {
+        this.formations = formations;
     }
 
     static fromUnknown(data: unknown): Establishment {

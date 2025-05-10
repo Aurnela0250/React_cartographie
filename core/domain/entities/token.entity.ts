@@ -14,6 +14,7 @@ export type IToken = Partial<TokenArgs>;
 export class Token implements IToken {
     accessToken?: string;
     refreshToken?: string;
+    tokenType?: string;
     exp?: number;
     iat?: number;
     user?: IUser;
@@ -21,9 +22,10 @@ export class Token implements IToken {
     constructor(args: IToken) {
         this.accessToken = args.accessToken;
         this.refreshToken = args.refreshToken;
+        this.tokenType = args.tokenType;
         this.exp = args.exp;
         this.iat = args.iat;
-        this.user = args.user;
+        this.setUser(args.user);
     }
 
     static fromUnknown(data: unknown): Token {
@@ -31,8 +33,6 @@ export class Token implements IToken {
     }
 
     setUser(user?: IUser) {
-        if (user) {
-            this.user = User.fromUnknown(user);
-        }
+        this.user = User.fromUnknown(user);
     }
 }

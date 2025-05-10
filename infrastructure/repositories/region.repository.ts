@@ -6,7 +6,7 @@ import {
 import { Region } from "@/core/domain/entities/region.entity";
 import { IRegionRepository } from "@/core/interfaces/region.repository.interface";
 import { env } from "@/env.mjs";
-import { toCamelCaseRecursive } from "@/shared/utils";
+import { toCamelCaseRecursive, toSnakeCaseRecursive } from "@/shared/utils";
 import { handleApiResponse } from "@/shared/utils/api-errors";
 
 export class RegionApiRepository implements IRegionRepository {
@@ -42,13 +42,14 @@ export class RegionApiRepository implements IRegionRepository {
         data: { name: string; code?: string }
     ): Promise<Region> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/regions`;
+        const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(payload),
         });
         const res = await handleApiResponse<unknown>(response);
 
@@ -60,13 +61,14 @@ export class RegionApiRepository implements IRegionRepository {
         data: { name?: string; code?: string }
     ): Promise<Region> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/regions/${id}`;
+        const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(payload),
         });
         const res = await handleApiResponse<unknown>(response);
 

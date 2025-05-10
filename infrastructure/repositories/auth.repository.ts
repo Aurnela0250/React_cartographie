@@ -2,7 +2,7 @@ import { Token } from "@/core/domain/entities/token.entity";
 import { User } from "@/core/domain/entities/users.entity";
 import { IAuthRepository } from "@/core/domain/interfaces/auth.repository.interface";
 import { env } from "@/env.mjs";
-import { toCamelCaseRecursive } from "@/shared/utils";
+import { toCamelCaseRecursive, toSnakeCaseRecursive } from "@/shared/utils";
 import { handleApiResponse } from "@/shared/utils/api-errors";
 import { ApiError } from "@/shared/utils/api-errors.types";
 import { UnauthorizedError } from "@/shared/utils/app-errors";
@@ -13,16 +13,14 @@ export class AuthDjangoApiRepository implements IAuthRepository {
 
         console.log("Login API URL:", apiUrl);
 
+        const payload = toSnakeCaseRecursive({ email, password });
         const response = await fetch(apiUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             credentials: "include", // Important pour les cookies de session
-            body: JSON.stringify({
-                email,
-                password,
-            }),
+            body: JSON.stringify(payload),
         });
 
         const data = await handleApiResponse<unknown>(response);
@@ -34,16 +32,14 @@ export class AuthDjangoApiRepository implements IAuthRepository {
     async register(email: string, password: string): Promise<User> {
         const apiUrl = `${env.API_PREFIX_URL}/${env.API_VERSION}/auth/signup`;
 
+        const payload = toSnakeCaseRecursive({ email, password });
         const response = await fetch(apiUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             credentials: "include", // Important pour les cookies de session
-            body: JSON.stringify({
-                email,
-                password,
-            }),
+            body: JSON.stringify(payload),
         });
 
         const data = await handleApiResponse<unknown>(response);
@@ -84,23 +80,25 @@ export class AuthDjangoApiRepository implements IAuthRepository {
                 const tokenExpiredError = new UnauthorizedError(
                     "Le token de rafraîchissement a expiré ou est invalide",
                     error.details
-                );
+                ) as UnauthorizedError & {
+                    cause?: unknown;
+                    errorType?: string;
+                };
 
-                (tokenExpiredError as any).cause = error;
-                (tokenExpiredError as any).errorType = "TOKEN_REFRESH_EXPIRED";
-
+                tokenExpiredError.cause = error;
+                tokenExpiredError.errorType = "TOKEN_REFRESH_EXPIRED";
                 throw tokenExpiredError;
             }
 
             // Sinon on propage une erreur générique de rafraîchissement
             const enhancedError =
                 error instanceof Error
-                    ? error
-                    : new ApiError(
+                    ? (error as Error & { errorType?: string })
+                    : (new ApiError(
                           "Erreur inconnue lors du rafraîchissement du token"
-                      );
+                      ) as ApiError & { errorType?: string });
 
-            (enhancedError as any).errorType = "TOKEN_REFRESH_FAILED";
+            enhancedError.errorType = "TOKEN_REFRESH_FAILED";
             throw enhancedError;
         }
     }

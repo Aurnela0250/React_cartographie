@@ -12,12 +12,12 @@ export interface IMentionRepository {
     get(token: string, id: number): Promise<Mention>;
     create(
         token: string,
-        data: { name: string; domain_id: number }
+        data: { name: string; domainId: number }
     ): Promise<Mention>;
     update(
         token: string,
         id: number,
-        data: { name?: string; domain_id?: number }
+        data: { name?: string; domainId?: number }
     ): Promise<Mention>;
     delete(token: string, id: number): Promise<boolean>;
 }

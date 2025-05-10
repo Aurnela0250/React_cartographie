@@ -6,7 +6,7 @@ import {
 } from "@/core/domain/entities/pagination";
 import { IMentionRepository } from "@/core/interfaces/mention.repository.interface";
 import { env } from "@/env.mjs";
-import { toCamelCaseRecursive } from "@/shared/utils";
+import { toCamelCaseRecursive, toSnakeCaseRecursive } from "@/shared/utils";
 import { handleApiResponse } from "@/shared/utils/api-errors";
 
 export class MentionApiRepository implements IMentionRepository {
@@ -26,6 +26,7 @@ export class MentionApiRepository implements IMentionRepository {
 
         return result;
     }
+
     async get(token: string, id: number): Promise<Mention> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/mentions/${id}`;
         const response = await fetch(url, {
@@ -36,41 +37,48 @@ export class MentionApiRepository implements IMentionRepository {
 
         return Mention.fromUnknown(toCamelCaseRecursive(data));
     }
+
     async create(
         token: string,
-        data: { name: string; domain_id: number }
+        data: { name: string; domainId: number }
     ): Promise<Mention> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/mentions`;
+        // Conversion camelCase -> snake_case pour l'API
+        const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(payload),
         });
         const res = await handleApiResponse<unknown>(response);
 
         return Mention.fromUnknown(toCamelCaseRecursive(res));
     }
+
     async update(
         token: string,
         id: number,
-        data: { name?: string; domain_id?: number }
+        data: { name?: string; domainId?: number }
     ): Promise<Mention> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/mentions/${id}`;
+        // Conversion camelCase -> snake_case pour l'API
+        const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(payload),
         });
         const res = await handleApiResponse<unknown>(response);
 
         return Mention.fromUnknown(toCamelCaseRecursive(res));
     }
+
     async delete(token: string, id: number): Promise<boolean> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/mentions/${id}`;
         const response = await fetch(url, {

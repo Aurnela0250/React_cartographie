@@ -3,6 +3,7 @@
 import * as React from "react";
 import {
     BookOpen,
+    Building,
     Building2,
     CircleGauge,
     Command,
@@ -60,13 +61,13 @@ const data = {
         },
         {
             title: "Types d'établissement",
-            url: "/admin/types-etablissement",
+            url: "/admin/establishment-types",
             icon: University,
             items: [],
         },
         {
             title: "Secteurs",
-            url: "/admin/secteurs",
+            url: "/admin/sectors",
             icon: Factory,
             items: [],
         },
@@ -74,6 +75,12 @@ const data = {
             title: "Villes",
             url: "/admin/cities",
             icon: Building2,
+            items: [],
+        },
+        {
+            title: "Etablissements",
+            url: "/admin/establishments",
+            icon: Building,
             items: [],
         },
     ],

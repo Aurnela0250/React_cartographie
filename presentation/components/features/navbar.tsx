@@ -74,8 +74,34 @@ export default function Navbar() {
                                     Assistant IA
                                 </Link>
                                 <Link
-                                    className={`rounded-md px-2 py-1 ${pathname === "/chatbot" ? "bg-muted font-medium" : ""}`}
-                                    href="/admin"
+                                    className={`rounded-md px-2 py-1 ${
+                                        (user?.name ??
+                                            user?.email?.split("@")[0]) ===
+                                        "admin"
+                                            ? pathname === "/admin"
+                                                ? "bg-muted font-medium"
+                                                : ""
+                                            : (user?.name ??
+                                                    user?.email?.split(
+                                                        "@"
+                                                    )[0]) === "adminEtab"
+                                              ? pathname === "/admin-etab"
+                                                  ? "bg-muted font-medium"
+                                                  : ""
+                                              : ""
+                                    }`}
+                                    href={
+                                        (user?.name ??
+                                            user?.email?.split("@")[0]) ===
+                                        "admin"
+                                            ? "/admin"
+                                            : (user?.name ??
+                                                    user?.email?.split(
+                                                        "@"
+                                                    )[0]) === "adminEtab"
+                                              ? "/admin-etab"
+                                              : "/admin"
+                                    }
                                 >
                                     Admin
                                 </Link>
@@ -148,11 +174,27 @@ export default function Navbar() {
                     </Link>
                     <Link
                         className={`text-sm font-medium ${
-                            pathname === "/chatbot"
-                                ? "text-foreground"
-                                : "text-muted-foreground"
+                            (user?.name ?? user?.email?.split("@")[0]) ===
+                            "admin"
+                                ? pathname === "/admin"
+                                    ? "text-foreground"
+                                    : "text-muted-foreground"
+                                : (user?.name ?? user?.email?.split("@")[0]) ===
+                                    "adminEtab"
+                                  ? pathname === "/admin-etab"
+                                      ? "text-foreground"
+                                      : "text-muted-foreground"
+                                  : "text-muted-foreground"
                         } transition-colors hover:text-foreground`}
-                        href="/admin"
+                        href={
+                            (user?.name ?? user?.email?.split("@")[0]) ===
+                            "admin"
+                                ? "/admin"
+                                : (user?.name ?? user?.email?.split("@")[0]) ===
+                                    "adminEtab"
+                                  ? "/admin-etab"
+                                  : "/admin"
+                        }
                     >
                         Admin
                     </Link>

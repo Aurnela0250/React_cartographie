@@ -6,7 +6,7 @@ import {
 } from "@/core/domain/entities/pagination";
 import { ICityRepository } from "@/core/interfaces/city.repository.interface";
 import { env } from "@/env.mjs";
-import { toCamelCaseRecursive } from "@/shared/utils";
+import { toCamelCaseRecursive, toSnakeCaseRecursive } from "@/shared/utils";
 import { handleApiResponse } from "@/shared/utils/api-errors";
 
 export class CityApiRepository implements ICityRepository {
@@ -45,13 +45,14 @@ export class CityApiRepository implements ICityRepository {
         data: { name: string; region_id: number }
     ): Promise<City> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/cities`;
+        const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(payload),
         });
         const res = await handleApiResponse<unknown>(response);
 
@@ -63,13 +64,14 @@ export class CityApiRepository implements ICityRepository {
         data: { name?: string; region_id?: number }
     ): Promise<City> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/cities/${id}`;
+        const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(payload),
         });
         const res = await handleApiResponse<unknown>(response);
 

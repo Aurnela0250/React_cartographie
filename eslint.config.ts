@@ -19,8 +19,8 @@ const compat = new FlatCompat({
 });
 
 export default tseslint.config(
-    eslint.configs.recommended,
-    tseslint.configs.recommended,
+    // eslint.configs.recommended,
+    // tseslint.configs.recommended,
     oxlint.buildFromOxlintConfigFile("./.oxlintrc.json"),
     {
         ignores: [
