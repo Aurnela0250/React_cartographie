@@ -33,9 +33,7 @@ const formSchema = z.object({
     name: z.string().min(1, "Le nom est requis"),
     acronyme: z.string().optional(),
     address: z.string().min(1, "L'adresse est requise"),
-    contact: z
-        .array(z.string().min(1, "Le contact ne peut pas être vide"))
-        .min(1, "Au moins un contact est requis"),
+    contacts: z.array(z.string().min(1, "Le contact ne peut pas être vide")), // Permettre un tableau vide, mais les chaînes existantes ne peuvent pas être vides
     siteUrl: z.string().optional(),
     description: z.string().optional(),
     latitude: z.coerce.number().optional(),
@@ -59,36 +57,15 @@ export function EstablishmentDialog({
     initialData?: Partial<FormValues>;
     error?: string | null;
 }) {
-    // const form = useForm<FormValues>({
-    //     resolver: zodResolver(formSchema),
-    //     defaultValues: {
-    //         name: initialData?.name || "",
-    //         acronyme: initialData?.acronyme || "",
-    //         address: initialData?.address || "",
-    //         contact: Array.isArray(initialData?.contact)
-    //             ? initialData?.contact
-    //             : initialData?.contact
-    //               ? [initialData.contact]
-    //               : [""],
-    //         siteUrl: initialData?.siteUrl || "",
-    //         description: initialData?.description || "",
-    //         latitude: initialData?.latitude || undefined,
-    //         longitude: initialData?.longitude || undefined,
-    //         establishmentTypeId: initialData?.establishmentTypeId || 0,
-    //         sectorId: initialData?.sectorId || 0,
-    //     },
-    // });
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: initialData?.name || "",
             acronyme: initialData?.acronyme || "",
             address: initialData?.address || "",
-            contact: Array.isArray(initialData?.contact)
-                ? initialData?.contact
-                : initialData?.contact
-                  ? [initialData.contact]
-                  : [""],
+            contacts: Array.isArray(initialData?.contacts)
+                ? initialData.contacts
+                : [], // Default to an empty array
             siteUrl: initialData?.siteUrl || "",
             description: initialData?.description || "",
             latitude: initialData?.latitude || undefined,
@@ -103,9 +80,9 @@ export function EstablishmentDialog({
         fields: contactFields,
         append: appendContact,
         remove: removeContact,
-    } = useFieldArray({
+    } = useFieldArray<FormValues, "contacts">({
         control,
-        name: "contact",
+        name: "contacts",
     });
 
     // Récupération des types et secteurs pour la liste déroulante
@@ -140,11 +117,9 @@ export function EstablishmentDialog({
                 name: initialData?.name || "",
                 acronyme: initialData?.acronyme || "",
                 address: initialData?.address || "",
-                contact: Array.isArray(initialData?.contact)
-                    ? initialData?.contact
-                    : initialData?.contact
-                      ? [initialData.contact]
-                      : [""],
+                contacts: Array.isArray(initialData?.contacts)
+                    ? initialData.contacts
+                    : [], // Reset to an empty array if not provided or not an array
                 siteUrl: initialData?.siteUrl || "",
                 description: initialData?.description || "",
                 latitude: initialData?.latitude || undefined,
@@ -237,7 +212,7 @@ export function EstablishmentDialog({
                                 >
                                     <FormField
                                         control={form.control}
-                                        name={`contact.${idx}`}
+                                        name={`contacts.${idx}`}
                                         render={({ field }) => (
                                             <FormItem className="flex-1">
                                                 <FormControl>
@@ -251,7 +226,6 @@ export function EstablishmentDialog({
                                         )}
                                     />
                                     <Button
-                                        disabled={contactFields.length === 1}
                                         size="icon"
                                         title="Supprimer ce contact"
                                         type="button"
@@ -260,19 +234,16 @@ export function EstablishmentDialog({
                                     >
                                         -
                                     </Button>
-                                    {idx === contactFields.length - 1 && (
-                                        <Button
-                                            size="icon"
-                                            title="Ajouter un contact"
-                                            type="button"
-                                            variant="outline"
-                                            onClick={() => appendContact("")}
-                                        >
-                                            +
-                                        </Button>
-                                    )}
                                 </div>
                             ))}
+                            <Button
+                                className="mt-2"
+                                type="button"
+                                variant="outline"
+                                onClick={() => appendContact("")}
+                            >
+                                Ajouter un contact
+                            </Button>
                         </div>
                         {/* Colonne 2 */}
                         <div className="space-y-4">

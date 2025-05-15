@@ -3,7 +3,7 @@ import { Save, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { Domain } from "@/core/domain/entities/domain.entity";
+import { Domain } from "@/core/entities/domain.entity";
 import { Button } from "@/presentation/components/ui/button";
 import {
     Dialog,

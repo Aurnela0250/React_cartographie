@@ -1,9 +1,9 @@
 import { useCallback, useRef } from "react";
 import { Edit, Trash } from "lucide-react";
 
-import { City } from "@/core/domain/entities/city.entity";
-import { PaginatedResult } from "@/core/domain/entities/pagination";
-import { Region } from "@/core/domain/entities/region.entity";
+import { City } from "@/core/entities/city.entity";
+import { PaginatedResult } from "@/core/entities/pagination";
+import { Region } from "@/core/entities/region.entity";
 import { Button } from "@/presentation/components/ui/button";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 

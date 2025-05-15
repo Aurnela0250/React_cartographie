@@ -3,12 +3,12 @@
 import React, { useState } from "react";
 import { Plus } from "lucide-react";
 
-import { EstablishmentType } from "@/core/domain/entities/establishment-type.entity";
+import { EstablishmentType } from "@/core/entities/establishment-type.entity";
 import {
     createEstablishmentType,
     deleteEstablishmentType,
     updateEstablishmentType,
-} from "@/infrastructure/server-action/establishment-type.actions";
+} from "@/infrastructure/server-actions/establishment-type.actions";
 import { Button } from "@/presentation/components/ui/button";
 import {
     Card,

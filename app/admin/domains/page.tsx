@@ -3,12 +3,12 @@
 import React, { useState } from "react";
 import { Plus } from "lucide-react";
 
-import { Domain } from "@/core/domain/entities/domain.entity";
+import { Domain } from "@/core/entities/domain.entity";
 import {
     createDomain,
     deleteDomain,
     updateDomain,
-} from "@/infrastructure/server-action/domain.actions";
+} from "@/infrastructure/server-actions/domain.actions";
 import { Button } from "@/presentation/components/ui/button";
 import {
     Card,

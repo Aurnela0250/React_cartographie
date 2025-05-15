@@ -1,9 +1,10 @@
 import { useCallback, useRef } from "react";
+import Link from "next/link";
 import { Edit, Trash } from "lucide-react";
 
-import { IEstablishmentType } from "@/core/domain/entities/establishment-type.entity";
-import { Establishment } from "@/core/domain/entities/establishment.entity";
-import { ISector } from "@/core/domain/entities/sector.entity";
+import { IEstablishmentType } from "@/core/entities/establishment-type.entity";
+import { Establishment } from "@/core/entities/establishment.entity";
+import { ISector } from "@/core/entities/sector.entity";
 import { Button } from "@/presentation/components/ui/button";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
@@ -85,44 +86,71 @@ export function EstablishmentList({
                             (s: ISector) => s.id === establishment.sectorId
                         )?.name || `Secteur #${establishment.sectorId}`;
 
+                    const handleButtonClick = (
+                        e: React.MouseEvent,
+                        action: () => void
+                    ) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        action();
+                    };
+
                     return (
-                        <div
+                        <Link
                             key={establishment.id}
                             ref={isLast ? lastEstablishmentRef : undefined}
-                            className="flex items-center justify-between rounded border p-2"
+                            className="block cursor-pointer rounded border p-3 transition-shadow duration-150 ease-in-out hover:bg-gray-50 hover:shadow-sm"
+                            href={`/admin/establishments/${establishment.id}/formations`}
                         >
-                            <div>
-                                <div className="font-bold">
-                                    {establishment.name}
+                            <div className="flex items-center justify-between">
+                                <div className="grow overflow-hidden pr-4">
+                                    <div className="truncate font-bold">
+                                        {establishment.name}
+                                    </div>
+                                    <div className="text-xs text-gray-500">
+                                        {typeName} | {sectorName}
+                                    </div>
+                                    <div className="truncate text-xs text-muted-foreground">
+                                        {establishment.address ||
+                                            "Adresse non spécifiée"}
+                                    </div>
                                 </div>
-                                <div className="text-xs text-gray-500">
-                                    {typeName} | {sectorName}
-                                </div>
-                                <div className="text-xs text-muted-foreground">
-                                    {establishment.address}
+                                <div className="flex shrink-0 gap-2">
+                                    <Button
+                                        aria-label={`Modifier ${establishment.name}`}
+                                        size="icon"
+                                        variant="outline"
+                                        onClick={(e) => {
+                                            handleButtonClick(e, () =>
+                                                onEdit(establishment)
+                                            );
+                                        }}
+                                    >
+                                        <Edit className="size-4" />
+                                    </Button>
+                                    <Button
+                                        aria-label={`Supprimer ${establishment.name}`}
+                                        size="icon"
+                                        variant="destructive"
+                                        onClick={(e) => {
+                                            handleButtonClick(e, () =>
+                                                onDelete(establishment)
+                                            );
+                                        }}
+                                    >
+                                        <Trash className="size-4" />
+                                    </Button>
                                 </div>
                             </div>
-                            <div className="flex gap-2">
-                                <Button
-                                    size="icon"
-                                    variant="outline"
-                                    onClick={() => onEdit(establishment)}
-                                >
-                                    <Edit className="size-4" />
-                                </Button>
-                                <Button
-                                    size="icon"
-                                    variant="destructive"
-                                    onClick={() => onDelete(establishment)}
-                                >
-                                    <Trash className="size-4" />
-                                </Button>
-                            </div>
-                        </div>
+                        </Link>
                     );
                 })
             )}
-            {isFetchingNextPage && <div>Chargement...</div>}
+            {isFetchingNextPage && (
+                <div className="p-3 text-center text-sm text-muted-foreground">
+                    Chargement...
+                </div>
+            )}
         </div>
     );
 }

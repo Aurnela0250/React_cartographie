@@ -3,8 +3,8 @@ import { Save, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { City } from "@/core/domain/entities/city.entity";
-import { Region } from "@/core/domain/entities/region.entity";
+import { City } from "@/core/entities/city.entity";
+import { Region } from "@/core/entities/region.entity";
 import { Button } from "@/presentation/components/ui/button";
 import {
     Dialog,
@@ -55,7 +55,7 @@ const fetchRegions = async (): Promise<Region[]> => {
 
 const formSchema = z.object({
     name: z.string().min(1, "Le nom est requis"),
-    region_id: z.coerce
+    regionId: z.coerce
         .number({ invalid_type_error: "La région est requise" })
         .min(1, "La région est requise"),
 });
@@ -71,7 +71,7 @@ export function CityDialog({
 }: {
     open: boolean;
     onClose: () => void;
-    onSubmit: (data: { name: string; region_id: number }) => void;
+    onSubmit: (data: { name: string; regionId: number }) => void;
     initialData?: Partial<City>;
     error?: string | null;
 }) {
@@ -79,7 +79,7 @@ export function CityDialog({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: initialData?.name || "",
-            region_id: initialData?.regionId || undefined,
+            regionId: initialData?.regionId || undefined,
         },
     });
 
@@ -98,7 +98,7 @@ export function CityDialog({
         if (open) {
             form.reset({
                 name: initialData?.name || "",
-                region_id: initialData?.regionId || undefined,
+                regionId: initialData?.regionId || undefined,
             });
         }
     }, [initialData, open, form]);
@@ -145,7 +145,7 @@ export function CityDialog({
                         />
                         <FormField
                             control={form.control}
-                            name="region_id"
+                            name="regionId"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Région</FormLabel>

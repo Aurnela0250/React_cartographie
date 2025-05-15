@@ -25,13 +25,13 @@ export async function GET(req: NextRequest) {
         const filters = {
             name: searchParams.get("name") || undefined,
             acronyme: searchParams.get("acronyme") || undefined,
-            establishment_type_id: searchParams.get("establishment_type_id")
+            establishmentTypeId: searchParams.get("establishment_type_id")
                 ? parseInt(searchParams.get("establishment_type_id")!)
                 : undefined,
-            city_id: searchParams.get("city_id")
+            cityId: searchParams.get("city_id")
                 ? parseInt(searchParams.get("city_id")!)
                 : undefined,
-            region_id: searchParams.get("region_id")
+            regionId: searchParams.get("region_id")
                 ? parseInt(searchParams.get("region_id")!)
                 : undefined,
         };

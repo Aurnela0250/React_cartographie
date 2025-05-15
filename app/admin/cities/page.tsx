@@ -3,12 +3,12 @@
 import React, { useState } from "react";
 import { Plus } from "lucide-react";
 
-import { City } from "@/core/domain/entities/city.entity";
+import { City } from "@/core/entities/city.entity";
 import {
     createCity,
     deleteCity,
     updateCity,
-} from "@/infrastructure/server-action/city.actions";
+} from "@/infrastructure/server-actions/city.actions";
 import { Button } from "@/presentation/components/ui/button";
 import {
     Card,
@@ -71,7 +71,7 @@ export default function CityPage() {
             data,
         }: {
             id: number;
-            data: { name?: string; region_id?: number };
+            data: { name?: string; regionId?: number };
         }) => updateCity(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["cities"] });
@@ -128,7 +128,7 @@ export default function CityPage() {
         setIsDeleteDialogOpen(true);
     };
 
-    const handleDialogSubmit = (data: { name: string; region_id: number }) => {
+    const handleDialogSubmit = (data: { name: string; regionId: number }) => {
         setFormError(null);
         if (selectedCity?.id) {
             updateMutation.mutate({ id: selectedCity.id, data });

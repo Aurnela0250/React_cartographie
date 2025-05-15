@@ -12,7 +12,7 @@ import {
     Users,
 } from "lucide-react";
 
-import { Establishment } from "@/core/domain/entities/establishment.entity";
+import { Establishment } from "@/core/entities/establishment.entity";
 import { EstablishmentGallery } from "@/presentation/components/features/establishment-gallery";
 import { Badge } from "@/presentation/components/ui/badge";
 import { Button } from "@/presentation/components/ui/button";

@@ -3,12 +3,12 @@
 import React, { useState } from "react";
 import { Plus } from "lucide-react";
 
-import { Sector } from "@/core/domain/entities/sector.entity";
+import { Sector } from "@/core/entities/sector.entity";
 import {
     createSector,
     deleteSector,
     updateSector,
-} from "@/infrastructure/server-action/sector.actions";
+} from "@/infrastructure/server-actions/sector.actions";
 import { Button } from "@/presentation/components/ui/button";
 import {
     Card,
@@ -64,7 +64,7 @@ export default function SectorPage() {
             data,
         }: {
             id: number;
-            data: { name?: string; city_id?: number };
+            data: { name?: string; cityId?: number };
         }) => updateSector(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["sectors"] });
@@ -115,7 +115,7 @@ export default function SectorPage() {
         setIsDeleteDialogOpen(true);
     };
 
-    const handleDialogSubmit = (data: { name: string; city_id: number }) => {
+    const handleDialogSubmit = (data: { name: string; cityId: number }) => {
         setFormError(null);
         if (selectedSector?.id) {
             updateMutation.mutate({ id: selectedSector.id, data });

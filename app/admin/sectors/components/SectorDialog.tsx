@@ -3,7 +3,7 @@ import { Save, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { Sector } from "@/core/domain/entities/sector.entity";
+import { Sector } from "@/core/entities/sector.entity";
 import { Button } from "@/presentation/components/ui/button";
 import {
     Dialog,
@@ -33,7 +33,7 @@ import { useQuery } from "@tanstack/react-query";
 
 const formSchema = z.object({
     name: z.string().min(1, "Le nom est requis"),
-    city_id: z.number().min(1, "La ville est requise"),
+    cityId: z.number().min(1, "La ville est requise"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -47,7 +47,7 @@ export function SectorDialog({
 }: {
     open: boolean;
     onClose: () => void;
-    onSubmit: (data: { name: string; city_id: number }) => void;
+    onSubmit: (data: { name: string; cityId: number }) => void;
     initialData?: Partial<Sector>;
     error?: string | null;
 }) {
@@ -55,7 +55,7 @@ export function SectorDialog({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: initialData?.name || "",
-            city_id: initialData?.cityId || 0,
+            cityId: initialData?.cityId || 0,
         },
     });
 
@@ -76,7 +76,7 @@ export function SectorDialog({
         if (open) {
             form.reset({
                 name: initialData?.name || "",
-                city_id: initialData?.cityId || 0,
+                cityId: initialData?.cityId || 0,
             });
         }
     }, [initialData, open, form]);
@@ -123,7 +123,7 @@ export function SectorDialog({
                         />
                         <FormField
                             control={form.control}
-                            name="city_id"
+                            name="cityId"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Ville</FormLabel>

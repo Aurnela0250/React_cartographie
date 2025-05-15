@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     }
     const searchParams = req.nextUrl.searchParams;
     const page = Number(searchParams.get("page")) || 1;
-    const per_page = Number(searchParams.get("per_page")) || 10;
+    const perPage = Number(searchParams.get("per_page")) || 10;
 
     const domainId = searchParams.get("domainId")
         ? Number(searchParams.get("domainId"))
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     // On ne peut pas passer domainId dans PaginationParams, il faut filtrer côté API ou ici
     let result = await repo.getAll(session.token.accessToken, {
         page,
-        perPage: per_page,
+        perPage,
     });
 
     // Filtrage JS côté API si domainId fourni (en attendant un endpoint/filter dédié)

@@ -3,12 +3,12 @@
 import React, { useState } from "react";
 import { Plus } from "lucide-react";
 
-import { Level } from "@/core/domain/entities/level.entity";
+import { Level } from "@/core/entities/level.entity";
 import {
     createLevel,
     deleteLevel,
     updateLevel,
-} from "@/infrastructure/server-action/level.actions";
+} from "@/infrastructure/server-actions/level.actions";
 import { Button } from "@/presentation/components/ui/button";
 import {
     Card,

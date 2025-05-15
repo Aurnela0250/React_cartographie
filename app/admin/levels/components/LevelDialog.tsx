@@ -3,7 +3,7 @@ import { Save, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { Level } from "@/core/domain/entities/level.entity";
+import { Level } from "@/core/entities/level.entity";
 import { Button } from "@/presentation/components/ui/button";
 import {
     Dialog,

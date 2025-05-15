@@ -1,12 +1,10 @@
-// MODIFIÉ: Ajout des imports pour les icônes
-
+// MODIFIÉ: Version corrigée du scroll infini
 import { useCallback, useRef } from "react";
 import { Edit, Trash } from "lucide-react";
 
-import { PaginatedResult } from "@/core/domain/entities/pagination";
-import { Region } from "@/core/domain/entities/region.entity";
+import { PaginatedResult } from "@/core/entities/pagination";
+import { Region } from "@/core/entities/region.entity";
 import { Button } from "@/presentation/components/ui/button";
-// MODIFIÉ: Ajout de l'import pour le composant Button
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 export function RegionList({
@@ -16,11 +14,10 @@ export function RegionList({
     onEdit: (region: Region) => void;
     onDelete: (region: Region) => void;
 }) {
-    // Ajout du paramètre per_page=10 pour la pagination
     const fetchRegions = async ({
         pageParam = 1,
     }): Promise<PaginatedResult<Region>> => {
-        const res = await fetch(`/api/regions?page=${pageParam}&per_page=5`);
+        const res = await fetch(`/api/regions?page=${pageParam}&per_page=10`);
 
         return res.json();
     };
@@ -41,14 +38,17 @@ export function RegionList({
         initialPageParam: 1,
     });
 
-    // Correction: observer ne doit pas déclencher au premier rendu, mais seulement quand on scroll jusqu'au dernier élément
+    // Nouvelle implémentation de l'IntersectionObserver
     const observer = useRef<IntersectionObserver | null>(null);
     const lastRegionRef = useCallback(
         (node: HTMLElement | null) => {
             if (isFetchingNextPage) return;
+
+            // Détacher l'observateur précédent s'il existe
             if (observer.current) observer.current.disconnect();
+
             observer.current = new IntersectionObserver(
-                (entries: IntersectionObserverEntry[]) => {
+                (entries) => {
                     if (
                         entries[0].isIntersecting &&
                         hasNextPage &&
@@ -57,25 +57,27 @@ export function RegionList({
                         fetchNextPage();
                     }
                 },
-                { threshold: 1.0 }
+                { threshold: 0.1 } // Déclenche quand 10% de l'élément est visible
             );
+
             if (node) observer.current.observe(node);
         },
-        [isFetchingNextPage, fetchNextPage, hasNextPage]
+        [isFetchingNextPage, hasNextPage, fetchNextPage]
     );
 
     return (
         <div className="max-h-full space-y-2 overflow-auto">
             {data?.pages.map((page, i) =>
                 page.items.map((region: Region, idx: number) => {
-                    const isLast =
+                    // Vérifie si c'est le dernier élément de la dernière page
+                    const isLastElement =
                         i === data.pages.length - 1 &&
                         idx === page.items.length - 1;
 
                     return (
                         <div
                             key={region.id}
-                            ref={isLast ? lastRegionRef : undefined}
+                            ref={isLastElement ? lastRegionRef : null}
                             className="flex items-center justify-between rounded border p-2"
                         >
                             <div>
@@ -104,7 +106,18 @@ export function RegionList({
                     );
                 })
             )}
-            {isFetchingNextPage && <div>Chargement...</div>}
+
+            {isFetchingNextPage && (
+                <div className="p-4 text-center text-muted-foreground">
+                    Chargement des régions...
+                </div>
+            )}
+
+            {!hasNextPage && !isFetching && (
+                <div className="p-4 text-center text-muted-foreground">
+                    Fin de la liste des régions
+                </div>
+            )}
         </div>
     );
 }

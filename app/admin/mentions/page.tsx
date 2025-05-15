@@ -3,12 +3,12 @@
 import React, { useState } from "react";
 import { Plus } from "lucide-react";
 
-import { Mention } from "@/core/domain/entities/mention.entity";
+import { Mention } from "@/core/entities/mention.entity";
 import {
     createMention,
     deleteMention,
     updateMention,
-} from "@/infrastructure/server-action/mention.actions";
+} from "@/infrastructure/server-actions/mention.actions";
 import { Button } from "@/presentation/components/ui/button";
 import {
     Card,

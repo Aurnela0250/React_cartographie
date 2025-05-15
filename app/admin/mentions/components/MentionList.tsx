@@ -1,8 +1,8 @@
 import { useCallback, useRef } from "react";
 import { Edit, Trash } from "lucide-react";
 
-import { Mention } from "@/core/domain/entities/mention.entity";
-import { PaginatedResult } from "@/core/domain/entities/pagination";
+import { Mention } from "@/core/entities/mention.entity";
+import { PaginatedResult } from "@/core/entities/pagination";
 import { Button } from "@/presentation/components/ui/button";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 

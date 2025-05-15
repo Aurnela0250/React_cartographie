@@ -3,12 +3,12 @@
 import React, { useState } from "react"; // Ajout de l'import useState
 import { Plus } from "lucide-react";
 
-import { Region } from "@/core/domain/entities/region.entity";
+import { Region } from "@/core/entities/region.entity";
 import {
     createRegion,
     deleteRegion,
     updateRegion,
-} from "@/infrastructure/server-action/region.actions";
+} from "@/infrastructure/server-actions/region.actions";
 import { Button } from "@/presentation/components/ui/button";
 import {
     Card,

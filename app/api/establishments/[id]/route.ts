@@ -21,7 +21,10 @@ export async function GET(
 ) {
     try {
         const token = await getTokenFromRequest(req);
-        const id = parseInt(params.id);
+
+        const { id: idStr } = await params;
+
+        const id = parseInt(idStr);
 
         const establishment = await repo.get(token, id);
 

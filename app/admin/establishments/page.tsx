@@ -4,12 +4,12 @@
 import React, { useState } from "react";
 import { Plus } from "lucide-react";
 
-import { Establishment } from "@/core/domain/entities/establishment.entity";
+import { Establishment } from "@/core/entities/establishment.entity";
 import {
     createEstablishment,
     deleteEstablishment,
     updateEstablishment,
-} from "@/infrastructure/server-action/establishment.action";
+} from "@/infrastructure/server-actions/establishment.action";
 import { Button } from "@/presentation/components/ui/button";
 import {
     Card,
@@ -27,13 +27,13 @@ type EstablishmentPayload = {
     name: string;
     acronyme?: string;
     address: string;
-    contact?: string;
-    site_url?: string;
+    contacts?: string[];
+    siteUrl?: string;
     description?: string;
     latitude?: number;
     longitude?: number;
-    establishment_type_id: number;
-    sector_id: number;
+    establishmentTypeId: number;
+    sectorId: number;
 };
 
 export default function EstablishmentPage() {
