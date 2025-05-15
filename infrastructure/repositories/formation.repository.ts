@@ -107,11 +107,13 @@ export class FormationApiRepository implements IFormationRepository {
             dateDebut: string;
             dateFin?: string;
             status: "REQUESTED" | "VALIDATED" | "REFUSED" | "EXPIRED";
-            arrete: string;
+            arrete?: string;
         }
     ): Promise<Formation> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${id}/authorization`;
         const payload = toSnakeCaseRecursive(data);
+
+        console.log("payload", payload);
         const response = await fetch(url, {
             method: "POST",
             headers: {
@@ -127,7 +129,6 @@ export class FormationApiRepository implements IFormationRepository {
     async updateFormationAuthorization(
         token: string,
         formationId: number,
-        id: number,
         data: {
             date_debut?: string;
             date_fin?: string;
@@ -135,7 +136,7 @@ export class FormationApiRepository implements IFormationRepository {
             arrete?: string;
         }
     ): Promise<Formation> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${formationId}/authorization/${id}`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${formationId}/authorization`;
         const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "PUT",

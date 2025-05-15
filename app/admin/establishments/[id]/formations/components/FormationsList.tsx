@@ -8,16 +8,19 @@ import { IFormation } from "@/core/entities/formation.entity";
 import {
     createAnnualHeadcount,
     createFormation,
+    createFormationAuthorization,
     deleteAnnualHeadcount,
     deleteFormation,
     updateAnnualHeadcount,
     updateFormation,
+    updateFormationAuthorization,
 } from "@/infrastructure/server-actions/formation.actions";
 import { Button } from "@/presentation/components/ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { AnnualHeadcountDeleteDialog } from "./AnnualHeadcountDeleteDialog";
 import { AnnualHeadcountDialog } from "./AnnualHeadcountDialog";
+import { FormationAuthorizationDialog } from "./FormationAuthorizationDialog";
 import { FormationsDeleteDialog } from "./FormationsDeleteDialog";
 import { FormationsDialog } from "./FormationsDialog";
 
@@ -34,6 +37,12 @@ export function FormationsList({
     levels = [],
     mentions = [],
 }: FormationsListProps) {
+    // State pour authorization
+    const [authDialogOpen, setAuthDialogOpen] = useState(false);
+    const [selectedFormationForAuth, setSelectedFormationForAuth] =
+        useState<IFormation | null>(null);
+    const [authError, setAuthError] = useState<string | null>(null);
+
     const [dialogOpen, setDialogOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedFormation, setSelectedFormation] =
@@ -49,6 +58,68 @@ export function FormationsList({
     const [selectedAnnualHeadcount, setSelectedAnnualHeadcount] =
         useState<IAnnualHeadcount | null>(null);
     const [ahError, setAhError] = useState<string | null>(null);
+
+    // Mutations pour authorization
+    type AuthFormData = {
+        dateDebut: string;
+        dateFin?: string;
+        status: "REQUESTED" | "VALIDATED" | "REFUSED" | "EXPIRED";
+        arrete?: string;
+    };
+    const createAuthMutation = useMutation<
+        unknown,
+        { message?: string },
+        AuthFormData
+    >({
+        mutationFn: async (data) => {
+            if (!selectedFormationForAuth?.id)
+                throw new Error("Aucune formation sélectionnée");
+
+            return createFormationAuthorization(
+                selectedFormationForAuth.id,
+                data
+            );
+        },
+        onSuccess: () => {
+            setAuthDialogOpen(false);
+            setSelectedFormationForAuth(null);
+            queryClient.invalidateQueries({ queryKey: ["establishment"] });
+        },
+        onError: (err) =>
+            setAuthError(
+                err.message || "Erreur lors de la création de l'autorisation"
+            ),
+    });
+    const updateAuthMutation = useMutation<
+        unknown,
+        { message?: string },
+        AuthFormData
+    >({
+        mutationFn: async (data) => {
+            if (
+                !selectedFormationForAuth?.id ||
+                !selectedFormationForAuth.authorization?.id
+            )
+                throw new Error(
+                    "Aucune formation ou autorisation sélectionnée"
+                );
+
+            return updateFormationAuthorization(
+                selectedFormationForAuth.id,
+                data
+            );
+        },
+        onSuccess: () => {
+            setAuthDialogOpen(false);
+            setSelectedFormationForAuth(null);
+            queryClient.invalidateQueries({ queryKey: ["establishment"] });
+        },
+        onError: (err) =>
+            setAuthError(
+                err.message ||
+                    "Erreur lors de la modification de l'autorisation"
+            ),
+    });
 
     // Mutations pour annual headcount
     type AnnualHeadcountFormData = { academicYear: number; students: number };
@@ -268,6 +339,96 @@ export function FormationsList({
                                 </Button>
                             </div>
                         </div>
+                        {/* Autorisation de formation */}
+                        <div className="mt-2 border-t pt-2">
+                            <div className="mb-1 flex items-center justify-between">
+                                <span className="text-sm font-semibold">
+                                    Autorisation
+                                </span>
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                        setSelectedFormationForAuth(formation);
+                                        setAuthError(null);
+                                        setAuthDialogOpen(true);
+                                    }}
+                                >
+                                    {formation.authorization ? (
+                                        <Edit className="mr-1 size-3" />
+                                    ) : (
+                                        <Plus className="mr-1 size-3" />
+                                    )}{" "}
+                                    {formation.authorization
+                                        ? "Modifier"
+                                        : "Ajouter"}
+                                </Button>
+                            </div>
+                            {formation.authorization ? (
+                                <div className="rounded bg-gray-50 px-2 py-1 text-xs">
+                                    <div>
+                                        Date début :{" "}
+                                        {formation.authorization.dateDebut ||
+                                            "-"}
+                                    </div>
+                                    <div>
+                                        Date fin :{" "}
+                                        {formation.authorization.dateFin || "-"}
+                                    </div>
+                                    <div>
+                                        Statut :{" "}
+                                        {formation.authorization.status || "-"}
+                                    </div>
+                                    <div>
+                                        Arrêté :{" "}
+                                        {formation.authorization.arrete || "-"}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="text-xs text-muted-foreground">
+                                    Aucune autorisation.
+                                </div>
+                            )}
+                        </div>
+                        {/* Dialogue pour autorisation */}
+                        <FormationAuthorizationDialog
+                            error={authError}
+                            initialData={
+                                selectedFormationForAuth?.authorization
+                                    ? {
+                                          dateDebut:
+                                              selectedFormationForAuth
+                                                  .authorization.dateDebut ??
+                                              "",
+                                          dateFin:
+                                              selectedFormationForAuth
+                                                  .authorization.dateFin ?? "",
+                                          status:
+                                              (selectedFormationForAuth
+                                                  .authorization.status as
+                                                  | "REQUESTED"
+                                                  | "VALIDATED"
+                                                  | "REFUSED"
+                                                  | "EXPIRED") ?? undefined,
+                                          arrete:
+                                              selectedFormationForAuth
+                                                  .authorization.arrete ?? "",
+                                      }
+                                    : undefined
+                            }
+                            open={authDialogOpen}
+                            onClose={() => {
+                                setAuthDialogOpen(false);
+                                setSelectedFormationForAuth(null);
+                            }}
+                            onSubmit={(data) => {
+                                if (selectedFormationForAuth?.authorization) {
+                                    updateAuthMutation.mutate(data);
+                                } else {
+                                    createAuthMutation.mutate(data);
+                                }
+                            }}
+                        />
                         {/* Effectifs annuels */}
                         <div className="mt-2 border-t pt-2">
                             <div className="mb-1 flex items-center justify-between">

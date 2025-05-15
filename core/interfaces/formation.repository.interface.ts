@@ -46,7 +46,6 @@ export interface IFormationRepository {
     updateFormationAuthorization(
         token: string,
         formationId: number,
-        id: number,
         data: {
             dateDebut?: string;
             dateFin?: string;
