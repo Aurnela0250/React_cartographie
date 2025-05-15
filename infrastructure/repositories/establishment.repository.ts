@@ -1,12 +1,12 @@
-import { Establishment } from "@/core/domain/entities/establishment.entity";
+import { Establishment } from "@/core/entities/establishment.entity";
 import {
     PaginatedPlain,
     PaginatedResult,
     PaginationParams,
-} from "@/core/domain/entities/pagination";
+} from "@/core/entities/pagination";
 import { IEstablishmentRepository } from "@/core/interfaces/establishment.repository.interface";
 import { env } from "@/env.mjs";
-import { toCamelCaseRecursive } from "@/shared/utils";
+import { toCamelCaseRecursive, toSnakeCaseRecursive } from "@/shared/utils";
 import { handleApiResponse } from "@/shared/utils/api-errors";
 
 export class EstablishmentApiRepository implements IEstablishmentRepository {
@@ -46,13 +46,13 @@ export class EstablishmentApiRepository implements IEstablishmentRepository {
             name: string;
             acronyme?: string;
             address: string;
-            contact?: string;
-            site_url?: string;
+            contacts?: string[];
+            siteUrl?: string;
             description?: string;
             latitude?: number;
             longitude?: number;
-            establishment_type_id: number;
-            sector_id: number;
+            establishmentTypeId: number;
+            sectorId: number;
         }
     ): Promise<Establishment> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/establishments`;
@@ -62,7 +62,7 @@ export class EstablishmentApiRepository implements IEstablishmentRepository {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(toSnakeCaseRecursive(data)),
         });
         const res = await handleApiResponse<unknown>(response);
 
@@ -80,7 +80,7 @@ export class EstablishmentApiRepository implements IEstablishmentRepository {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(toSnakeCaseRecursive(data)),
         });
 
         await handleApiResponse<unknown>(response);
@@ -94,23 +94,25 @@ export class EstablishmentApiRepository implements IEstablishmentRepository {
             name?: string;
             acronyme?: string;
             address?: string;
-            contact?: string;
-            site_url?: string;
+            contacts?: string[];
+            siteUrl?: string;
             description?: string;
             latitude?: number;
             longitude?: number;
-            establishment_type_id?: number;
-            sector_id?: number;
+            establishmentTypeId?: number;
+            sectorId?: number;
         }
     ): Promise<Establishment> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/establishments/${id}`;
+
+        console.log("data", data);
         const response = await fetch(url, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(toSnakeCaseRecursive(data)),
         });
         const res = await handleApiResponse<unknown>(response);
 
@@ -133,9 +135,9 @@ export class EstablishmentApiRepository implements IEstablishmentRepository {
         filters: {
             name?: string;
             acronyme?: string;
-            establishment_type_id?: number;
-            city_id?: number;
-            region_id?: number;
+            establishmentTypeId?: number;
+            cityId?: number;
+            regionId?: number;
         }
     ): Promise<PaginatedResult<Establishment>> {
         const queryParams = new URLSearchParams();
@@ -146,15 +148,15 @@ export class EstablishmentApiRepository implements IEstablishmentRepository {
 
         if (filters.name) queryParams.append("name", filters.name);
         if (filters.acronyme) queryParams.append("acronyme", filters.acronyme);
-        if (filters.establishment_type_id)
+        if (filters.establishmentTypeId)
             queryParams.append(
                 "establishment_type_id",
-                filters.establishment_type_id.toString()
+                filters.establishmentTypeId.toString()
             );
-        if (filters.city_id)
-            queryParams.append("city_id", filters.city_id.toString());
-        if (filters.region_id)
-            queryParams.append("region_id", filters.region_id.toString());
+        if (filters.cityId)
+            queryParams.append("city_id", filters.cityId.toString());
+        if (filters.regionId)
+            queryParams.append("region_id", filters.regionId.toString());
 
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/establishments/filter?${queryParams.toString()}`;
         const response = await fetch(url, {

@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Filter, MapPin, Search, Star, Users, X } from "lucide-react";
 
-import { Establishment } from "@/core/domain/entities/establishment.entity";
+import { Establishment } from "@/core/entities/establishment.entity";
 import {
     FilterParams,
     SearchFilters,
@@ -39,21 +39,21 @@ export function FeaturedEstablishments() {
                 const params = new URLSearchParams();
 
                 params.append("page", "1");
-                params.append("per_page", "3");
+                params.append("perPage", "3");
 
                 // Ajouter les filtres s'ils sont présents
                 if (filters.name) params.append("name", filters.name);
                 if (filters.acronyme)
                     params.append("acronyme", filters.acronyme);
-                if (filters.establishment_type_id)
+                if (filters.establishmentTypeId)
                     params.append(
                         "establishment_type_id",
-                        filters.establishment_type_id.toString()
+                        filters.establishmentTypeId.toString()
                     );
-                if (filters.city_id)
-                    params.append("city_id", filters.city_id.toString());
-                if (filters.region_id)
-                    params.append("region_id", filters.region_id.toString());
+                if (filters.cityId)
+                    params.append("city_id", filters.cityId.toString());
+                if (filters.regionId)
+                    params.append("region_id", filters.regionId.toString());
 
                 // Utiliser l'API de filtrage avec les paramètres
                 const response = await fetch(
@@ -86,13 +86,13 @@ export function FeaturedEstablishments() {
         const badges: string[] = [];
 
         if (newFilters.name) badges.push(`Nom: ${newFilters.name}`);
-        if (newFilters.region_id) {
-            const regionId = newFilters.region_id;
+        if (newFilters.regionId) {
+            const regionId = newFilters.regionId;
 
             badges.push(`Région: ${regionId}`);
         }
-        if (newFilters.establishment_type_id) {
-            const typeId = newFilters.establishment_type_id;
+        if (newFilters.establishmentTypeId) {
+            const typeId = newFilters.establishmentTypeId;
 
             badges.push(`Type: ${typeId}`);
         }
@@ -123,9 +123,9 @@ export function FeaturedEstablishments() {
             delete updatedFilters.name;
             setSearchTerm("");
         } else if (type === "Région") {
-            delete updatedFilters.region_id;
+            delete updatedFilters.regionId;
         } else if (type === "Type") {
-            delete updatedFilters.establishment_type_id;
+            delete updatedFilters.establishmentTypeId;
         }
 
         setFilters(updatedFilters);

@@ -15,19 +15,25 @@ async function getTokenServerSide(): Promise<string> {
     return session.token.accessToken;
 }
 
-export async function createCity(data: { name: string; region_id: number }) {
+export async function createCity(data: { name: string; regionId: number }) {
     const token = await getTokenServerSide();
-    const city = await repo.create(token, data);
+    const city = await repo.create(token, {
+        name: data.name,
+        regionId: data.regionId,
+    });
 
     return { ...city };
 }
 
 export async function updateCity(
     id: number,
-    data: { name?: string; region_id?: number }
+    data: { name?: string; regionId?: number }
 ) {
     const token = await getTokenServerSide();
-    const city = await repo.update(token, id, data);
+    const city = await repo.update(token, id, {
+        name: data.name,
+        regionId: data.regionId,
+    });
 
     return { ...city };
 }

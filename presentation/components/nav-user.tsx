@@ -9,7 +9,7 @@ import {
     Sparkles,
 } from "lucide-react";
 
-import { IUser } from "@/core/domain/entities/users.entity";
+import { IUser } from "@/core/entities/users.entity";
 import {
     DropdownMenu,
     DropdownMenuContent,

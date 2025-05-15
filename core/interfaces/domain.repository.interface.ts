@@ -1,8 +1,5 @@
-import { Domain } from "@/core/domain/entities/domain.entity";
-import {
-    PaginatedResult,
-    PaginationParams,
-} from "@/core/domain/entities/pagination";
+import { Domain } from "@/core/entities/domain.entity";
+import { PaginatedResult, PaginationParams } from "@/core/entities/pagination";
 
 export interface IDomainRepository {
     getAll(

@@ -18,13 +18,13 @@ export async function createEstablishment(data: {
     name: string;
     acronyme?: string;
     address: string;
-    contact?: string;
-    site_url?: string;
+    contacts?: string[];
+    siteUrl?: string;
     description?: string;
     latitude?: number;
     longitude?: number;
-    establishment_type_id: number;
-    sector_id: number;
+    establishmentTypeId: number;
+    sectorId: number;
 }) {
     try {
         const token = await getTokenServerSide();
@@ -44,13 +44,13 @@ export async function updateEstablishment(
         name?: string;
         acronyme?: string;
         address?: string;
-        contact?: string;
-        site_url?: string;
+        contacts?: string[];
+        siteUrl?: string;
         description?: string;
         latitude?: number;
         longitude?: number;
-        establishment_type_id?: number;
-        sector_id?: number;
+        establishmentTypeId?: number;
+        sectorId?: number;
     }
 ) {
     try {

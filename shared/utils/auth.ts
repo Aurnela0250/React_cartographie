@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getIronSession, IronSession, SessionOptions } from "session-auth";
 
-import { IToken, Token } from "@/core/domain/entities/token.entity";
-import { IUser } from "@/core/domain/entities/users.entity";
+import { IToken, Token } from "@/core/entities/token.entity";
+import { IUser } from "@/core/entities/users.entity";
 import { env } from "@/env.mjs";
 
 // Définition de la structure des données de session

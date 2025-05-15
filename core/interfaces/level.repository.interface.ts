@@ -1,8 +1,5 @@
-import { Level } from "@/core/domain/entities/level.entity";
-import {
-    PaginatedResult,
-    PaginationParams,
-} from "@/core/domain/entities/pagination";
+import { Level } from "@/core/entities/level.entity";
+import { PaginatedResult, PaginationParams } from "@/core/entities/pagination";
 
 export interface ILevelRepository {
     getAll(

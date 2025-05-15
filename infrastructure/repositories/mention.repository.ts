@@ -1,9 +1,9 @@
-import { Mention } from "@/core/domain/entities/mention.entity";
+import { Mention } from "@/core/entities/mention.entity";
 import {
     PaginatedPlain,
     PaginatedResult,
     PaginationParams,
-} from "@/core/domain/entities/pagination";
+} from "@/core/entities/pagination";
 import { IMentionRepository } from "@/core/interfaces/mention.repository.interface";
 import { env } from "@/env.mjs";
 import { toCamelCaseRecursive, toSnakeCaseRecursive } from "@/shared/utils";

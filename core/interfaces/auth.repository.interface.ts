@@ -1,5 +1,5 @@
-import { Token } from "@/core/domain/entities/token.entity";
-import { User } from "@/core/domain/entities/users.entity";
+import { Token } from "@/core/entities/token.entity";
+import { User } from "@/core/entities/users.entity";
 
 export interface IAuthRepository {
     login(email: string, password: string): Promise<Token>;

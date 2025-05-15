@@ -1,9 +1,9 @@
-import { Formation } from "@/core/domain/entities/formation.entity";
+import { Formation } from "@/core/entities/formation.entity";
 import {
     PaginatedPlain,
     PaginatedResult,
     PaginationParams,
-} from "@/core/domain/entities/pagination";
+} from "@/core/entities/pagination";
 import { IFormationRepository } from "@/core/interfaces/formation.repository.interface";
 import { env } from "@/env.mjs";
 import { toCamelCaseRecursive, toSnakeCaseRecursive } from "@/shared/utils";
@@ -41,10 +41,10 @@ export class FormationApiRepository implements IFormationRepository {
             intitule: string;
             description?: string;
             duration: number;
-            level_id: number;
-            mention_id: number;
-            establishment_id: number;
-            authorization_id?: number;
+            levelId: number;
+            mentionId: number;
+            establishmentId: number;
+            authorizationId?: number;
         }
     ): Promise<Formation> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations`;
@@ -68,10 +68,10 @@ export class FormationApiRepository implements IFormationRepository {
             intitule?: string;
             description?: string;
             duration?: number;
-            level_id?: number;
-            mention_id?: number;
-            establishment_id?: number;
-            authorization_id?: number;
+            levelId?: number;
+            mentionId?: number;
+            establishmentId?: number;
+            authorizationId?: number;
         }
     ): Promise<Formation> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${id}`;
@@ -101,10 +101,11 @@ export class FormationApiRepository implements IFormationRepository {
     }
     async createFormationAuthorization(
         token: string,
+
         id: number,
         data: {
-            date_debut: string;
-            date_fin?: string;
+            dateDebut: string;
+            dateFin?: string;
             status: "REQUESTED" | "VALIDATED" | "REFUSED" | "EXPIRED";
             arrete: string;
         }
@@ -125,6 +126,7 @@ export class FormationApiRepository implements IFormationRepository {
     }
     async updateFormationAuthorization(
         token: string,
+        formationId: number,
         id: number,
         data: {
             date_debut?: string;
@@ -133,7 +135,7 @@ export class FormationApiRepository implements IFormationRepository {
             arrete?: string;
         }
     ): Promise<Formation> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${id}/authorization`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${formationId}/authorization/${id}`;
         const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "PUT",
@@ -149,20 +151,21 @@ export class FormationApiRepository implements IFormationRepository {
     }
     async createFormationAnnualHeadCount(
         token: string,
-        id: number,
+        formationId: number,
         data: {
-            academic_year: number;
+            academicYear: number;
             students: number;
         }
     ): Promise<Formation> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${id}/annual-headcount`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${formationId}/annual-headcount`;
+        const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(payload),
         });
         const res = await handleApiResponse<unknown>(response);
 
@@ -170,20 +173,22 @@ export class FormationApiRepository implements IFormationRepository {
     }
     async updateFormationAnnualHeadCount(
         token: string,
+        formationId: number,
         id: number,
         data: {
-            academic_year?: number;
+            academicYear?: number;
             students?: number;
         }
     ): Promise<Formation> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${id}/annual-headcount`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${formationId}/annual-headcount/${id}`;
+        const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(payload),
         });
         const res = await handleApiResponse<unknown>(response);
 
@@ -191,15 +196,17 @@ export class FormationApiRepository implements IFormationRepository {
     }
     async deleteFormationAnnualHeadCount(
         token: string,
+        formationId: number,
         id: number
-    ): Promise<Formation> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${id}/annual-headcount`;
+    ): Promise<boolean> {
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${formationId}/annual-headcount/${id}`;
         const response = await fetch(url, {
             method: "DELETE",
             headers: { Authorization: `Bearer ${token}` },
         });
-        const res = await handleApiResponse<unknown>(response);
 
-        return Formation.fromUnknown(toCamelCaseRecursive(res));
+        await handleApiResponse<unknown>(response);
+
+        return true;
     }
 }

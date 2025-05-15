@@ -12,8 +12,6 @@ function UserAvatar({ email, image }: UserAvatarProps) {
 
     const finalImage = image ?? avatarUri;
 
-    console.log("finalImage", finalImage);
-
     return (
         <Avatar className="size-8">
             <AvatarImage alt="avatar" src={finalImage} />

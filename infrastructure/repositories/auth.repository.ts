@@ -1,6 +1,6 @@
-import { Token } from "@/core/domain/entities/token.entity";
-import { User } from "@/core/domain/entities/users.entity";
-import { IAuthRepository } from "@/core/domain/interfaces/auth.repository.interface";
+import { Token } from "@/core/entities/token.entity";
+import { User } from "@/core/entities/users.entity";
+import { IAuthRepository } from "@/core/interfaces/auth.repository.interface";
 import { env } from "@/env.mjs";
 import { toCamelCaseRecursive, toSnakeCaseRecursive } from "@/shared/utils";
 import { handleApiResponse } from "@/shared/utils/api-errors";

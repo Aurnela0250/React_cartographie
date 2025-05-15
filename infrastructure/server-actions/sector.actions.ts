@@ -15,7 +15,7 @@ async function getTokenServerSide(): Promise<string> {
     return session.token.accessToken;
 }
 
-export async function createSector(data: { name: string; city_id: number }) {
+export async function createSector(data: { name: string; cityId: number }) {
     const token = await getTokenServerSide();
     const sector = await repo.create(token, data);
 
@@ -24,7 +24,7 @@ export async function createSector(data: { name: string; city_id: number }) {
 
 export async function updateSector(
     id: number,
-    data: { name?: string; city_id?: number }
+    data: { name?: string; cityId?: number }
 ) {
     const token = await getTokenServerSide();
     const sector = await repo.update(token, id, data);

@@ -1,5 +1,5 @@
-import { User } from "@/core/domain/entities/users.entity";
 import { IUserRepository } from "@/core/domain/interfaces/users.repository.interface";
+import { User } from "@/core/entities/users.entity";
 import { AuthenticationError, NotFoundError } from "@/shared/errors/errors";
 
 export class UserRepository implements IUserRepository {

@@ -2,8 +2,8 @@ import {
     PaginatedPlain,
     PaginatedResult,
     PaginationParams,
-} from "@/core/domain/entities/pagination";
-import { Sector } from "@/core/domain/entities/sector.entity";
+} from "@/core/entities/pagination";
+import { Sector } from "@/core/entities/sector.entity";
 import { ISectorRepository } from "@/core/interfaces/sector.repository.interface";
 import { env } from "@/env.mjs";
 import { toCamelCaseRecursive, toSnakeCaseRecursive } from "@/shared/utils";
@@ -38,7 +38,7 @@ export class SectorApiRepository implements ISectorRepository {
     }
     async create(
         token: string,
-        data: { name: string; city_id: number }
+        data: { name: string; cityId: number }
     ): Promise<Sector> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/sectors`;
         const payload = toSnakeCaseRecursive(data);
@@ -57,7 +57,7 @@ export class SectorApiRepository implements ISectorRepository {
     async update(
         token: string,
         id: number,
-        data: { name?: string; city_id?: number }
+        data: { name?: string; cityId?: number }
     ): Promise<Sector> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/sectors/${id}`;
         const payload = toSnakeCaseRecursive(data);

@@ -1,9 +1,9 @@
-import { City } from "@/core/domain/entities/city.entity";
+import { City } from "@/core/entities/city.entity";
 import {
     PaginatedPlain,
     PaginatedResult,
     PaginationParams,
-} from "@/core/domain/entities/pagination";
+} from "@/core/entities/pagination";
 import { ICityRepository } from "@/core/interfaces/city.repository.interface";
 import { env } from "@/env.mjs";
 import { toCamelCaseRecursive, toSnakeCaseRecursive } from "@/shared/utils";
@@ -42,9 +42,10 @@ export class CityApiRepository implements ICityRepository {
     }
     async create(
         token: string,
-        data: { name: string; region_id: number }
+        data: { name: string; regionId: number }
     ): Promise<City> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/cities`;
+        // On convertit en snake_case pour l'API, mais on utilise camelCase côté TS
         const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "POST",
@@ -61,9 +62,10 @@ export class CityApiRepository implements ICityRepository {
     async update(
         token: string,
         id: number,
-        data: { name?: string; region_id?: number }
+        data: { name?: string; regionId?: number }
     ): Promise<City> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/cities/${id}`;
+        // On convertit en snake_case pour l'API, mais on utilise camelCase côté TS
         const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "PUT",

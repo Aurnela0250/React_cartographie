@@ -1,8 +1,5 @@
-import { City } from "@/core/domain/entities/city.entity";
-import {
-    PaginatedResult,
-    PaginationParams,
-} from "@/core/domain/entities/pagination";
+import { City } from "@/core/entities/city.entity";
+import { PaginatedResult, PaginationParams } from "@/core/entities/pagination";
 
 export interface ICityRepository {
     getAll(
@@ -12,12 +9,12 @@ export interface ICityRepository {
     get(token: string, id: number): Promise<City>;
     create(
         token: string,
-        data: { name: string; region_id: number }
+        data: { name: string; regionId: number }
     ): Promise<City>;
     update(
         token: string,
         id: number,
-        data: { name?: string; region_id?: number }
+        data: { name?: string; regionId?: number }
     ): Promise<City>;
     delete(token: string, id: number): Promise<boolean>;
 }

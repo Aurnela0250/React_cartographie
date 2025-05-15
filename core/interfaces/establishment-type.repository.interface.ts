@@ -1,8 +1,5 @@
-import { EstablishmentType } from "@/core/domain/entities/establishment-type.entity";
-import {
-    PaginatedResult,
-    PaginationParams,
-} from "@/core/domain/entities/pagination";
+import { EstablishmentType } from "@/core/entities/establishment-type.entity";
+import { PaginatedResult, PaginationParams } from "@/core/entities/pagination";
 
 export interface IEstablishmentTypeRepository {
     getAll(

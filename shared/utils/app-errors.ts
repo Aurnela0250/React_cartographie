@@ -2,7 +2,7 @@
 
 export class AppError extends Error {
     constructor(
-        public status_code: number,
+        public statusCode: number,
         public detail: any,
         public headers?: Record<string, any>
     ) {
@@ -73,6 +73,7 @@ export class EntityError<T> {
         const detail = `${model.name} not found${
             identifier ? ` with identifier: ${identifier}` : ""
         }`;
+
         return new NotFoundError(detail);
     }
 
@@ -83,6 +84,7 @@ export class EntityError<T> {
         const detail = `${model.name} already exists${
             identifier ? ` with identifier: ${identifier}` : ""
         }`;
+
         return new ConflictError(detail);
     }
 }
@@ -98,6 +100,7 @@ export class ValidationError extends UnprocessableEntityError {
 
     static formatted(errors: any) {
         const formattedErrors = formatValidationErrors(errors);
+
         return new ValidationError(formattedErrors);
     }
 }

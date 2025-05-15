@@ -46,9 +46,9 @@ interface EstablishmentType {
 export interface FilterParams {
     name?: string;
     acronyme?: string;
-    establishment_type_id?: number;
-    city_id?: number;
-    region_id?: number;
+    establishmentTypeId?: number;
+    cityId?: number;
+    regionId?: number;
 }
 
 export function SearchFilters({
@@ -137,7 +137,7 @@ export function SearchFilters({
             addFilter(`Région: ${region.name}`);
             const updatedFilters = {
                 ...filters,
-                region_id: regionId,
+                regionId: regionId,
             };
 
             setFilters(updatedFilters);
@@ -156,7 +156,7 @@ export function SearchFilters({
             addFilter(`Type: ${type.name}`);
             const updatedFilters = {
                 ...filters,
-                establishment_type_id: typeId,
+                establishmentTypeId: typeId,
             };
 
             setFilters(updatedFilters);
@@ -428,7 +428,7 @@ export function SearchFilters({
                                                     );
                                                     const updatedFilters = {
                                                         ...filters,
-                                                        establishment_type_id:
+                                                        establishmentTypeId:
                                                             type.id,
                                                     };
 
@@ -443,7 +443,7 @@ export function SearchFilters({
                                                         `Type: ${type.name}`
                                                     );
                                                     const {
-                                                        establishment_type_id,
+                                                        establishmentTypeId,
                                                         ...rest
                                                     } = filters;
 

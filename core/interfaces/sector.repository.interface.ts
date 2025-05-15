@@ -1,8 +1,5 @@
-import {
-    PaginatedResult,
-    PaginationParams,
-} from "@/core/domain/entities/pagination";
-import { Sector } from "@/core/domain/entities/sector.entity";
+import { PaginatedResult, PaginationParams } from "@/core/entities/pagination";
+import { Sector } from "@/core/entities/sector.entity";
 
 export interface ISectorRepository {
     getAll(
@@ -12,12 +9,12 @@ export interface ISectorRepository {
     get(token: string, id: number): Promise<Sector>;
     create(
         token: string,
-        data: { name: string; city_id: number }
+        data: { name: string; cityId: number }
     ): Promise<Sector>;
     update(
         token: string,
         id: number,
-        data: { name?: string; city_id?: number }
+        data: { name?: string; cityId?: number }
     ): Promise<Sector>;
     delete(token: string, id: number): Promise<boolean>;
 }

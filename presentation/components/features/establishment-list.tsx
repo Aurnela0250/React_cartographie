@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { BookOpen, Filter, MapPin, Search, Star, X } from "lucide-react";
 
-import { Establishment } from "@/core/domain/entities/establishment.entity";
+import { Establishment } from "@/core/entities/establishment.entity";
 import {
     FilterParams,
     SearchFilters,
@@ -53,15 +53,15 @@ export function EstablishmentList() {
             // Ajouter les filtres s'ils sont présents
             if (filters.name) params.append("name", filters.name);
             if (filters.acronyme) params.append("acronyme", filters.acronyme);
-            if (filters.establishment_type_id)
+            if (filters.establishmentTypeId)
                 params.append(
                     "establishment_type_id",
-                    filters.establishment_type_id.toString()
+                    filters.establishmentTypeId.toString()
                 );
-            if (filters.city_id)
-                params.append("city_id", filters.city_id.toString());
-            if (filters.region_id)
-                params.append("region_id", filters.region_id.toString());
+            if (filters.cityId)
+                params.append("city_id", filters.cityId.toString());
+            if (filters.regionId)
+                params.append("region_id", filters.regionId.toString());
 
             // Utiliser l'API de filtrage avec les paramètres
             const response = await fetch(
@@ -137,13 +137,13 @@ export function EstablishmentList() {
         const badges: string[] = [];
 
         if (newFilters.name) badges.push(`Nom: ${newFilters.name}`);
-        if (newFilters.region_id) {
-            const regionId = newFilters.region_id;
+        if (newFilters.regionId) {
+            const regionId = newFilters.regionId;
 
             badges.push(`Région: ${regionId}`);
         }
-        if (newFilters.establishment_type_id) {
-            const typeId = newFilters.establishment_type_id;
+        if (newFilters.establishmentTypeId) {
+            const typeId = newFilters.establishmentTypeId;
 
             badges.push(`Type: ${typeId}`);
         }
@@ -174,9 +174,9 @@ export function EstablishmentList() {
             delete updatedFilters.name;
             setSearchTerm("");
         } else if (type === "Région") {
-            delete updatedFilters.region_id;
+            delete updatedFilters.regionId;
         } else if (type === "Type") {
-            delete updatedFilters.establishment_type_id;
+            delete updatedFilters.establishmentTypeId;
         }
 
         setFilters(updatedFilters);
@@ -354,9 +354,8 @@ export function EstablishmentList() {
                                     <CardContent className="p-4">
                                         <div className="mb-2 flex items-start justify-between">
                                             <Badge variant="outline">
-                                                {establishment
-                                                    .establishment_type?.name ||
-                                                    "Établissement"}
+                                                {establishment.establishmentType
+                                                    ?.name || "Établissement"}
                                             </Badge>
                                             <div className="flex items-center gap-1">
                                                 <Star className="size-4 fill-yellow-500 text-yellow-500" />
@@ -430,7 +429,7 @@ export function EstablishmentList() {
 
                     {/* Message de fin des résultats */}
                     {!hasMore && establishments.length > 0 && !loading && (
-                        <div className="py-4 text-center text-muted-foreground">
+                        <div className="text-CardContent-muted-foreground py-4">
                             Fin des résultats
                         </div>
                     )}

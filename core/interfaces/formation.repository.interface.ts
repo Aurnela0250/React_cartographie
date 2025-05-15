@@ -1,8 +1,5 @@
-import { Formation } from "@/core/domain/entities/formation.entity";
-import {
-    PaginatedResult,
-    PaginationParams,
-} from "@/core/domain/entities/pagination";
+import { Formation } from "@/core/entities/formation.entity";
+import { PaginatedResult, PaginationParams } from "@/core/entities/pagination";
 
 export interface IFormationRepository {
     getAll(
@@ -16,10 +13,10 @@ export interface IFormationRepository {
             intitule: string;
             description?: string;
             duration: number;
-            level_id: number;
-            mention_id: number;
-            establishment_id: number;
-            authorization_id?: number;
+            levelId: number;
+            mentionId: number;
+            establishmentId: number;
+            authorizationId?: number;
         }
     ): Promise<Formation>;
     update(
@@ -29,51 +26,54 @@ export interface IFormationRepository {
             intitule?: string;
             description?: string;
             duration?: number;
-            level_id?: number;
-            mention_id?: number;
-            establishment_id?: number;
-            authorization_id?: number;
+            levelId?: number;
+            mentionId?: number;
+            establishmentId?: number;
+            authorizationId?: number;
         }
     ): Promise<Formation>;
     delete(token: string, id: number): Promise<boolean>;
     createFormationAuthorization(
         token: string,
-        id: number,
+        formationId: number,
         data: {
-            date_debut: string;
-            date_fin?: string;
+            dateDebut: string;
+            dateFin?: string;
             status: "REQUESTED" | "VALIDATED" | "REFUSED" | "EXPIRED";
             arrete: string;
         }
     ): Promise<Formation>;
     updateFormationAuthorization(
         token: string,
+        formationId: number,
         id: number,
         data: {
-            date_debut?: string;
-            date_fin?: string;
+            dateDebut?: string;
+            dateFin?: string;
             status?: "REQUESTED" | "VALIDATED" | "REFUSED" | "EXPIRED";
             arrete?: string;
         }
     ): Promise<Formation>;
     createFormationAnnualHeadCount(
         token: string,
-        id: number,
+        formationId: number,
         data: {
-            academic_year: number;
+            academicYear: number;
             students: number;
         }
     ): Promise<Formation>;
     updateFormationAnnualHeadCount(
         token: string,
+        formationId: number,
         id: number,
         data: {
-            academic_year?: number;
+            academicYear?: number;
             students?: number;
         }
     ): Promise<Formation>;
     deleteFormationAnnualHeadCount(
         token: string,
+        formationId: number,
         id: number
-    ): Promise<Formation>;
+    ): Promise<boolean>;
 }

@@ -1,8 +1,5 @@
-import { Establishment } from "@/core/domain/entities/establishment.entity";
-import {
-    PaginatedResult,
-    PaginationParams,
-} from "@/core/domain/entities/pagination";
+import { Establishment } from "@/core/entities/establishment.entity";
+import { PaginatedResult, PaginationParams } from "@/core/entities/pagination";
 
 export interface IEstablishmentRepository {
     getAll(
@@ -16,13 +13,13 @@ export interface IEstablishmentRepository {
             name: string;
             acronyme?: string;
             address: string;
-            contact?: string;
-            site_url?: string;
+            contacts?: string[];
+            siteUrl?: string;
             description?: string;
             latitude?: number;
             longitude?: number;
-            establishment_type_id: number;
-            sector_id: number;
+            establishmentTypeId: number;
+            sectorId: number;
         }
     ): Promise<Establishment>;
     rate(token: string, id: number, data: { rating: number }): Promise<boolean>;
@@ -33,13 +30,13 @@ export interface IEstablishmentRepository {
             name?: string;
             acronyme?: string;
             address?: string;
-            contact?: string;
-            site_url?: string;
+            contacts?: string[];
+            siteUrl?: string;
             description?: string;
             latitude?: number;
             longitude?: number;
-            establishment_type_id?: number;
-            sector_id?: number;
+            establishmentTypeId?: number;
+            sectorId?: number;
         }
     ): Promise<Establishment>;
     delete(token: string, id: number): Promise<boolean>;
@@ -49,9 +46,9 @@ export interface IEstablishmentRepository {
         filters: {
             name?: string;
             acronyme?: string;
-            establishment_type_id?: number;
-            city_id?: number;
-            region_id?: number;
+            establishmentTypeId?: number;
+            cityId?: number;
+            regionId?: number;
         }
     ): Promise<PaginatedResult<Establishment>>;
 }

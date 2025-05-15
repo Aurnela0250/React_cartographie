@@ -2,8 +2,8 @@ import {
     PaginatedPlain,
     PaginatedResult,
     PaginationParams,
-} from "@/core/domain/entities/pagination";
-import { Region } from "@/core/domain/entities/region.entity";
+} from "@/core/entities/pagination";
+import { Region } from "@/core/entities/region.entity";
 import { IRegionRepository } from "@/core/interfaces/region.repository.interface";
 import { env } from "@/env.mjs";
 import { toCamelCaseRecursive, toSnakeCaseRecursive } from "@/shared/utils";

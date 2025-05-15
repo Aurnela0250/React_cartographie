@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { User } from "@/core/domain/entities/users.entity";
+import { User } from "@/core/entities/users.entity";
 import {
     loginSchema,
     newPasswordSchema,
@@ -47,9 +47,9 @@ export type AuthResult = {
  * Extended user type with tokens
  */
 export type AuthUser = User & {
-    access_token: string;
-    refresh_token: string;
-    token_type: string;
+    accessToken: string;
+    refreshToken: string;
+    tokenType: string;
 };
 
 /**
@@ -60,9 +60,9 @@ export type JWTToken = {
     name?: string;
     email?: string;
     role?: string;
-    access_token: string;
-    refresh_token: string;
-    token_type: string;
+    accessToken: string;
+    refreshToken: string;
+    tokenType: string;
     accessTokenExpires?: number;
     error?: string;
 };
@@ -77,8 +77,8 @@ export type SessionData = {
         email: string;
         role?: string;
     };
-    access_token: string;
-    refresh_token: string;
+    accessToken: string;
+    refreshToken: string;
     token_type: string;
     expires: string;
     error?: string;

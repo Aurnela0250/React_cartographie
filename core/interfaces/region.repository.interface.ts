@@ -1,8 +1,5 @@
-import {
-    PaginatedResult,
-    PaginationParams,
-} from "@/core/domain/entities/pagination";
-import { Region } from "@/core/domain/entities/region.entity";
+import { PaginatedResult, PaginationParams } from "@/core/entities/pagination";
+import { Region } from "@/core/entities/region.entity";
 
 export interface IRegionRepository {
     getAll(

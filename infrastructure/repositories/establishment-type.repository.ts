@@ -1,9 +1,9 @@
-import { EstablishmentType } from "@/core/domain/entities/establishment-type.entity";
+import { EstablishmentType } from "@/core/entities/establishment-type.entity";
 import {
     PaginatedPlain,
     PaginatedResult,
     PaginationParams,
-} from "@/core/domain/entities/pagination";
+} from "@/core/entities/pagination";
 import { IEstablishmentTypeRepository } from "@/core/interfaces/establishment-type.repository.interface";
 import { env } from "@/env.mjs";
 import { toCamelCaseRecursive, toSnakeCaseRecursive } from "@/shared/utils";

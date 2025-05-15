@@ -1,8 +1,5 @@
-import { Mention } from "@/core/domain/entities/mention.entity";
-import {
-    PaginatedResult,
-    PaginationParams,
-} from "@/core/domain/entities/pagination";
+import { Mention } from "@/core/entities/mention.entity";
+import { PaginatedResult, PaginationParams } from "@/core/entities/pagination";
 
 export interface IMentionRepository {
     getAll(
