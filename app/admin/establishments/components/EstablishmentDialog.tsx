@@ -36,13 +36,29 @@ const formSchema = z.object({
     contacts: z.array(z.string().min(1, "Le contact ne peut pas être vide")), // Permettre un tableau vide, mais les chaînes existantes ne peuvent pas être vides
     siteUrl: z.string().optional(),
     description: z.string().optional(),
-    latitude: z.coerce.number().optional(),
-    longitude: z.coerce.number().optional(),
+    latitude: z
+        .string()
+        .optional()
+        .refine((val) => !val || /^-?\d*(\.?\d*)?$/.test(val), {
+            message: "La latitude doit être un nombre valide",
+        }),
+    longitude: z
+        .string()
+        .optional()
+        .refine((val) => !val || /^-?\d*(\.?\d*)?$/.test(val), {
+            message: "La longitude doit être un nombre valide",
+        }),
     establishmentTypeId: z.coerce.number().min(1, "Le type est requis"),
     sectorId: z.coerce.number().min(1, "Le secteur est requis"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
+
+// Type pour les données convertis avec latitude/longitude en nombre
+type SubmitValues = Omit<FormValues, "latitude" | "longitude"> & {
+    latitude?: number;
+    longitude?: number;
+};
 
 export function EstablishmentDialog({
     open,
@@ -53,7 +69,7 @@ export function EstablishmentDialog({
 }: {
     open: boolean;
     onClose: () => void;
-    onSubmit: (data: FormValues) => void;
+    onSubmit: (data: SubmitValues) => void;
     initialData?: Partial<FormValues>;
     error?: string | null;
 }) {
@@ -65,11 +81,19 @@ export function EstablishmentDialog({
             address: initialData?.address || "",
             contacts: Array.isArray(initialData?.contacts)
                 ? initialData.contacts
-                : [], // Default to an empty array
+                : [],
             siteUrl: initialData?.siteUrl || "",
             description: initialData?.description || "",
-            latitude: initialData?.latitude || undefined,
-            longitude: initialData?.longitude || undefined,
+            latitude:
+                initialData?.latitude !== undefined &&
+                initialData?.latitude !== null
+                    ? String(initialData.latitude)
+                    : "",
+            longitude:
+                initialData?.longitude !== undefined &&
+                initialData?.longitude !== null
+                    ? String(initialData.longitude)
+                    : "",
             establishmentTypeId: initialData?.establishmentTypeId || 0,
             sectorId: initialData?.sectorId || 0,
         },
@@ -119,11 +143,19 @@ export function EstablishmentDialog({
                 address: initialData?.address || "",
                 contacts: Array.isArray(initialData?.contacts)
                     ? initialData.contacts
-                    : [], // Reset to an empty array if not provided or not an array
+                    : [],
                 siteUrl: initialData?.siteUrl || "",
                 description: initialData?.description || "",
-                latitude: initialData?.latitude || undefined,
-                longitude: initialData?.longitude || undefined,
+                latitude:
+                    initialData?.latitude !== undefined &&
+                    initialData?.latitude !== null
+                        ? String(initialData.latitude)
+                        : "",
+                longitude:
+                    initialData?.longitude !== undefined &&
+                    initialData?.longitude !== null
+                        ? String(initialData.longitude)
+                        : "",
                 establishmentTypeId: initialData?.establishmentTypeId || 0,
                 sectorId: initialData?.sectorId || 0,
             });
@@ -131,7 +163,14 @@ export function EstablishmentDialog({
     }, [initialData, open, form]);
 
     function handleSubmit(data: FormValues) {
-        onSubmit(data);
+        // Convertir latitude et longitude en nombres avant la soumission
+        const formattedData: SubmitValues = {
+            ...data,
+            latitude: data.latitude ? Number(data.latitude) : undefined,
+            longitude: data.longitude ? Number(data.longitude) : undefined,
+        };
+
+        onSubmit(formattedData);
     }
 
     return (
@@ -289,7 +328,6 @@ export function EstablishmentDialog({
                                             <FormControl>
                                                 <Input
                                                     placeholder="Latitude"
-                                                    type="number"
                                                     {...field}
                                                 />
                                             </FormControl>
@@ -306,7 +344,6 @@ export function EstablishmentDialog({
                                             <FormControl>
                                                 <Input
                                                     placeholder="Longitude"
-                                                    type="number"
                                                     {...field}
                                                 />
                                             </FormControl>

@@ -1,12 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { Layers, Loader2, MapPin, Minus, Plus } from "lucide-react";
+import "leaflet/dist/leaflet.css";
 
+import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+import Link from "next/link";
+import { Layers, Minus, Plus } from "lucide-react";
+import { useMap } from "react-leaflet";
+
+import type { Establishment } from "@/core/entities/establishment.entity";
+import { env } from "@/env.mjs";
 import { Badge } from "@/presentation/components/ui/badge";
 import { Button } from "@/presentation/components/ui/button";
-import { Card } from "@/presentation/components/ui/card";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -14,199 +19,294 @@ import {
     DropdownMenuTrigger,
 } from "@/presentation/components/ui/dropdown-menu";
 
-const mockEstablishments = [
-    {
-        id: "1",
-        name: "Université d'Antananarivo",
-        type: "Université",
-        address: "Ankatso, Antananarivo",
-        coordinates: { lat: 48.712, lng: 2.213 },
-        programs: 350,
-        students: 48000,
-    },
-    {
-        id: "2",
-        name: "École Polytechnique",
-        type: "Grande École",
-        address: "Vontovorona, Anatananarivo",
-        coordinates: { lat: 48.7147, lng: 2.2118 },
-        programs: 120,
-        students: 3000,
-    },
-    {
-        id: "3",
-        name: "ESMIA ",
-        type: "Université",
-        address: "Mahamasina, Antananarivo",
-        coordinates: { lat: 48.8515, lng: 2.3408 },
-        programs: 400,
-        students: 55000,
-    },
-    {
-        id: "4",
-        name: "IEP",
-        type: "Institut",
-        address: "Ampasanimalo",
-        coordinates: { lat: 48.8539, lng: 2.3265 },
-        programs: 80,
-        students: 14000,
-    },
-    {
-        id: "5",
-        name: "INSCAE",
-        type: "Institue",
-        address: "67Ha, Antananarivo",
-        coordinates: { lat: 45.7829, lng: 4.879 },
-        programs: 90,
-        students: 6000,
-    },
-];
+import { FilterParams } from "./search-filters";
+
+const MapContainer = dynamic<
+    React.ComponentProps<typeof import("react-leaflet").MapContainer>
+>(() => import("react-leaflet").then((mod) => mod.MapContainer), {
+    ssr: false,
+});
+const TileLayer = dynamic<
+    React.ComponentProps<typeof import("react-leaflet").TileLayer>
+>(() => import("react-leaflet").then((mod) => mod.TileLayer), { ssr: false });
+const Marker = dynamic<
+    React.ComponentProps<typeof import("react-leaflet").Marker>
+>(() => import("react-leaflet").then((mod) => mod.Marker), { ssr: false });
+const Popup = dynamic<
+    React.ComponentProps<typeof import("react-leaflet").Popup>
+>(() => import("react-leaflet").then((mod) => mod.Popup), { ssr: false });
+
+if (typeof window !== "undefined") {
+    import("leaflet").then((leaflet) => {
+        if (leaflet && leaflet.Icon && leaflet.Icon.Default) {
+            leaflet.Icon.Default.mergeOptions({
+                iconRetinaUrl:
+                    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+                iconUrl:
+                    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+                shadowUrl:
+                    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+            });
+        }
+    });
+}
 
 interface MapExplorerProps {
     preview?: boolean;
+    filters?: FilterParams;
 }
 
-export function MapExplorer({ preview = false }: MapExplorerProps) {
-    const mapContainerRef = useRef<HTMLDivElement>(null);
+export function MapExplorer(props: MapExplorerProps) {
+    const { preview = false, filters } = props;
+    // Pour éviter la recréation d'objet à chaque rendu
+    const stableFilters = filters || {};
+    const [establishments, setEstablishments] = useState<Establishment[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedEstablishment, setSelectedEstablishment] = useState<
-        (typeof mockEstablishments)[0] | null
-    >(null);
-    const [zoom, setZoom] = useState(5);
+    const [error, setError] = useState<string | null>(null);
+    const [selectedEstablishment, setSelectedEstablishment] =
+        useState<Establishment | null>(null);
+    const [zoom, setZoom] = useState(13);
+    const [center, setCenter] = useState<[number, number]>([
+        -18.8792,
+        47.5079, // Coordonnées par défaut pour Antananarivo
+    ]);
+    const [tileType, setTileType] = useState<
+        "standard" | "satellite" | "terrain"
+    >("standard");
 
-    // Simulate map loading
-    useEffect(() => {
-        const timer = setTimeout(() => {
+    const MAPTILER_KEY =
+        env.NEXT_PUBLIC_MAP_API_KEY || "get_your_own_D6rA4zTHduk6KOKTXzGB";
+
+    // Fonction pour récupérer les établissements
+    const fetchEstablishments = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            // Construire les paramètres de requête
+            const params = new URLSearchParams();
+
+            params.append("page", "1");
+            params.append("per_page", "50"); // Récupérer plus d'établissements pour la carte
+
+            // Ajouter les filtres s'ils sont présents
+            if (stableFilters.name) params.append("name", stableFilters.name);
+            if (stableFilters.acronyme)
+                params.append("acronyme", stableFilters.acronyme);
+            if (stableFilters.establishmentTypeId)
+                params.append(
+                    "establishment_type_id",
+                    stableFilters.establishmentTypeId.toString()
+                );
+            if (stableFilters.cityId)
+                params.append("city_id", stableFilters.cityId.toString());
+            if (stableFilters.regionId)
+                params.append("region_id", stableFilters.regionId.toString());
+
+            // Utiliser l'API de filtrage
+            const response = await fetch(
+                `/api/establishments/filter?${params.toString()}`
+            );
+
+            if (!response.ok) {
+                throw new Error(
+                    "Erreur lors de la récupération des établissements"
+                );
+            }
+
+            const data = await response.json();
+            const fetchedEstablishments = data.items || [];
+
+            setEstablishments(fetchedEstablishments);
+
+            // Si nous avons des établissements, centrer la carte sur le premier
+            if (
+                fetchedEstablishments.length > 0 &&
+                fetchedEstablishments[0].latitude &&
+                fetchedEstablishments[0].longitude
+            ) {
+                setCenter([
+                    fetchedEstablishments[0].latitude,
+                    fetchedEstablishments[0].longitude,
+                ]);
+            }
+        } catch (error) {
+            console.error("Erreur:", error);
+            setError(
+                "Une erreur est survenue lors du chargement des établissements"
+            );
+        } finally {
             setLoading(false);
-        }, 1000);
-
-        return () => clearTimeout(timer);
-    }, []);
-
-    const handleZoomIn = () => {
-        setZoom(Math.min(zoom + 1, 18));
+        }
     };
 
-    const handleZoomOut = () => {
-        setZoom(Math.max(zoom - 1, 1));
+    // Charger les établissements au chargement et quand les filtres changent
+    useEffect(() => {
+        fetchEstablishments();
+    }, [stableFilters]);
+
+    // Gestion du changement de fond de carte
+    const getTileUrl = () => {
+        switch (tileType) {
+            case "satellite":
+                return `https://api.maptiler.com/maps/hybrid/256/{z}/{x}/{y}.jpg?key=${MAPTILER_KEY}`;
+            case "terrain":
+                return `https://api.maptiler.com/maps/topo-v2/256/{z}/{x}/{y}.png?key=${MAPTILER_KEY}`;
+            default:
+                return `https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=${MAPTILER_KEY}`;
+        }
     };
 
-    const handleMarkerClick = (
-        establishment: (typeof mockEstablishments)[0]
-    ) => {
-        setSelectedEstablishment(establishment);
-    };
+    // Centrage sur le marker sélectionné
+    function FlyToMarker({ position }: { position: [number, number] }) {
+        const map = useMap();
+
+        useEffect(() => {
+            if (position) {
+                map.flyTo(position, zoom);
+            }
+        }, [position]);
+
+        return null;
+    }
+
+    // Si chargement en cours, afficher un message
+    if (loading && !preview) {
+        return (
+            <div className="flex h-full items-center justify-center">
+                Chargement de la carte...
+            </div>
+        );
+    }
 
     return (
         <div className="relative size-full overflow-hidden rounded-lg">
-            {loading ? (
-                <div className="absolute inset-0 flex items-center justify-center bg-muted">
-                    <Loader2 className="text-muted-foreground size-8 animate-spin" />
-                </div>
-            ) : (
-                <>
-                    {/* Map container */}
-                    <div
-                        ref={mapContainerRef}
-                        className="h-full w-full bg-[url('/placeholder.svg?height=600&width=800')] bg-cover bg-center"
-                    >
-                        {/* Simulated markers */}
-                        {mockEstablishments.map((establishment) => (
-                            <div
-                                key={establishment.id}
-                                className="absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer"
-                                style={{
-                                    left: `${((establishment.coordinates.lng + 180) / 360) * 100}%`,
-                                    top: `${((90 - establishment.coordinates.lat) / 180) * 100}%`,
-                                }}
-                                onClick={() => handleMarkerClick(establishment)}
-                            >
-                                <div className="flex flex-col items-center">
-                                    <div
-                                        className={`bg-primary flex size-6 items-center justify-center rounded-full ${selectedEstablishment?.id === establishment.id ? "ring-primary/20 ring-4" : ""}`}
-                                    >
-                                        <MapPin className="text-primary-foreground size-4" />
-                                    </div>
-                                    {selectedEstablishment?.id ===
-                                        establishment.id && (
-                                        <span className="mt-1 rounded-md bg-background px-2 py-1 text-xs font-medium shadow">
-                                            {establishment.name}
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+            <MapContainer
+                scrollWheelZoom
+                center={center}
+                style={{ height: "100%", width: "100%" }}
+                zoom={zoom}
+            >
+                <TileLayer url={getTileUrl()} />
+                {establishments.map((establishment) => {
+                    // Ne pas afficher les établissements sans coordonnées
+                    if (!establishment.latitude || !establishment.longitude)
+                        return null;
 
-                    {/* Map controls */}
-                    <div className="absolute right-4 top-4 flex flex-col gap-2">
-                        <Button
-                            size="icon"
-                            variant="secondary"
-                            onClick={handleZoomIn}
+                    return (
+                        <Marker
+                            key={establishment.id}
+                            eventHandlers={{
+                                click: () => {
+                                    setSelectedEstablishment(establishment);
+                                    setCenter([
+                                        establishment.latitude!,
+                                        establishment.longitude!,
+                                    ]);
+                                },
+                            }}
+                            position={[
+                                establishment.latitude,
+                                establishment.longitude,
+                            ]}
                         >
-                            <Plus className="size-4" />
-                        </Button>
-                        <Button
-                            size="icon"
-                            variant="secondary"
-                            onClick={handleZoomOut}
-                        >
-                            <Minus className="size-4" />
-                        </Button>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button size="icon" variant="secondary">
-                                    <Layers className="size-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem>
-                                    Carte standard
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>Satellite</DropdownMenuItem>
-                                <DropdownMenuItem>Terrain</DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </div>
-
-                    {/* Selected establishment info */}
-                    {selectedEstablishment && !preview && (
-                        <Card className="absolute bottom-4 left-4 w-80 shadow-lg">
-                            <div className="p-4">
-                                <div className="mb-2 flex items-start justify-between">
-                                    <h3 className="font-medium">
-                                        {selectedEstablishment.name}
-                                    </h3>
-                                    <Badge variant="outline">
-                                        {selectedEstablishment.type}
-                                    </Badge>
-                                </div>
-                                <p className="mb-3 text-sm text-muted-foreground">
-                                    {selectedEstablishment.address}
-                                </p>
-                                <div className="mb-4 flex justify-between text-sm">
-                                    <span>
-                                        {selectedEstablishment.programs}{" "}
-                                        formations
-                                    </span>
-                                    <span>
-                                        {selectedEstablishment.students.toLocaleString()}{" "}
-                                        étudiants
-                                    </span>
-                                </div>
-                                <Button asChild className="w-full">
-                                    <Link
-                                        href={`/establishments/${selectedEstablishment.id}`}
+                            {selectedEstablishment?.id === establishment.id &&
+                                !preview && (
+                                    <Popup
+                                        closeButton={false}
+                                        maxWidth={350}
+                                        minWidth={250}
                                     >
-                                        Voir les détails
-                                    </Link>
-                                </Button>
-                            </div>
-                        </Card>
+                                        <div className="mb-2 flex items-start justify-between">
+                                            <h3 className="font-medium">
+                                                {establishment.name}
+                                            </h3>
+                                            <Badge variant="outline">
+                                                {establishment.establishmentType
+                                                    ?.name || "Établissement"}
+                                            </Badge>
+                                        </div>
+                                        <p className="mb-3 text-sm text-muted-foreground">
+                                            {establishment.address ||
+                                                "Adresse non disponible"}
+                                        </p>
+                                        <div className="mb-4 flex justify-between text-sm">
+                                            <span>
+                                                {establishment.formations
+                                                    ?.length || 0}{" "}
+                                                formations
+                                            </span>
+                                            <span>
+                                                {establishment.rating
+                                                    ? `Note: ${establishment.rating}/5`
+                                                    : "Non noté"}
+                                            </span>
+                                        </div>
+                                        <Button asChild className="w-full">
+                                            <Link
+                                                href={`/establishments/${establishment.id}`}
+                                            >
+                                                Voir les détails
+                                            </Link>
+                                        </Button>
+                                    </Popup>
+                                )}
+                        </Marker>
+                    );
+                })}
+                {selectedEstablishment &&
+                    selectedEstablishment.latitude &&
+                    selectedEstablishment.longitude && (
+                        <FlyToMarker
+                            position={[
+                                selectedEstablishment.latitude,
+                                selectedEstablishment.longitude,
+                            ]}
+                        />
                     )}
-                </>
-            )}
+            </MapContainer>
+
+            {/* Contrôles custom */}
+            <div className="absolute right-4 top-4 z-[1000] flex flex-col gap-2">
+                <Button
+                    size="icon"
+                    variant="secondary"
+                    onClick={() => setZoom((z) => Math.min(z + 1, 18))}
+                >
+                    <Plus className="size-4" />
+                </Button>
+                <Button
+                    size="icon"
+                    variant="secondary"
+                    onClick={() => setZoom((z) => Math.max(z - 1, 1))}
+                >
+                    <Minus className="size-4" />
+                </Button>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button size="icon" variant="secondary">
+                            <Layers className="size-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                            onClick={() => setTileType("standard")}
+                        >
+                            Carte standard
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={() => setTileType("satellite")}
+                        >
+                            Satellite
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={() => setTileType("terrain")}
+                        >
+                            Terrain
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
         </div>
     );
 }
