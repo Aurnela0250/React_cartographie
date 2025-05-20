@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { EstablishmentList } from "@/presentation/components/features/establishment-list";
-import { MapExplorer } from "@/presentation/components/features/map-explorer";
+import { MapExplorer } from "@/presentation/components/features/map/map-explorer";
 import { SearchFilters } from "@/presentation/components/features/search-filters";
 import type { FilterParams } from "@/presentation/components/features/search-filters";
 import {

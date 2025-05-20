@@ -19,7 +19,7 @@ import {
     DropdownMenuTrigger,
 } from "@/presentation/components/ui/dropdown-menu";
 
-import { FilterParams } from "./search-filters";
+import { FilterParams } from "../search-filters";
 
 const MapContainer = dynamic<
     React.ComponentProps<typeof import("react-leaflet").MapContainer>
@@ -62,7 +62,6 @@ export function MapExplorer(props: MapExplorerProps) {
     const stableFilters = filters || {};
     const [establishments, setEstablishments] = useState<Establishment[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [selectedEstablishment, setSelectedEstablishment] =
         useState<Establishment | null>(null);
     const [zoom, setZoom] = useState(13);
@@ -81,7 +80,6 @@ export function MapExplorer(props: MapExplorerProps) {
     const fetchEstablishments = async () => {
         try {
             setLoading(true);
-            setError(null);
 
             // Construire les paramètres de requête
             const params = new URLSearchParams();
@@ -132,9 +130,6 @@ export function MapExplorer(props: MapExplorerProps) {
             }
         } catch (error) {
             console.error("Erreur:", error);
-            setError(
-                "Une erreur est survenue lors du chargement des établissements"
-            );
         } finally {
             setLoading(false);
         }

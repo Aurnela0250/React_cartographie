@@ -1,5 +1,6 @@
 import { Inter } from "next/font/google";
 
+import { ChatAI } from "@/presentation/components/features/chat/chat-ai";
 import { Toaster } from "@/presentation/components/ui/toaster";
 import QueryProvider from "@/presentation/providers/query-provider";
 import { ThemeProvider } from "@/presentation/providers/theme-provider";
@@ -31,6 +32,7 @@ export default function RootLayout({
                     >
                         {children}
                         <Toaster />
+                        <ChatAI />
                     </ThemeProvider>
                 </QueryProvider>
             </body>

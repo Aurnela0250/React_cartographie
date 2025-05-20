@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { FeaturedEstablishments } from "@/presentation/components/features/featured-establishments";
-import { MapExplorer } from "@/presentation/components/features/map-explorer";
+import { MapExplorer } from "@/presentation/components/features/map/map-explorer";
 import { RecommendationSection } from "@/presentation/components/features/recommendation-section";
 import { Stats } from "@/presentation/components/features/stats";
 import { Button } from "@/presentation/components/ui/button";
