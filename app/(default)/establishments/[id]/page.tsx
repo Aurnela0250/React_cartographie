@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import {
     Award,
     Building,
@@ -29,23 +32,15 @@ import {
     TabsList,
     TabsTrigger,
 } from "@/presentation/components/ui/tabs";
+import { useQuery } from "@tanstack/react-query";
 
-// S'assurer que l'URL de l'API est bien définie
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
-async function getEstablishmentById(id: string): Promise<Establishment> {
-    // Vérification que l'ID est bien fourni
-    if (!id) {
-        throw new Error("ID d'établissement non fourni");
-    }
-
-    // Cette fonction sera exécutée côté serveur
+async function fetchEstablishmentById(id: string): Promise<Establishment> {
+    if (!id) throw new Error("ID d'établissement non fourni");
     const res = await fetch(`${API_URL}/api/establishments/${id}`, {
         cache: "no-store",
-        // On ajoute next.js 13 fetch options
-        next: {
-            revalidate: 60, // Revalidate every 60 seconds
-        },
+        next: { revalidate: 60 },
     });
 
     if (!res.ok) {
@@ -53,29 +48,29 @@ async function getEstablishmentById(id: string): Promise<Establishment> {
             "Erreur lors de la récupération des détails de l'établissement"
         );
     }
+    const data = await res.json();
 
-    return res.json();
+    return Establishment.fromUnknown(data);
 }
 
-export default async function EstablishmentPage({
-    params,
-}: {
-    params: { id: string };
-}) {
-    // Récupérer les données de l'établissement à partir de l'API
-    // Utilisation de try/catch pour gérer les erreurs potentielles
-    let establishment: Establishment;
-
-    try {
-        establishment = await getEstablishmentById(params.id);
-    } catch (error) {
-        console.error(
-            "Erreur lors de la récupération de l'établissement:",
-            error
-        );
-        // Fournir un objet vide en cas d'erreur
-        establishment = new Establishment({});
-    }
+export default function EstablishmentPage() {
+    const params = useParams() as Record<string, string | string[]> | null;
+    const id =
+        params && typeof params.id === "string"
+            ? params.id
+            : params && Array.isArray(params.id)
+              ? params.id[0]
+              : "";
+    const {
+        data: establishment,
+        isLoading,
+        isError,
+        error,
+    } = useQuery({
+        queryKey: ["establishment", id],
+        queryFn: () => fetchEstablishmentById(id),
+        enabled: !!id,
+    });
 
     // Images pour la galerie (placeholder pour l'instant)
     const images = [
@@ -93,13 +88,22 @@ export default async function EstablishmentPage({
         "Installations sportives",
     ];
 
+    if (isLoading) {
+        return <div>Chargement...</div>;
+    }
+
+    if (isError || !establishment) {
+        return <div>Erreur lors de la récupération de l'établissement.</div>;
+    }
+
     return (
         <div className="space-y-6">
+            {/* En-tête */}
             <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
                 <div>
                     <div className="mb-2 flex items-center gap-2">
                         <Badge variant="outline">
-                            {establishment.establishment_type?.name ||
+                            {establishment.establishmentType?.name ||
                                 "Établissement"}
                         </Badge>
                         <Link
@@ -121,7 +125,9 @@ export default async function EstablishmentPage({
                 </div>
             </div>
 
+            {/* Grille principale */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                {/* Colonne principale */}
                 <div className="space-y-6 lg:col-span-2">
                     <EstablishmentGallery images={images} />
 
@@ -136,7 +142,7 @@ export default async function EstablishmentPage({
                             </p>
 
                             <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-                                {establishment.formations && (
+                                {!!establishment.formations && (
                                     <div className="flex items-center gap-2">
                                         <Users className="size-5 text-muted-foreground" />
                                         <span>
@@ -146,24 +152,24 @@ export default async function EstablishmentPage({
                                         </span>
                                     </div>
                                 )}
-                                {establishment.rating && (
+                                {!!establishment.rating && (
                                     <div className="flex items-center gap-2">
                                         <Star className="size-5 text-muted-foreground" />
                                         <span>{establishment.rating} / 5</span>
                                     </div>
                                 )}
-                                {establishment.created_at && (
+                                {!!establishment.createdAt && (
                                     <div className="flex items-center gap-2">
                                         <Calendar className="size-5 text-muted-foreground" />
                                         <span>
                                             Ajouté le{" "}
                                             {new Date(
-                                                establishment.created_at
+                                                establishment.createdAt
                                             ).toLocaleDateString()}
                                         </span>
                                     </div>
                                 )}
-                                {establishment.sector && (
+                                {!!establishment.sector && (
                                     <div className="flex items-center gap-2">
                                         <Award className="size-5 text-muted-foreground" />
                                         <span>
@@ -198,23 +204,18 @@ export default async function EstablishmentPage({
                             <TabsTrigger value="reviews">Avis</TabsTrigger>
                         </TabsList>
                         <TabsContent className="mt-4" value="programs">
-                            {/* <ProgramsList
-                                establishmentId={establishment.id || 0}
-                            /> */}
+                            {/* <ProgramsList establishmentId={establishment.id || 0} /> */}
                         </TabsContent>
                         <TabsContent className="mt-4" value="stats">
-                            {/* <EstablishmentStats
-                                establishmentId={establishment.id || 0}
-                            /> */}
+                            {/* <EstablishmentStats establishmentId={establishment.id || 0} /> */}
                         </TabsContent>
                         <TabsContent className="mt-4" value="reviews">
-                            {/* <EstablishmentReviews
-                                establishmentId={establishment.id || 0}
-                            /> */}
+                            {/* <EstablishmentReviews establishmentId={establishment.id || 0} /> */}
                         </TabsContent>
                     </Tabs>
                 </div>
 
+                {/* Colonne latérale */}
                 <div className="space-y-6">
                     <Card>
                         <CardHeader>
@@ -228,16 +229,14 @@ export default async function EstablishmentPage({
                                         {establishment.address ||
                                             "Adresse non disponible"}
                                     </p>
-                                    {establishment.address && (
+                                    {!!establishment.address && (
                                         <Button
                                             asChild
                                             className="h-auto p-0"
                                             variant="link"
                                         >
                                             <Link
-                                                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                                                    establishment.address
-                                                )}`}
+                                                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(establishment.address ?? "")}`}
                                                 target="_blank"
                                             >
                                                 Voir sur Google Maps
@@ -247,7 +246,7 @@ export default async function EstablishmentPage({
                                 </div>
                             </div>
 
-                            {establishment.contacts &&
+                            {!!establishment.contacts &&
                                 establishment.contacts[0] && (
                                     <div className="flex items-center gap-3">
                                         <Phone className="size-5 text-muted-foreground" />
@@ -260,12 +259,12 @@ export default async function EstablishmentPage({
                                     </div>
                                 )}
 
-                            {establishment.site_url && (
+                            {!!establishment.siteUrl && (
                                 <div className="flex items-center gap-3">
                                     <Globe className="size-5 text-muted-foreground" />
                                     <a
                                         className="hover:underline"
-                                        href={establishment.site_url}
+                                        href={establishment.siteUrl}
                                         rel="noopener noreferrer"
                                         target="_blank"
                                     >
@@ -275,7 +274,7 @@ export default async function EstablishmentPage({
                             )}
 
                             {/* Contact email - s'il existe dans l'API */}
-                            {establishment.contacts &&
+                            {!!establishment.contacts &&
                                 establishment.contacts.length > 1 && (
                                     <div className="flex items-center gap-3">
                                         <Mail className="size-5 text-muted-foreground" />
@@ -296,8 +295,8 @@ export default async function EstablishmentPage({
                         </CardHeader>
                         <CardContent>
                             <div className="relative h-[200px] overflow-hidden rounded-md">
-                                {establishment.latitude &&
-                                establishment.longitude ? (
+                                {!!establishment.latitude &&
+                                !!establishment.longitude ? (
                                     <Image
                                         fill
                                         alt="Carte de localisation"
@@ -328,7 +327,7 @@ export default async function EstablishmentPage({
                         </CardContent>
                     </Card>
 
-                    {establishment.formations &&
+                    {!!establishment.formations &&
                         establishment.formations.length > 0 && (
                             <Card>
                                 <CardHeader>
@@ -340,7 +339,7 @@ export default async function EstablishmentPage({
                                 <CardContent className="space-y-4">
                                     {establishment.formations
                                         .slice(0, 3)
-                                        .map((formation, i) => (
+                                        .map((formation: any, i: number) => (
                                             <div
                                                 key={i}
                                                 className="rounded-lg border p-3 transition-colors hover:bg-muted/50"

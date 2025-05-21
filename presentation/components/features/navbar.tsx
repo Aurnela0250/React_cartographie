@@ -68,12 +68,6 @@ export default function Navbar() {
                                     Établissements
                                 </Link>
                                 <Link
-                                    className={`rounded-md px-2 py-1 ${pathname === "/chatbot" ? "bg-muted font-medium" : ""}`}
-                                    href="/chatbot"
-                                >
-                                    Assistant IA
-                                </Link>
-                                <Link
                                     className={`rounded-md px-2 py-1 ${
                                         (user?.name ??
                                             user?.email?.split("@")[0]) ===
@@ -161,16 +155,6 @@ export default function Navbar() {
                         href="/establishments"
                     >
                         Établissements
-                    </Link>
-                    <Link
-                        className={`text-sm font-medium ${
-                            pathname === "/chatbot"
-                                ? "text-foreground"
-                                : "text-muted-foreground"
-                        } transition-colors hover:text-foreground`}
-                        href="/chatbot"
-                    >
-                        Assistant IA
                     </Link>
                     <Link
                         className={`text-sm font-medium ${
