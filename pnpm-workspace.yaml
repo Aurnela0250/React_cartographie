@@ -1,0 +1,3 @@
+# React_cartographie/pnpm-workspace.yaml
+packages:
+    - "packages/*"

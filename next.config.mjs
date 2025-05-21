@@ -1,48 +1,66 @@
-let userConfig = undefined
+let userConfig = undefined;
+
 try {
-  userConfig = await import('./v0-user-next.config')
+    userConfig = await import("./v0-user-next.config");
 } catch (e) {
-  // ignore error
+    // ignore error
 }
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  images: {
-    unoptimized: true,
-  },
-  experimental: {
-    webpackBuildWorker: true,
-    parallelServerBuildTraces: true,
-    parallelServerCompiles: true,
-  },
-}
+    eslint: {
+        ignoreDuringBuilds: true,
+        dirs: ["pages", "utils"],
+    },
+    typescript: {
+        ignoreBuildErrors: true,
+    },
+    images: {
+        unoptimized: true,
+    },
+    experimental: {
+        parallelServerBuildTraces: true,
+        parallelServerCompiles: true,
+    },
+    devIndicators: {
+        position: "bottom-right",
+    },
+    // Ignorer le dossier packages lors de la compilation
+    transpilePackages: [],
+    webpack: (config, { isServer }) => {
+        // Ignorer les fichiers dans packages/session-auth
+        config.watchOptions = {
+            ...config.watchOptions,
+            ignored: [
+                ...(config.watchOptions?.ignored || []),
+                "**/packages/**",
+            ],
+        };
 
-mergeConfig(nextConfig, userConfig)
+        return config;
+    },
+};
+
+mergeConfig(nextConfig, userConfig);
 
 function mergeConfig(nextConfig, userConfig) {
-  if (!userConfig) {
-    return
-  }
-
-  for (const key in userConfig) {
-    if (
-      typeof nextConfig[key] === 'object' &&
-      !Array.isArray(nextConfig[key])
-    ) {
-      nextConfig[key] = {
-        ...nextConfig[key],
-        ...userConfig[key],
-      }
-    } else {
-      nextConfig[key] = userConfig[key]
+    if (!userConfig) {
+        return;
     }
-  }
+
+    for (const key in userConfig) {
+        if (
+            typeof nextConfig[key] === "object" &&
+            !Array.isArray(nextConfig[key])
+        ) {
+            nextConfig[key] = {
+                ...nextConfig[key],
+                ...userConfig[key],
+            };
+        } else {
+            nextConfig[key] = userConfig[key];
+        }
+    }
 }
 
-export default nextConfig
+export default nextConfig;
