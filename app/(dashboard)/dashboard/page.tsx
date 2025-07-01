@@ -19,16 +19,49 @@ import {
     TabsList,
     TabsTrigger,
 } from "@/presentation/components/ui/tabs";
+import { getCurrentUser } from "@/shared/utils/auth-utils";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+    // Récupérer l'utilisateur connecté
+    const user = await getCurrentUser();
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
                 <div>
                     <h1 className="text-3xl font-bold">Tableau de bord</h1>
                     <p className="text-muted-foreground">
-                        Bienvenue sur votre espace d'administration
+                        Bienvenue{" "}
+                        {user?.email
+                            ? `${user.email}`
+                            : "sur votre espace d'administration"}
                     </p>
+                    {user && (
+                        <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                            <span>Rôle:</span>
+                            <span
+                                className={`rounded px-2 py-1 text-xs ${
+                                    user.isAdmin
+                                        ? "bg-red-100 text-red-800"
+                                        : "bg-blue-100 text-blue-800"
+                                }`}
+                            >
+                                {user.isAdmin
+                                    ? "Administrateur"
+                                    : "Utilisateur"}
+                            </span>
+                            <span>•</span>
+                            <span
+                                className={`rounded px-2 py-1 text-xs ${
+                                    user.active
+                                        ? "bg-green-100 text-green-800"
+                                        : "bg-gray-100 text-gray-800"
+                                }`}
+                            >
+                                {user.active ? "Actif" : "Inactif"}
+                            </span>
+                        </div>
+                    )}
                 </div>
                 <div className="flex gap-2">
                     <Button asChild variant="outline">
