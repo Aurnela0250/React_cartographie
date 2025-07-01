@@ -3,14 +3,14 @@
 export interface ChatFormation {
     title: string;
     level: string;
-    domain_mention: string;
-    duration_months?: number;
-    authorization_status: string;
+    domainMention: string;
+    durationMonths?: number;
+    authorizationStatus: string;
 }
 
 export interface ChatFoundData {
-    establishment_name: string;
-    establishment_acronym: string;
+    establishmentName: string;
+    establishmentAcronym: string;
     type: string;
     sector: string;
     address: string;
@@ -18,9 +18,9 @@ export interface ChatFoundData {
 }
 
 export interface ChatResponseData {
-    assistant_message: string;
-    found_data: ChatFoundData[];
-    clarification_question: string | null;
+    assistantMessage: string;
+    foundData: ChatFoundData[];
+    clarificationQuestion: string | null;
 }
 
 export interface ChatResponse {
@@ -47,20 +47,20 @@ export class ChatEntity {
 
         // Mapping response
         let response: ChatResponseData = {
-            assistant_message: "",
-            found_data: [],
-            clarification_question: null,
+            assistantMessage: "",
+            foundData: [],
+            clarificationQuestion: null,
         };
 
         if (typeof obj.response === "object" && obj.response !== null) {
             const resp = obj.response as Record<string, unknown>;
 
             response = {
-                assistant_message:
+                assistantMessage:
                     typeof resp.assistant_message === "string"
                         ? resp.assistant_message
                         : "",
-                found_data: Array.isArray(resp.found_data)
+                foundData: Array.isArray(resp.found_data)
                     ? (resp.found_data
                           .map((fd) => {
                               if (typeof fd !== "object" || fd === null)
@@ -68,11 +68,11 @@ export class ChatEntity {
                               const fdo = fd as Record<string, unknown>;
 
                               return {
-                                  establishment_name:
+                                  establishmentName:
                                       typeof fdo.establishment_name === "string"
                                           ? fdo.establishment_name
                                           : "",
-                                  establishment_acronym:
+                                  establishmentAcronym:
                                       typeof fdo.establishment_acronym ===
                                       "string"
                                           ? fdo.establishment_acronym
@@ -113,17 +113,17 @@ export class ChatEntity {
                                                         "string"
                                                             ? fo.level
                                                             : "",
-                                                    domain_mention:
+                                                    domainMention:
                                                         typeof fo.domain_mention ===
                                                         "string"
                                                             ? fo.domain_mention
                                                             : "",
-                                                    duration_months:
+                                                    durationMonths:
                                                         typeof fo.duration_months ===
                                                         "number"
                                                             ? fo.duration_months
                                                             : undefined,
-                                                    authorization_status:
+                                                    authorizationStatus:
                                                         typeof fo.authorization_status ===
                                                         "string"
                                                             ? fo.authorization_status
@@ -136,7 +136,7 @@ export class ChatEntity {
                           })
                           .filter(Boolean) as ChatFoundData[])
                     : [],
-                clarification_question:
+                clarificationQuestion:
                     typeof resp.clarification_question === "string" ||
                     resp.clarification_question === null
                         ? resp.clarification_question

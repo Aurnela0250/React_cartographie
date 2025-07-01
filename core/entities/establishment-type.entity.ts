@@ -1,11 +1,11 @@
 export type EstablishmentTypeArgs = {
     id: number;
     name: string;
-    description: string;
-    createdAt: string;
-    updatedAt: string;
-    createdBy: number;
-    updatedBy: number;
+    description?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    createdBy?: number;
+    updatedBy?: number;
 };
 
 export type IEstablishmentType = Partial<EstablishmentTypeArgs>;

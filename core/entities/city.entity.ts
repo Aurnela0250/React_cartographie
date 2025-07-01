@@ -2,10 +2,10 @@ export type CityArgs = {
     id: number;
     name: string;
     regionId: number;
-    createdAt: string;
-    updatedAt: string;
-    createdBy: number;
-    updatedBy: number;
+    createdAt?: string;
+    updatedAt?: string;
+    createdBy?: number;
+    updatedBy?: number;
 };
 
 export type ICity = Partial<CityArgs>;

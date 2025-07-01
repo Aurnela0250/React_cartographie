@@ -1,13 +1,13 @@
 export type FormationAuthorizationArgs = {
     id: number;
     dateDebut: string;
-    dateFin: string;
+    dateFin?: string;
     status: string;
-    arrete: string;
-    createdAt: string;
-    updatedAt: string;
-    createdBy: number;
-    updatedBy: number;
+    decree?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    createdBy?: number;
+    updatedBy?: number;
 };
 
 export type IFormationAuthorization = Partial<FormationAuthorizationArgs>;
@@ -17,7 +17,7 @@ export class FormationAuthorization implements IFormationAuthorization {
     dateDebut?: string;
     dateFin?: string;
     status?: string;
-    arrete?: string;
+    decree?: string;
     createdAt?: string;
     updatedAt?: string;
     createdBy?: number;
@@ -28,7 +28,7 @@ export class FormationAuthorization implements IFormationAuthorization {
         this.dateDebut = args.dateDebut;
         this.dateFin = args.dateFin;
         this.status = args.status;
-        this.arrete = args.arrete;
+        this.decree = args.decree;
         this.createdAt = args.createdAt;
         this.updatedAt = args.updatedAt;
         this.createdBy = args.createdBy;

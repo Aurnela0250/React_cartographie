@@ -6,29 +6,29 @@ import { IMention } from "./mention.entity";
 
 export type FormationArgs = {
     id: number;
-    intitule: string;
-    description: string;
+    name: string;
+    description?: string;
     duration: number;
     levelId: number;
     mentionId: number;
     establishmentId: number;
-    authorizationId: number;
+    authorizationId?: number;
     level?: ILevel;
     mention?: IMention;
     establishment?: IEstablishment;
     authorization?: IFormationAuthorization;
     annualHeadcounts?: IAnnualHeadcount[];
-    createdAt: string;
-    updatedAt: string;
-    createdBy: number;
-    updatedBy: number;
+    createdAt?: string;
+    updatedAt?: string;
+    createdBy?: number;
+    updatedBy?: number;
 };
 
 export type IFormation = Partial<FormationArgs>;
 
 export class Formation implements IFormation {
     id?: number;
-    intitule?: string;
+    name?: string;
     description?: string;
     duration?: number;
     levelId?: number;
@@ -47,7 +47,7 @@ export class Formation implements IFormation {
 
     constructor(args: IFormation) {
         this.id = args.id;
-        this.intitule = args.intitule;
+        this.name = args.name;
         this.description = args.description;
         this.duration = args.duration;
         this.levelId = args.levelId;
@@ -82,7 +82,7 @@ export class Formation implements IFormation {
     }
 
     setAnnualHeadcounts(annualHeadcounts?: IAnnualHeadcount[]) {
-        this.annualHeadcounts = annualHeadcounts;
+        this.annualHeadcounts = annualHeadcounts || [];
     }
 
     static fromUnknown(data: unknown): Formation {

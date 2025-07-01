@@ -4,8 +4,8 @@ export type MentionArgs = {
     domainId: number;
     createdAt: string;
     updatedAt: string;
-    createdBy: number;
-    updatedBy: number;
+    createdBy?: number;
+    updatedBy?: number;
 };
 
 export type IMention = Partial<MentionArgs>;

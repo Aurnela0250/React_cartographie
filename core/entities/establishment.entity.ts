@@ -1,27 +1,22 @@
+import { ICity } from "./city.entity";
 import { IEstablishmentType } from "./establishment-type.entity";
 import { IFormation } from "./formation.entity";
-import { ISector } from "./sector.entity";
 
 export type EstablishmentArgs = {
     id: number;
     name: string;
-    acronyme: string;
-    address: string;
-    contacts: string[];
-    siteUrl: string;
-    description: string;
-    latitude: number;
-    longitude: number;
+    acronym?: string;
+    address?: string;
+    contacts?: string[];
+    website?: string;
+    description?: string;
+    latitude?: number;
+    longitude?: number;
     establishmentTypeId: number;
-    sectorId: number;
+    cityId: number;
     establishmentType?: IEstablishmentType;
-    sector?: ISector;
+    city?: ICity;
     formations?: IFormation[];
-    rating: number;
-    createdAt: string;
-    updatedAt: string;
-    createdBy: number;
-    updatedBy: number;
 };
 
 export type IEstablishment = Partial<EstablishmentArgs>;
@@ -29,56 +24,46 @@ export type IEstablishment = Partial<EstablishmentArgs>;
 export class Establishment implements IEstablishment {
     id?: number;
     name?: string;
-    acronyme?: string;
+    acronym?: string;
     address?: string;
     contacts?: string[];
-    siteUrl?: string;
+    website?: string;
     description?: string;
     latitude?: number;
     longitude?: number;
     establishmentTypeId?: number;
-    sectorId?: number;
+    cityId?: number;
     establishmentType?: IEstablishmentType;
-    sector?: ISector;
+    city?: ICity;
     formations?: IFormation[];
-    rating?: number;
-    createdAt?: string;
-    updatedAt?: string;
-    createdBy?: number;
-    updatedBy?: number;
 
     constructor(args: IEstablishment) {
         this.id = args.id;
         this.name = args.name;
-        this.acronyme = args.acronyme;
+        this.acronym = args.acronym;
         this.address = args.address;
         this.contacts = args.contacts;
-        this.siteUrl = args.siteUrl;
+        this.website = args.website;
         this.description = args.description;
         this.latitude = args.latitude;
         this.longitude = args.longitude;
         this.establishmentTypeId = args.establishmentTypeId;
-        this.sectorId = args.sectorId;
+        this.cityId = args.cityId;
         this.setEstablishmentType(args.establishmentType);
-        this.setSector(args.sector);
+        this.setCity(args.city);
         this.setFormations(args.formations);
-        this.rating = args.rating;
-        this.createdAt = args.createdAt;
-        this.updatedAt = args.updatedAt;
-        this.createdBy = args.createdBy;
-        this.updatedBy = args.updatedBy;
     }
 
     setEstablishmentType(establishmentType?: IEstablishmentType) {
         this.establishmentType = establishmentType;
     }
 
-    setSector(sector?: ISector) {
-        this.sector = sector;
+    setCity(city?: ICity) {
+        this.city = city;
     }
 
     setFormations(formations?: IFormation[]) {
-        this.formations = formations;
+        this.formations = formations || [];
     }
 
     static fromUnknown(data: unknown): Establishment {

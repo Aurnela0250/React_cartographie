@@ -1,11 +1,11 @@
 export type LevelArgs = {
     id: number;
     name: string;
-    acronyme: string;
-    createdAt: string;
-    updatedAt: string;
-    createdBy: number;
-    updatedBy: number;
+    acronym?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    createdBy?: number;
+    updatedBy?: number;
 };
 
 export type ILevel = Partial<LevelArgs>;
@@ -13,7 +13,7 @@ export type ILevel = Partial<LevelArgs>;
 export class Level implements ILevel {
     id?: number;
     name?: string;
-    acronyme?: string;
+    acronym?: string;
     createdAt?: string;
     updatedAt?: string;
     createdBy?: number;
@@ -22,7 +22,7 @@ export class Level implements ILevel {
     constructor(args: ILevel) {
         this.id = args.id;
         this.name = args.name;
-        this.acronyme = args.acronyme;
+        this.acronym = args.acronym;
         this.createdAt = args.createdAt;
         this.updatedAt = args.updatedAt;
         this.createdBy = args.createdBy;

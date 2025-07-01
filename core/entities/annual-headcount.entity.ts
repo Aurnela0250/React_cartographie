@@ -1,21 +1,23 @@
 export type AnnualHeadcountArgs = {
     id: number;
+    formationId: number;
     academicYear: number;
     students: number;
-    formationId: number;
+    successRate?: number;
     createdAt: string;
     updatedAt: string;
-    createdBy: number;
-    updatedBy: number;
+    createdBy?: number;
+    updatedBy?: number;
 };
 
 export type IAnnualHeadcount = Partial<AnnualHeadcountArgs>;
 
 export class AnnualHeadcount implements IAnnualHeadcount {
     id?: number;
+    formationId?: number;
     academicYear?: number;
     students?: number;
-    formationId?: number;
+    successRate?: number;
     createdAt?: string;
     updatedAt?: string;
     createdBy?: number;
@@ -23,9 +25,10 @@ export class AnnualHeadcount implements IAnnualHeadcount {
 
     constructor(args: IAnnualHeadcount) {
         this.id = args.id;
+        this.formationId = args.formationId;
         this.academicYear = args.academicYear;
         this.students = args.students;
-        this.formationId = args.formationId;
+        this.successRate = args.successRate;
         this.createdAt = args.createdAt;
         this.updatedAt = args.updatedAt;
         this.createdBy = args.createdBy;
