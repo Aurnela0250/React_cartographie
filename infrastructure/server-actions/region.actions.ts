@@ -1,19 +1,10 @@
 "use server";
 
 import { RegionApiRepository } from "@/infrastructure/repositories/region.repository";
-import { getServerActionSession } from "@/infrastructure/server-actions/get-session.action";
+
+import { getTokenServerSide } from "./token";
 
 const repo = new RegionApiRepository();
-
-async function getTokenServerSide(): Promise<string> {
-    const session = await getServerActionSession();
-
-    if (!session.isLoggedIn || !session.token?.accessToken) {
-        throw new Error("Non authentifié");
-    }
-
-    return session.token.accessToken;
-}
 
 export async function createRegion(data: { name: string; code?: string }) {
     const token = await getTokenServerSide();

@@ -1,19 +1,10 @@
 "use server";
 
 import { CityApiRepository } from "@/infrastructure/repositories/city.repository";
-import { getServerActionSession } from "@/infrastructure/server-actions/get-session.action";
+
+import { getTokenServerSide } from "./token";
 
 const repo = new CityApiRepository();
-
-async function getTokenServerSide(): Promise<string> {
-    const session = await getServerActionSession();
-
-    if (!session.isLoggedIn || !session.token?.accessToken) {
-        throw new Error("Non authentifié");
-    }
-
-    return session.token.accessToken;
-}
 
 export async function createCity(data: { name: string; regionId: number }) {
     const token = await getTokenServerSide();

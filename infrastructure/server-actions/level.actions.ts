@@ -1,19 +1,10 @@
 "use server";
 
 import { LevelApiRepository } from "@/infrastructure/repositories/level.repository";
-import { getServerActionSession } from "@/infrastructure/server-actions/get-session.action";
+
+import { getTokenServerSide } from "./token";
 
 const repo = new LevelApiRepository();
-
-async function getTokenServerSide(): Promise<string> {
-    const session = await getServerActionSession();
-
-    if (!session.isLoggedIn || !session.token?.accessToken) {
-        throw new Error("Non authentifié");
-    }
-
-    return session.token.accessToken;
-}
 
 export async function createLevel(data: { name: string; acronyme?: string }) {
     const token = await getTokenServerSide();

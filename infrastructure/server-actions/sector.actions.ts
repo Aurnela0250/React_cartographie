@@ -1,19 +1,10 @@
 "use server";
 
 import { SectorApiRepository } from "@/infrastructure/repositories/sector.repository";
-import { getServerActionSession } from "@/infrastructure/server-actions/get-session.action";
+
+import { getTokenServerSide } from "./token";
 
 const repo = new SectorApiRepository();
-
-async function getTokenServerSide(): Promise<string> {
-    const session = await getServerActionSession();
-
-    if (!session.isLoggedIn || !session.token?.accessToken) {
-        throw new Error("Non authentifié");
-    }
-
-    return session.token.accessToken;
-}
 
 export async function createSector(data: { name: string; cityId: number }) {
     const token = await getTokenServerSide();

@@ -1,19 +1,10 @@
 "use server";
 
 import { MentionApiRepository } from "@/infrastructure/repositories/mention.repository";
-import { getServerActionSession } from "@/infrastructure/server-actions/get-session.action";
+
+import { getTokenServerSide } from "./token";
 
 const repo = new MentionApiRepository();
-
-async function getTokenServerSide(): Promise<string> {
-    const session = await getServerActionSession();
-
-    if (!session.isLoggedIn || !session.token?.accessToken) {
-        throw new Error("Non authentifié");
-    }
-
-    return session.token.accessToken;
-}
 
 export async function createMention(data: { name: string; domainId: number }) {
     const token = await getTokenServerSide();

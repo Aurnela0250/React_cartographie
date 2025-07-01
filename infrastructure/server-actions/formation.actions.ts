@@ -2,7 +2,8 @@
 
 import { IFormation } from "@/core/entities/formation.entity";
 import { FormationApiRepository } from "@/infrastructure/repositories/formation.repository";
-import { getServerActionSession } from "@/infrastructure/server-actions/get-session.action";
+
+import { getTokenServerSide } from "./token";
 
 // --- Formation Authorization actions ---
 export async function createFormationAuthorization(
@@ -97,16 +98,6 @@ export async function deleteAnnualHeadcount(formationId: number, id: number) {
 }
 
 const repo = new FormationApiRepository();
-
-async function getTokenServerSide(): Promise<string> {
-    const session = await getServerActionSession();
-
-    if (!session.isLoggedIn || !session.token?.accessToken) {
-        throw new Error("Non authentifié");
-    }
-
-    return session.token.accessToken;
-}
 
 export async function createFormation(data: {
     intitule: string;

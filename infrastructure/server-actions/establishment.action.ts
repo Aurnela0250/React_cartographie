@@ -1,17 +1,9 @@
 "use server";
 
 import { EstablishmentApiRepository } from "@/infrastructure/repositories/establishment.repository";
-import { getServerActionSession } from "@/infrastructure/server-actions/get-session.action";
 
-async function getTokenServerSide(): Promise<string> {
-    const session = await getServerActionSession();
+import { getTokenServerSide } from "./token";
 
-    if (!session.isLoggedIn || !session.token?.accessToken) {
-        throw new Error("Non authentifié");
-    }
-
-    return session.token.accessToken;
-}
 const repository = new EstablishmentApiRepository();
 
 export async function createEstablishment(data: {
