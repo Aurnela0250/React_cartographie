@@ -4,17 +4,21 @@ import {
     PaginatedResult,
     PaginationParams,
 } from "@/core/entities/pagination";
+import { LevelFilter } from "@/core/filters/level.filter";
 import { ILevelRepository } from "@/core/interfaces/level.repository.interface";
 import { env } from "@/env.mjs";
 import { toCamelCaseRecursive, toSnakeCaseRecursive } from "@/shared/utils";
 import { handleApiResponse } from "@/shared/utils/api-errors";
 
 export class LevelApiRepository implements ILevelRepository {
+    filter(_: string, __: LevelFilter): Promise<PaginatedResult<Level>> {
+        throw new Error("Method not implemented.");
+    }
     async getAll(
         token: string,
         param: PaginationParams
     ): Promise<PaginatedResult<Level>> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/levels?page=${param.page}&per_page=${param.perPage || 10}`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/levels/?page=${param.page}&per_page=${param.perPage || 10}`;
         const response = await fetch(url, {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -27,7 +31,7 @@ export class LevelApiRepository implements ILevelRepository {
         return result;
     }
     async get(token: string, id: number): Promise<Level> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/levels/${id}`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/levels/${id}/`;
         const response = await fetch(url, {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -38,9 +42,9 @@ export class LevelApiRepository implements ILevelRepository {
     }
     async create(
         token: string,
-        data: { name: string; acronyme?: string }
+        data: { name: string; acronym?: string }
     ): Promise<Level> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/levels`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/levels/`;
         const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "POST",
@@ -59,7 +63,7 @@ export class LevelApiRepository implements ILevelRepository {
         id: number,
         data: { name?: string; acronyme?: string }
     ): Promise<Level> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/levels/${id}`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/levels/${id}/`;
         const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "PUT",
@@ -74,7 +78,7 @@ export class LevelApiRepository implements ILevelRepository {
         return Level.fromUnknown(toCamelCaseRecursive(res));
     }
     async delete(token: string, id: number): Promise<boolean> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/levels/${id}`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/levels/${id}/`;
         const response = await fetch(url, {
             method: "DELETE",
             headers: { Authorization: `Bearer ${token}` },

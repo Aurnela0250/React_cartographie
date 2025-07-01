@@ -1,5 +1,8 @@
 import { Establishment } from "@/core/entities/establishment.entity";
 import { PaginatedResult, PaginationParams } from "@/core/entities/pagination";
+import { Rate } from "@/core/entities/rate.entity";
+
+import { EstablishmentFilter } from "../filters/establishment.filter";
 
 export interface IEstablishmentRepository {
     getAll(
@@ -11,44 +14,37 @@ export interface IEstablishmentRepository {
         token: string,
         data: {
             name: string;
-            acronyme?: string;
-            address: string;
+            acronym?: string;
+            address?: string;
             contacts?: string[];
-            siteUrl?: string;
+            website?: string;
             description?: string;
             latitude?: number;
             longitude?: number;
             establishmentTypeId: number;
-            sectorId: number;
+            cityId: number;
         }
     ): Promise<Establishment>;
-    rate(token: string, id: number, data: { rating: number }): Promise<boolean>;
     update(
         token: string,
         id: number,
         data: {
-            name?: string;
-            acronyme?: string;
+            name: string;
+            acronym?: string;
             address?: string;
             contacts?: string[];
-            siteUrl?: string;
+            website?: string;
             description?: string;
             latitude?: number;
             longitude?: number;
-            establishmentTypeId?: number;
-            sectorId?: number;
+            establishmentTypeId: number;
+            cityId: number;
         }
     ): Promise<Establishment>;
-    delete(token: string, id: number): Promise<boolean>;
+    delete(token: string, id: number): Promise<void>;
     filter(
         token: string,
-        param: PaginationParams,
-        filters: {
-            name?: string;
-            acronyme?: string;
-            establishmentTypeId?: number;
-            cityId?: number;
-            regionId?: number;
-        }
+        filters: EstablishmentFilter
     ): Promise<PaginatedResult<Establishment>>;
+    rate(token: string, id: number, data: { rating: number }): Promise<Rate>;
 }
