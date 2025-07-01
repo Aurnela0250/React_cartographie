@@ -22,15 +22,7 @@ export function LevelList({
         return res.json();
     };
 
-    const {
-        data,
-        fetchNextPage,
-        hasNextPage,
-        isFetchingNextPage,
-        isFetching,
-        isError,
-        error,
-    } = useInfiniteQuery({
+    const { data, isFetchingNextPage } = useInfiniteQuery({
         queryKey: ["levels"],
         queryFn: fetchLevels,
         getNextPageParam: (lastPage: PaginatedResult<Level>) =>
@@ -65,7 +57,7 @@ export function LevelList({
                             <div>
                                 <div className="font-bold">{level.name}</div>
                                 <div className="text-xs text-gray-500">
-                                    {level.acronyme}
+                                    {level.acronym}
                                 </div>
                             </div>
                             <div className="flex gap-2">

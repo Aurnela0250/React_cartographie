@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 
 import { NavMain } from "@/presentation/components/nav-main";
-import { NavUser } from "@/presentation/components/nav-user";
 import {
     Sidebar,
     SidebarContent,
@@ -25,7 +24,7 @@ import {
     SidebarMenuItem,
 } from "@/presentation/components/ui/sidebar";
 
-import { useSession } from "../hooks/use-session";
+import { LogoutButton } from "./logout-button";
 
 const data = {
     user: {
@@ -89,9 +88,13 @@ const data = {
 export function AdminSidebar({
     ...props
 }: React.ComponentProps<typeof Sidebar>) {
-    const session = useSession();
+    // const session = useAuth();
 
-    const { user } = session;
+    // if (!session) {
+    //     return null;
+    // }
+
+    // const { user } = session;
 
     return (
         <Sidebar variant="inset" {...props}>
@@ -117,7 +120,8 @@ export function AdminSidebar({
                 <NavMain items={data.navMain} />
             </SidebarContent>
             <SidebarFooter>
-                <NavUser user={user} />
+                {/* <NavUser user={user} /> */}
+                <LogoutButton />
             </SidebarFooter>
         </Sidebar>
     );
