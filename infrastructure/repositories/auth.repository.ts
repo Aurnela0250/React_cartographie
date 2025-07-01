@@ -1,6 +1,9 @@
 import { Token } from "@/core/entities/token.entity";
 import { User } from "@/core/entities/users.entity";
-import { IAuthRepository } from "@/core/interfaces/auth.repository.interface";
+import {
+    AuthResponse,
+    IAuthRepository,
+} from "@/core/interfaces/auth.repository.interface";
 import { env } from "@/env.mjs";
 import { toCamelCaseRecursive, toSnakeCaseRecursive } from "@/shared/utils";
 import { handleApiResponse } from "@/shared/utils/api-errors";
@@ -8,12 +11,22 @@ import { ApiError } from "@/shared/utils/api-errors.types";
 import { UnauthorizedError } from "@/shared/utils/app-errors";
 
 export class AuthDjangoApiRepository implements IAuthRepository {
-    async login(email: string, password: string): Promise<Token> {
+    loginOAuth2(_: {
+        username: string;
+        password: string;
+        grantType?: string | undefined;
+        scope?: string | undefined;
+        clientId?: string | undefined;
+        clientSecret?: string | undefined;
+    }): Promise<AuthResponse> {
+        throw new Error("Method not implemented.");
+    }
+    async login(data: { email: string; password: string }): Promise<Token> {
         const apiUrl = `${env.API_PREFIX_URL}/${env.API_VERSION}/auth/login`;
 
         console.log("Login API URL:", apiUrl);
 
-        const payload = toSnakeCaseRecursive({ email, password });
+        const payload = toSnakeCaseRecursive(data);
         const response = await fetch(apiUrl, {
             method: "POST",
             headers: {
@@ -23,16 +36,16 @@ export class AuthDjangoApiRepository implements IAuthRepository {
             body: JSON.stringify(payload),
         });
 
-        const data = await handleApiResponse<unknown>(response);
-        const token = Token.fromUnknown(toCamelCaseRecursive(data));
+        const dataResponse = await handleApiResponse<unknown>(response);
+        const token = Token.fromUnknown(toCamelCaseRecursive(dataResponse));
 
         return token;
     }
 
-    async register(email: string, password: string): Promise<User> {
+    async signup(data: { email: string; password: string }): Promise<User> {
         const apiUrl = `${env.API_PREFIX_URL}/${env.API_VERSION}/auth/signup`;
 
-        const payload = toSnakeCaseRecursive({ email, password });
+        const payload = toSnakeCaseRecursive(data);
         const response = await fetch(apiUrl, {
             method: "POST",
             headers: {
@@ -42,13 +55,13 @@ export class AuthDjangoApiRepository implements IAuthRepository {
             body: JSON.stringify(payload),
         });
 
-        const data = await handleApiResponse<unknown>(response);
-        const user = User.fromUnknown(toCamelCaseRecursive(data));
+        const dataResponse = await handleApiResponse<unknown>(response);
+        const user = User.fromUnknown(toCamelCaseRecursive(dataResponse));
 
         return user;
     }
 
-    async refreshToken(refreshToken: string): Promise<Token> {
+    async refresh(refreshToken: string): Promise<Token> {
         const apiUrl = `${env.API_PREFIX_URL}/${env.API_VERSION}/auth/refresh?refresh_token=${refreshToken}`;
 
         try {
@@ -103,7 +116,10 @@ export class AuthDjangoApiRepository implements IAuthRepository {
         }
     }
 
-    async logout(accessToken: string, refreshToken: string): Promise<void> {
+    async logout(
+        accessToken: string,
+        refreshToken: string
+    ): Promise<{ message: string }> {
         const apiUrl = `${env.API_PREFIX_URL}/${env.API_VERSION}/auth/logout?refresh_token=${refreshToken}`;
 
         const response = await fetch(apiUrl, {
@@ -114,10 +130,26 @@ export class AuthDjangoApiRepository implements IAuthRepository {
             },
         });
 
-        await handleApiResponse<unknown>(response);
+        const dataResponse = await handleApiResponse<unknown>(response);
+
+        return dataResponse as { message: string };
     }
 
-    me(token: string): Promise<User> {
-        throw new Error("Method not implemented.");
+    async me(token: string): Promise<User> {
+        const apiUrl = `${env.API_PREFIX_URL}/${env.API_VERSION}/auth/me`;
+
+        const response = await fetch(apiUrl, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            credentials: "include",
+        });
+
+        const dataResponse = await handleApiResponse<unknown>(response);
+        const user = User.fromUnknown(toCamelCaseRecursive(dataResponse));
+
+        return user;
     }
 }

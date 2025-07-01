@@ -2,12 +2,10 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
-import { useAction } from "next-safe-action/hooks";
 import { useForm } from "react-hook-form";
 
-import { login } from "@/infrastructure/server-actions/login.action";
 import { Button } from "@/presentation/components/ui/button";
 import { Checkbox } from "@/presentation/components/ui/checkbox";
 import {
@@ -24,11 +22,25 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { FormError } from "./form-error-message";
 
+interface LoginResponse {
+    success: boolean;
+    redirectTo?: string;
+    error?: string;
+    user?: {
+        id: number;
+        email: string;
+        active: boolean;
+        isAdmin: boolean;
+    };
+}
+
 export function LoginForm() {
     const router = useRouter();
-    const { executeAsync, isPending } = useAction(login);
+    const searchParams = useSearchParams();
     const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
     const [showPassword, setShowPassword] = React.useState(false);
+    const [isPending, setIsPending] = React.useState(false);
+
     const form = useForm<LoginInput>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
@@ -39,22 +51,52 @@ export function LoginForm() {
 
     const onSubmit = async (data: LoginInput) => {
         setErrorMessage(null);
-        const result = await executeAsync(data);
+        setIsPending(true);
 
-        // Vérification du résultat pour les erreurs
-        if (
-            result?.data &&
-            result.data.success === false &&
-            result.data.error
-        ) {
-            setErrorMessage(result.data.error);
+        try {
+            // Récupérer le paramètre redirectTo depuis l'URL
+            const redirectTo = searchParams.get("redirectTo");
 
-            return;
-        }
+            // Construire l'URL avec les paramètres de redirection
+            const loginUrl = new URL("/api/auth/login", window.location.origin);
+            if (redirectTo) {
+                loginUrl.searchParams.set("redirectTo", redirectTo);
+            }
 
-        // Si le résultat contient des données de succès et une URL de redirection
-        if (result?.data && result.data.success === true) {
-            router.push(result.data.redirectTo || "/");
+            const response = await fetch(loginUrl.toString(), {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result: LoginResponse = await response.json();
+
+            if (!result.success || !response.ok) {
+                setErrorMessage(
+                    result.error ||
+                        "Une erreur est survenue lors de la connexion"
+                );
+
+                return;
+            }
+
+            // Connexion réussie
+            console.log("Utilisateur connecté:", result.user);
+
+            // Utiliser l'URL de redirection fournie par l'API ou redirection par défaut selon le rôle
+            const redirectPath =
+                result.redirectTo ||
+                (result.user?.isAdmin ? "/admin" : "/dashboard");
+
+            router.push(redirectPath);
+            router.refresh();
+        } catch (error) {
+            console.error("Erreur de connexion:", error);
+            setErrorMessage("Une erreur est survenue lors de la connexion");
+        } finally {
+            setIsPending(false);
         }
     };
 
@@ -194,16 +236,15 @@ export function LoginForm() {
             </Form>
 
             <div className="mt-8 text-center text-xs text-muted-foreground">
-                <p>© 2025 OrientaMada. Tous droits réservés.</p>
-                <div className="mt-2 space-x-4">
-                    <Link className="hover:underline" href="/terms">
-                        Conditions d'utilisation
-                    </Link>
-                    <span>|</span>
-                    <Link className="hover:underline" href="/privacy">
-                        Politique de confidentialité
-                    </Link>
-                </div>
+                En vous connectant, vous acceptez nos{" "}
+                <Link className="hover:underline" href="/terms-of-service">
+                    Conditions d'utilisation
+                </Link>{" "}
+                et notre{" "}
+                <Link className="hover:underline" href="/privacy-policy">
+                    Politique de confidentialité
+                </Link>
+                .
             </div>
         </div>
     );

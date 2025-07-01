@@ -1,31 +1,29 @@
-export type UserArgs = {
+export type IUser = {
     id: number;
-    name: string;
     email: string;
     active: boolean;
+    isAdmin: boolean;
     createdBy: number;
     updatedBy: number;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
 };
 
-export type IUser = Partial<UserArgs>;
-
 export class User implements IUser {
-    id?: number;
-    name?: string;
-    email?: string;
-    active?: boolean;
-    createdBy?: number;
-    updatedBy?: number;
-    createdAt?: Date;
-    updatedAt?: Date;
+    id: number;
+    email: string;
+    active: boolean;
+    isAdmin: boolean;
+    createdBy: number;
+    updatedBy: number;
+    createdAt: string;
+    updatedAt: string;
 
     constructor(args: IUser) {
         this.id = args.id;
-        this.name = args.name;
         this.email = args.email;
         this.active = args.active;
+        this.isAdmin = args.isAdmin;
         this.createdBy = args.createdBy;
         this.updatedBy = args.updatedBy;
         this.createdAt = args.createdAt;
@@ -33,6 +31,6 @@ export class User implements IUser {
     }
 
     static fromUnknown(data: unknown): User {
-        return new User(data as Partial<UserArgs>);
+        return new User(data as IUser);
     }
 }

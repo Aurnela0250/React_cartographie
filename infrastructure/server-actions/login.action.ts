@@ -22,7 +22,7 @@ export const login = actionClient
     .action(async ({ parsedInput: { email, password } }) => {
         try {
             // Appeler directement le repository
-            const tokenData = await authRepository.login(email, password);
+            const tokenData = await authRepository.login({ email, password });
 
             // Vérifier que les données de token sont complètes
             if (

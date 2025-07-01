@@ -1,8 +1,8 @@
 import { Inter } from "next/font/google";
 
-import { ChatAI } from "@/presentation/components/features/chat/chat-ai";
 import { Toaster } from "@/presentation/components/ui/toaster";
 import QueryProvider from "@/presentation/providers/query-provider";
+import { AuthProvider } from "@/presentation/providers/session-provider";
 import { ThemeProvider } from "@/presentation/providers/theme-provider";
 
 import "@/styles/globals.css";
@@ -23,18 +23,20 @@ export default function RootLayout({
     return (
         <html suppressHydrationWarning lang="fr">
             <body className={inter.className}>
-                <QueryProvider>
-                    <ThemeProvider
-                        disableTransitionOnChange
-                        enableSystem
-                        attribute="class"
-                        defaultTheme="light"
-                    >
-                        {children}
-                        <Toaster />
-                        <ChatAI />
-                    </ThemeProvider>
-                </QueryProvider>
+                <AuthProvider>
+                    <QueryProvider>
+                        <ThemeProvider
+                            disableTransitionOnChange
+                            enableSystem
+                            attribute="class"
+                            defaultTheme="light"
+                        >
+                            {children}
+                            <Toaster />
+                            {/* <ChatAI /> */}
+                        </ThemeProvider>
+                    </QueryProvider>
+                </AuthProvider>
             </body>
         </html>
     );
