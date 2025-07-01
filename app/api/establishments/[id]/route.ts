@@ -1,42 +1,60 @@
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 import { EstablishmentApiRepository } from "@/infrastructure/repositories/establishment.repository";
-import { getRouteHandlerSession } from "@/shared/utils/auth";
+import { getCurrentUser } from "@/shared/utils/auth-utils";
 
 const repo = new EstablishmentApiRepository();
 
-async function getTokenFromRequest(req: NextRequest): Promise<string> {
-    const session = await getRouteHandlerSession(req);
+async function authHandler() {
+    const user = await getCurrentUser();
 
-    if (!session.isLoggedIn || !session.token?.accessToken) {
-        throw new Error("Non authentifié");
+    if (!user) {
+        return {
+            error: NextResponse.json(
+                { message: "Non authentifié" },
+                { status: 401 }
+            ),
+        };
     }
 
-    return session.token.accessToken;
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("accessToken")?.value;
+
+    if (!accessToken) {
+        return {
+            error: NextResponse.json(
+                { message: "Token manquant" },
+                { status: 401 }
+            ),
+        };
+    }
+
+    return { accessToken };
 }
 
 export async function GET(
     req: NextRequest,
     { params }: { params: { id: string } }
 ) {
+    const authResult = await authHandler();
+
+    if (authResult.error) return authResult.error;
+    const { accessToken } = authResult;
+
     try {
-        const token = await getTokenFromRequest(req);
-
-        const { id: idStr } = await params;
-
-        const id = parseInt(idStr);
-
-        const establishment = await repo.get(token, id);
+        const id = parseInt(params.id);
+        const establishment = await repo.get(accessToken, id);
 
         // Convertir l'instance de classe en objet JavaScript simple
         const plainEstablishment = JSON.parse(JSON.stringify(establishment));
 
         return NextResponse.json(plainEstablishment);
     } catch (error) {
-        return NextResponse.json(
-            { message: "Non authentifié" },
-            { status: 401 }
-        );
+        const errorMsg =
+            error instanceof Error ? error.message : "Erreur inconnue";
+
+        return NextResponse.json({ message: errorMsg }, { status: 500 });
     }
 }
 
@@ -44,22 +62,26 @@ export async function PUT(
     req: NextRequest,
     { params }: { params: { id: string } }
 ) {
+    const authResult = await authHandler();
+
+    if (authResult.error) return authResult.error;
+    const { accessToken } = authResult;
+
     try {
-        const token = await getTokenFromRequest(req);
         const id = parseInt(params.id);
         const body = await req.json();
 
-        const establishment = await repo.update(token, id, body);
+        const establishment = await repo.update(accessToken, id, body);
 
         // Convertir l'instance de classe en objet simple
         const plainEstablishment = JSON.parse(JSON.stringify(establishment));
 
         return NextResponse.json(plainEstablishment);
     } catch (error) {
-        return NextResponse.json(
-            { message: "Non authentifié" },
-            { status: 401 }
-        );
+        const errorMsg =
+            error instanceof Error ? error.message : "Erreur inconnue";
+
+        return NextResponse.json({ message: errorMsg }, { status: 500 });
     }
 }
 
@@ -67,17 +89,21 @@ export async function DELETE(
     req: NextRequest,
     { params }: { params: { id: string } }
 ) {
+    const authResult = await authHandler();
+
+    if (authResult.error) return authResult.error;
+    const { accessToken } = authResult;
+
     try {
-        const token = await getTokenFromRequest(req);
         const id = parseInt(params.id);
 
-        const result = await repo.delete(token, id);
+        const result = await repo.delete(accessToken, id);
 
         return NextResponse.json({ success: result });
     } catch (error) {
-        return NextResponse.json(
-            { message: "Non authentifié" },
-            { status: 401 }
-        );
+        const errorMsg =
+            error instanceof Error ? error.message : "Erreur inconnue";
+
+        return NextResponse.json({ message: errorMsg }, { status: 500 });
     }
 }

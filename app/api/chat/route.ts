@@ -1,20 +1,29 @@
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 import { ChatApiRepository } from "@/infrastructure/repositories/chat.repository";
-import { getServerActionSession } from "@/infrastructure/server-actions/get-session.action";
+import { getCurrentUser } from "@/shared/utils/auth-utils";
 
 const repo = new ChatApiRepository();
 
 export async function POST(req: NextRequest) {
-    const session = await getServerActionSession();
+    const user = await getCurrentUser();
 
-    if (!session.isLoggedIn || !session.token?.accessToken) {
+    if (!user) {
         return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
     }
+
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("accessToken")?.value;
+
+    if (!accessToken) {
+        return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+    }
+
     const body = await req.json();
 
     try {
-        const chat = await repo.sendMessage(session.token.accessToken, body);
+        const chat = await repo.sendMessage(accessToken, body);
 
         return NextResponse.json(chat);
     } catch (e) {

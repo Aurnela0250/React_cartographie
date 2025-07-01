@@ -1,71 +1,125 @@
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 import { LevelApiRepository } from "@/infrastructure/repositories/level.repository";
-import { getServerActionSession } from "@/infrastructure/server-actions/get-session.action";
+import { getCurrentUser } from "@/shared/utils/auth-utils";
 
 const repo = new LevelApiRepository();
 
-async function getTokenOrThrow() {
-    const session = await getServerActionSession();
+async function authHandler() {
+    const user = await getCurrentUser();
 
-    if (!session.isLoggedIn || !session.token?.accessToken) {
-        return null;
+    if (!user) {
+        return {
+            error: NextResponse.json(
+                { message: "Non authentifié" },
+                { status: 401 }
+            ),
+        };
     }
 
-    return session.token.accessToken;
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("accessToken")?.value;
+
+    if (!accessToken) {
+        return {
+            error: NextResponse.json(
+                { message: "Token manquant" },
+                { status: 401 }
+            ),
+        };
+    }
+
+    return { accessToken };
 }
 
 export async function GET(
     req: NextRequest,
     { params }: { params: { id: string } }
 ) {
-    const token = await getTokenOrThrow();
+    const authResult = await authHandler();
 
-    if (!token)
-        return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
-    const id = Number(params.id);
+    if (authResult.error) return authResult.error;
+    const { accessToken } = authResult;
 
-    if (!id)
-        return NextResponse.json({ error: "ID invalide" }, { status: 400 });
-    const level = await repo.get(token, id);
+    try {
+        const id = Number(params.id);
 
-    return NextResponse.json(level);
+        if (!id) {
+            return NextResponse.json({ error: "ID invalide" }, { status: 400 });
+        }
+
+        const level = await repo.get(accessToken, id);
+
+        return NextResponse.json(level);
+    } catch (error) {
+        const errorMsg =
+            error instanceof Error
+                ? error.message
+                : "An unexpected error occurred";
+
+        return NextResponse.json({ message: errorMsg }, { status: 500 });
+    }
 }
 
 export async function PUT(
     req: NextRequest,
     { params }: { params: { id: string } }
 ) {
-    const token = await getTokenOrThrow();
+    const authResult = await authHandler();
 
-    if (!token)
-        return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
-    const id = Number(params.id);
+    if (authResult.error) return authResult.error;
+    const { accessToken } = authResult;
 
-    if (!id)
-        return NextResponse.json({ error: "ID invalide" }, { status: 400 });
-    const body = await req.json();
-    // Remplacer 'code' par 'acronyme' si besoin (compatibilité front)
-    const { name, code, acronyme, ...rest } = body;
-    const data = { name, acronyme: acronyme ?? code, ...rest };
-    const level = await repo.update(token, id, data);
+    try {
+        const id = Number(params.id);
 
-    return NextResponse.json(level);
+        if (!id) {
+            return NextResponse.json({ error: "ID invalide" }, { status: 400 });
+        }
+
+        const body = await req.json();
+        // Remplacer 'code' par 'acronyme' si besoin (compatibilité front)
+        const { name, code, acronyme, ...rest } = body;
+        const data = { name, acronyme: acronyme ?? code, ...rest };
+        const level = await repo.update(accessToken, id, data);
+
+        return NextResponse.json(level);
+    } catch (error) {
+        const errorMsg =
+            error instanceof Error
+                ? error.message
+                : "An unexpected error occurred";
+
+        return NextResponse.json({ message: errorMsg }, { status: 500 });
+    }
 }
 
 export async function DELETE(
     req: NextRequest,
     { params }: { params: { id: string } }
 ) {
-    const token = await getTokenOrThrow();
+    const authResult = await authHandler();
 
-    if (!token)
-        return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
-    const id = Number(params.id);
+    if (authResult.error) return authResult.error;
+    const { accessToken } = authResult;
 
-    if (!id)
-        return NextResponse.json({ error: "ID invalide" }, { status: 400 });
-    await repo.delete(token, id);
+    try {
+        const id = Number(params.id);
 
-    return NextResponse.json({ success: true });
+        if (!id) {
+            return NextResponse.json({ error: "ID invalide" }, { status: 400 });
+        }
+
+        await repo.delete(accessToken, id);
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        const errorMsg =
+            error instanceof Error
+                ? error.message
+                : "An unexpected error occurred";
+
+        return NextResponse.json({ message: errorMsg }, { status: 500 });
+    }
 }

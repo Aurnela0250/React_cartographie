@@ -1,26 +1,53 @@
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 import { IFormation } from "@/core/entities/formation.entity";
 import { FormationApiRepository } from "@/infrastructure/repositories/formation.repository";
-import { getRouteHandlerSession } from "@/shared/utils/auth";
+import { getCurrentUser } from "@/shared/utils/auth-utils";
 
 const repository = new FormationApiRepository();
+
+async function authHandler() {
+    const user = await getCurrentUser();
+
+    if (!user) {
+        return {
+            error: NextResponse.json(
+                { message: "Non authentifié" },
+                { status: 401 }
+            ),
+        };
+    }
+
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("accessToken")?.value;
+
+    if (!accessToken) {
+        return {
+            error: NextResponse.json(
+                { message: "Token manquant" },
+                { status: 401 }
+            ),
+        };
+    }
+
+    return { accessToken };
+}
 
 export async function GET(
     request: NextRequest,
     { params }: { params: { id: string } }
 ) {
-    try {
-        const session = await getRouteHandlerSession(request);
-        const token = session.token?.accessToken;
+    const authResult = await authHandler();
 
-        if (!token) {
-            return NextResponse.json(
-                { error: "Unauthorized" },
-                { status: 401 }
-            );
-        }
-        const formation = await repository.get(token, parseInt(params.id, 10));
+    if (authResult.error) return authResult.error;
+    const { accessToken } = authResult;
+
+    try {
+        const formation = await repository.get(
+            accessToken,
+            parseInt(params.id, 10)
+        );
 
         if (!formation) {
             return NextResponse.json(
@@ -31,14 +58,12 @@ export async function GET(
 
         return NextResponse.json(formation);
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ error: error.message }, { status: 500 });
-        }
+        const errorMsg =
+            error instanceof Error
+                ? error.message
+                : "An unexpected error occurred";
 
-        return NextResponse.json(
-            { error: "Internal server error" },
-            { status: 500 }
-        );
+        return NextResponse.json({ message: errorMsg }, { status: 500 });
     }
 }
 
@@ -46,19 +71,15 @@ export async function PUT(
     request: NextRequest,
     { params }: { params: { id: string } }
 ) {
-    try {
-        const session = await getRouteHandlerSession(request);
-        const token = session.token?.accessToken;
+    const authResult = await authHandler();
 
-        if (!token) {
-            return NextResponse.json(
-                { error: "Unauthorized" },
-                { status: 401 }
-            );
-        }
+    if (authResult.error) return authResult.error;
+    const { accessToken } = authResult;
+
+    try {
         const body = await request.json();
         const updatedFormation = await repository.update(
-            token,
+            accessToken,
             parseInt(params.id, 10),
             body as Partial<
                 Omit<
@@ -79,14 +100,12 @@ export async function PUT(
 
         return NextResponse.json(updatedFormation);
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ error: error.message }, { status: 500 });
-        }
+        const errorMsg =
+            error instanceof Error
+                ? error.message
+                : "An unexpected error occurred";
 
-        return NextResponse.json(
-            { error: "Internal server error" },
-            { status: 500 }
-        );
+        return NextResponse.json({ message: errorMsg }, { status: 500 });
     }
 }
 
@@ -94,30 +113,24 @@ export async function DELETE(
     request: NextRequest,
     { params }: { params: { id: string } }
 ) {
-    try {
-        const session = await getRouteHandlerSession(request);
-        const token = session.token?.accessToken;
+    const authResult = await authHandler();
 
-        if (!token) {
-            return NextResponse.json(
-                { error: "Unauthorized" },
-                { status: 401 }
-            );
-        }
-        await repository.delete(token, parseInt(params.id, 10));
+    if (authResult.error) return authResult.error;
+    const { accessToken } = authResult;
+
+    try {
+        await repository.delete(accessToken, parseInt(params.id, 10));
 
         return NextResponse.json(
             { message: "Formation deleted successfully" },
             { status: 200 }
         );
     } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ error: error.message }, { status: 500 });
-        }
+        const errorMsg =
+            error instanceof Error
+                ? error.message
+                : "An unexpected error occurred";
 
-        return NextResponse.json(
-            { error: "Internal server error" },
-            { status: 500 }
-        );
+        return NextResponse.json({ message: errorMsg }, { status: 500 });
     }
 }

@@ -1,23 +1,26 @@
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 import { EstablishmentApiRepository } from "@/infrastructure/repositories/establishment.repository";
-import { getRouteHandlerSession } from "@/shared/utils/auth";
+import { getCurrentUser } from "@/shared/utils/auth-utils";
 
 const repo = new EstablishmentApiRepository();
 
-async function getTokenFromRequest(req: NextRequest): Promise<string> {
-    const session = await getRouteHandlerSession(req);
+export async function GET(req: NextRequest) {
+    const user = await getCurrentUser();
 
-    if (!session.isLoggedIn || !session.token?.accessToken) {
-        throw new Error("Non authentifié");
+    if (!user) {
+        return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
     }
 
-    return session.token.accessToken;
-}
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("accessToken")?.value;
 
-export async function GET(req: NextRequest) {
+    if (!accessToken) {
+        return NextResponse.json({ error: "Token manquant" }, { status: 401 });
+    }
+
     try {
-        const token = await getTokenFromRequest(req);
         const { searchParams } = new URL(req.url);
         const page = Number(searchParams.get("page") || 1);
         const perPage = Number(searchParams.get("per_page") || 10);
@@ -36,16 +39,16 @@ export async function GET(req: NextRequest) {
                 : undefined,
         };
 
-        const data = await repo.filter(token, { page, perPage }, filters);
+        const data = await repo.filter(accessToken, { page, perPage }, filters);
 
         // Convertir l'instance de classe en objet JavaScript simple
         const plainData = JSON.parse(JSON.stringify(data));
 
         return NextResponse.json(plainData);
     } catch (error) {
-        return NextResponse.json(
-            { message: "Non authentifié" },
-            { status: 401 }
-        );
+        const errorMsg =
+            error instanceof Error ? error.message : "Erreur inconnue";
+
+        return NextResponse.json({ message: errorMsg }, { status: 500 });
     }
 }

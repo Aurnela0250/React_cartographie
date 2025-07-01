@@ -1,25 +1,49 @@
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 import { FormationApiRepository } from "@/infrastructure/repositories/formation.repository";
-import { getRouteHandlerSession } from "@/shared/utils/auth";
+import { getCurrentUser } from "@/shared/utils/auth-utils";
 
 const repository = new FormationApiRepository();
 
-export async function GET(request: NextRequest) {
-    try {
-        const session = await getRouteHandlerSession(request);
-        const token = session.token?.accessToken;
+async function authHandler() {
+    const user = await getCurrentUser();
 
-        if (!token) {
-            return NextResponse.json(
-                { error: "Unauthorized" },
+    if (!user) {
+        return {
+            error: NextResponse.json(
+                { message: "Non authentifié" },
                 { status: 401 }
-            );
-        }
+            ),
+        };
+    }
+
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("accessToken")?.value;
+
+    if (!accessToken) {
+        return {
+            error: NextResponse.json(
+                { message: "Token manquant" },
+                { status: 401 }
+            ),
+        };
+    }
+
+    return { accessToken };
+}
+
+export async function GET(request: NextRequest) {
+    const authResult = await authHandler();
+
+    if (authResult.error) return authResult.error;
+    const { accessToken } = authResult;
+
+    try {
         const { searchParams } = new URL(request.url);
         const page = parseInt(searchParams.get("page") || "1", 10);
         const limit = parseInt(searchParams.get("limit") || "10", 10);
-        const response = await repository.getAll(token, {
+        const response = await repository.getAll(accessToken, {
             page,
             perPage: limit,
         });
@@ -36,16 +60,12 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-    try {
-        const session = await getRouteHandlerSession(request);
-        const token = session.token?.accessToken;
+    const authResult = await authHandler();
 
-        if (!token) {
-            return NextResponse.json(
-                { error: "Unauthorized" },
-                { status: 401 }
-            );
-        }
+    if (authResult.error) return authResult.error;
+    const { accessToken } = authResult;
+
+    try {
         const body = await request.json();
 
         // Validate required fields
@@ -72,7 +92,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const newFormation = await repository.create(token, {
+        const newFormation = await repository.create(accessToken, {
             intitule,
             description,
             duration,

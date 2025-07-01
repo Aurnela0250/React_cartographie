@@ -1,42 +1,42 @@
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 import { MentionApiRepository } from "@/infrastructure/repositories/mention.repository";
-import { getServerActionSession } from "@/infrastructure/server-actions/get-session.action";
+import { getCurrentUser } from "@/shared/utils/auth-utils";
 
 const repo = new MentionApiRepository();
 
 export async function GET(req: NextRequest) {
-    const session = await getServerActionSession();
+    const user = await getCurrentUser();
 
-    if (!session.isLoggedIn || !session.token?.accessToken) {
-        return NextResponse.json(
-            { message: "Non authentifié" },
-            { status: 401 }
-        );
-    }
-    const searchParams = req.nextUrl.searchParams;
-    const page = Number(searchParams.get("page")) || 1;
-    const perPage = Number(searchParams.get("per_page")) || 10;
-
-    const domainId = searchParams.get("domainId")
-        ? Number(searchParams.get("domainId"))
-        : undefined;
-    // Correction : utiliser getAll (comme pour les autres repositories)
-    // On ne peut pas passer domainId dans PaginationParams, il faut filtrer côté API ou ici
-    let result = await repo.getAll(session.token.accessToken, {
-        page,
-        perPage,
-    });
-
-    // Filtrage JS côté API si domainId fourni (en attendant un endpoint/filter dédié)
-    if (domainId) {
-        result = {
-            ...result,
-            items: result.items.filter((m) => m.domainId === domainId),
-            totalItems: result.items.filter((m) => m.domainId === domainId)
-                .length,
-        };
+    if (!user) {
+        return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
     }
 
-    return NextResponse.json(result);
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("accessToken")?.value;
+
+    if (!accessToken) {
+        return NextResponse.json({ error: "Token manquant" }, { status: 401 });
+    }
+
+    try {
+        const searchParams = req.nextUrl.searchParams;
+        const page = Number(searchParams.get("page")) || 1;
+        const perPage = Number(searchParams.get("perPage")) || 10;
+
+        const result = await repo.getAll(accessToken, {
+            page,
+            perPage,
+        });
+
+        return NextResponse.json(result);
+    } catch (error) {
+        const errorMsg =
+            error instanceof Error
+                ? error.message
+                : "An unexpected error occurred";
+
+        return NextResponse.json({ message: errorMsg }, { status: 500 });
+    }
 }

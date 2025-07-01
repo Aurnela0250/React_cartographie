@@ -1,26 +1,29 @@
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 import { EstablishmentApiRepository } from "@/infrastructure/repositories/establishment.repository";
-import { getRouteHandlerSession } from "@/shared/utils/auth";
+import { getCurrentUser } from "@/shared/utils/auth-utils";
 
 const repo = new EstablishmentApiRepository();
-
-async function getTokenFromRequest(req: NextRequest): Promise<string> {
-    const session = await getRouteHandlerSession(req);
-
-    if (!session.isLoggedIn || !session.token?.accessToken) {
-        throw new Error("Non authentifié");
-    }
-
-    return session.token.accessToken;
-}
 
 export async function POST(
     req: NextRequest,
     { params }: { params: { id: string } }
 ) {
+    const user = await getCurrentUser();
+
+    if (!user) {
+        return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+    }
+
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("accessToken")?.value;
+
+    if (!accessToken) {
+        return NextResponse.json({ error: "Token manquant" }, { status: 401 });
+    }
+
     try {
-        const token = await getTokenFromRequest(req);
         const id = parseInt(params.id);
         const body = await req.json();
 
@@ -31,13 +34,15 @@ export async function POST(
             );
         }
 
-        const result = await repo.rate(token, id, { rating: body.rating });
+        const result = await repo.rate(accessToken, id, {
+            rating: body.rating,
+        });
 
         return NextResponse.json({ success: result });
     } catch (error) {
-        return NextResponse.json(
-            { message: "Non authentifié" },
-            { status: 401 }
-        );
+        const errorMsg =
+            error instanceof Error ? error.message : "Erreur inconnue";
+
+        return NextResponse.json({ message: errorMsg }, { status: 500 });
     }
 }
