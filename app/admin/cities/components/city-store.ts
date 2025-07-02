@@ -9,7 +9,6 @@ interface CityState {
     isAddEditDialogOpen: boolean;
     isDeleteDialogOpen: boolean;
     formError: string | null;
-    deleteCityData: City | null;
     setSelectedCity: (city: City | null) => void;
     setIsAddEditDialogOpen: (open: boolean) => void;
     setIsDeleteDialogOpen: (open: boolean) => void;
@@ -21,7 +20,6 @@ export const useCityStore = create<CityState>((set) => ({
     isAddEditDialogOpen: false,
     isDeleteDialogOpen: false,
     formError: null,
-    deleteCityData: null,
     setSelectedCity: (city) => set({ selectedCity: city }),
     setIsAddEditDialogOpen: (open) => set({ isAddEditDialogOpen: open }),
     setIsDeleteDialogOpen: (open) => set({ isDeleteDialogOpen: open }),
