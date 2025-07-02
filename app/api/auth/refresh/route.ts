@@ -15,6 +15,8 @@ interface JWTPayload {
 }
 
 export async function GET(request: NextRequest) {
+    const isAjaxRefresh = request.headers.get("x-refresh-request") === "true";
+
     try {
         const cookieStore = await cookies();
         const refreshToken = cookieStore.get("refreshToken")?.value;
@@ -26,7 +28,16 @@ export async function GET(request: NextRequest) {
             const loginUrl = new URL("/login", request.url);
             const originalUrl =
                 request.nextUrl.searchParams.get("redirectTo") || request.url;
+
             loginUrl.searchParams.set("redirectTo", originalUrl);
+            loginUrl.searchParams.set("toast", "session-expired");
+            if (isAjaxRefresh) {
+                return NextResponse.json(
+                    { success: false, reason: "no-refresh-token" },
+                    { status: 401 }
+                );
+            }
+
             return NextResponse.redirect(loginUrl);
         }
 
@@ -58,7 +69,16 @@ export async function GET(request: NextRequest) {
                 const originalUrl =
                     request.nextUrl.searchParams.get("redirectTo") ||
                     request.url;
+
                 loginUrl.searchParams.set("redirectTo", originalUrl);
+                loginUrl.searchParams.set("toast", "session-expired");
+                if (isAjaxRefresh) {
+                    return NextResponse.json(
+                        { success: false, reason: "refresh-token-expired" },
+                        { status: 401 }
+                    );
+                }
+
                 return NextResponse.redirect(loginUrl);
             }
         } catch (error) {
@@ -70,7 +90,16 @@ export async function GET(request: NextRequest) {
             const loginUrl = new URL("/login", request.url);
             const originalUrl =
                 request.nextUrl.searchParams.get("redirectTo") || request.url;
+
             loginUrl.searchParams.set("redirectTo", originalUrl);
+            loginUrl.searchParams.set("toast", "session-expired");
+            if (isAjaxRefresh) {
+                return NextResponse.json(
+                    { success: false, reason: "decode-error" },
+                    { status: 401 }
+                );
+            }
+
             return NextResponse.redirect(loginUrl);
         }
 
@@ -91,7 +120,16 @@ export async function GET(request: NextRequest) {
             const loginUrl = new URL("/login", request.url);
             const originalUrl =
                 request.nextUrl.searchParams.get("redirectTo") || request.url;
+
             loginUrl.searchParams.set("redirectTo", originalUrl);
+            loginUrl.searchParams.set("toast", "session-expired");
+            if (isAjaxRefresh) {
+                return NextResponse.json(
+                    { success: false, reason: "incomplete-token" },
+                    { status: 401 }
+                );
+            }
+
             return NextResponse.redirect(loginUrl);
         }
 
@@ -145,6 +183,10 @@ export async function GET(request: NextRequest) {
             }
         );
 
+        if (isAjaxRefresh) {
+            return NextResponse.json({ success: true });
+        }
+
         // Récupérer l'URL de redirection depuis les paramètres ou utiliser une URL par défaut
         const redirectTo =
             request.nextUrl.searchParams.get("redirectTo") || "/dashboard";
@@ -178,14 +220,32 @@ export async function GET(request: NextRequest) {
             const loginUrl = new URL("/login", request.url);
             const originalUrl =
                 request.nextUrl.searchParams.get("redirectTo") || request.url;
+
             loginUrl.searchParams.set("redirectTo", originalUrl);
+            loginUrl.searchParams.set("toast", "session-expired");
+            if (isAjaxRefresh) {
+                return NextResponse.json(
+                    { success: false, reason: "unauthorized" },
+                    { status: 401 }
+                );
+            }
+
             return NextResponse.redirect(loginUrl);
         }
 
         const loginUrl = new URL("/login", request.url);
         const originalUrl =
             request.nextUrl.searchParams.get("redirectTo") || request.url;
+
         loginUrl.searchParams.set("redirectTo", originalUrl);
+        loginUrl.searchParams.set("toast", "session-expired");
+        if (isAjaxRefresh) {
+            return NextResponse.json(
+                { success: false, reason: "error" },
+                { status: 401 }
+            );
+        }
+
         return NextResponse.redirect(loginUrl);
     }
 }
