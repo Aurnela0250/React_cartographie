@@ -1,27 +1,25 @@
-export type RegionArgs = {
+export type IRegion = {
     id: number;
     name: string;
-    createdAt?: string;
-    updatedAt?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
     createdBy?: number;
     updatedBy?: number;
 };
 
-export type IRegion = Partial<RegionArgs>;
-
 export class Region implements IRegion {
-    id?: number;
-    name?: string;
-    createdAt?: string;
-    updatedAt?: string;
+    id: number;
+    name: string;
+    createdAt?: Date;
+    updatedAt?: Date;
     createdBy?: number;
     updatedBy?: number;
 
     constructor(args: IRegion) {
         this.id = args.id;
         this.name = args.name;
-        this.createdAt = args.createdAt;
-        this.updatedAt = args.updatedAt;
+        this.createdAt = args.createdAt ? new Date(args.createdAt) : undefined;
+        this.updatedAt = args.updatedAt ? new Date(args.updatedAt) : undefined;
         this.createdBy = args.createdBy;
         this.updatedBy = args.updatedBy;
     }

@@ -19,10 +19,10 @@ export interface IRegionRepository {
         token: string,
         id: number,
         data: {
-            name?: string;
+            name: string;
         }
     ): Promise<Region>;
-    delete(token: string, id: number): Promise<void>;
+    delete(token: string, id: number): Promise<boolean>;
     filter(
         token: string,
         filters: RegionFilter
