@@ -1,6 +1,5 @@
 ---
-description: Ce template et ces patterns sont à appliquer pour toute nouvelle entité CRUD admin. Ils garantissent une expérience utilisateur cohérente, un code maintenable, et une architecture scalable.
-globs:
+globs: app/admin/domains/**/*.tsx
 alwaysApply: false
 ---
 
