@@ -17,6 +17,7 @@ const publicApiPaths: string[] = [
 
 export default async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
+
     const isApiRoute = path.startsWith("/api/");
 
     // Permettre l'accès aux routes vraiment publiques et aux API d'auth sans token
@@ -37,12 +38,6 @@ export default async function middleware(request: NextRequest) {
     const accessToken = request.cookies.get("accessToken")?.value;
     const refreshToken = request.cookies.get("refreshToken")?.value;
 
-    console.log("Middleware: accessToken", accessToken ? "présent" : "absent");
-    console.log(
-        "Middleware: refreshToken",
-        refreshToken ? "présent" : "absent"
-    );
-
     // Si pas de refreshToken = session complètement expirée
     if (!refreshToken) {
         console.log("Middleware: Pas de refreshToken");
@@ -57,7 +52,10 @@ export default async function middleware(request: NextRequest) {
             // Pour les routes de page, rediriger vers login
             console.log("Middleware: Redirection vers /login");
             const loginUrl = new URL("/login", request.url);
+
             loginUrl.searchParams.set("redirectTo", request.url);
+            loginUrl.searchParams.set("toast", "session-expired");
+
             return NextResponse.redirect(loginUrl);
         }
     }
@@ -75,7 +73,9 @@ export default async function middleware(request: NextRequest) {
         } else {
             // Pour les routes de page, rediriger vers refresh
             const refreshUrl = new URL("/api/auth/refresh", request.url);
+
             refreshUrl.searchParams.set("redirectTo", request.url);
+
             return NextResponse.redirect(refreshUrl);
         }
     }
@@ -94,6 +94,7 @@ export default async function middleware(request: NextRequest) {
 
         // Token valide, continuer
         console.log("Middleware: Token valide, accès autorisé");
+
         return NextResponse.next();
     } catch (error) {
         // Erreur lors du décodage = token corrompu
@@ -112,7 +113,9 @@ export default async function middleware(request: NextRequest) {
             // Pour les routes de page, essayer de refresh
             console.log("Middleware: Token corrompu, tentative de refresh");
             const refreshUrl = new URL("/api/auth/refresh", request.url);
+
             refreshUrl.searchParams.set("redirectTo", request.url);
+
             return NextResponse.redirect(refreshUrl);
         }
     }

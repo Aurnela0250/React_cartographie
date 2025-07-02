@@ -19,8 +19,8 @@ const nextConfig = {
         unoptimized: true,
     },
     experimental: {
-        parallelServerBuildTraces: true,
-        parallelServerCompiles: true,
+        // parallelServerBuildTraces: true,
+        // parallelServerCompiles: true,
     },
     devIndicators: {
         position: "bottom-right",
@@ -32,7 +32,9 @@ const nextConfig = {
         config.watchOptions = {
             ...config.watchOptions,
             ignored: [
-                ...(config.watchOptions?.ignored || []),
+                ...(Array.isArray(config.watchOptions?.ignored)
+                    ? config.watchOptions.ignored
+                    : []),
                 "**/packages/**",
             ],
         };

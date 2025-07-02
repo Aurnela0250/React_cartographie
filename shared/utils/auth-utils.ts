@@ -1,12 +1,5 @@
 import { cookies } from "next/headers";
 
-import { auth } from "@/auth";
-
-// Fonction pour récupérer la session côté serveur
-export async function getServerSession() {
-    return await auth();
-}
-
 interface User {
     id: number;
     email: string;
