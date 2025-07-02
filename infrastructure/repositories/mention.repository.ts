@@ -4,12 +4,35 @@ import {
     PaginatedResult,
     PaginationParams,
 } from "@/core/entities/pagination";
+import { MentionFilter } from "@/core/filters/mention.filter";
 import { IMentionRepository } from "@/core/interfaces/mention.repository.interface";
 import { env } from "@/env.mjs";
 import { toCamelCaseRecursive, toSnakeCaseRecursive } from "@/shared/utils";
 import { handleApiResponse } from "@/shared/utils/api-errors";
 
 export class MentionApiRepository implements IMentionRepository {
+    async filter(
+        token: string,
+        filters: MentionFilter
+    ): Promise<PaginatedResult<Mention>> {
+        const cleanedFilters = Object.fromEntries(
+            Object.entries(filters).filter(
+                ([, value]) =>
+                    value !== null && value !== undefined && value !== ""
+            )
+        );
+
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/mentions/filter/?${new URLSearchParams(toSnakeCaseRecursive(cleanedFilters as Record<string, string>)).toString()}`;
+        const response = await fetch(url, {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await handleApiResponse<PaginatedPlain<Mention>>(response);
+        const camelCasedData = toCamelCaseRecursive(data);
+        const paginatedRaw = PaginatedResult.fromPlain(camelCasedData);
+
+        return PaginatedResult.mapItemsToEntity(paginatedRaw, Mention);
+    }
     async getAll(
         token: string,
         param: PaginationParams

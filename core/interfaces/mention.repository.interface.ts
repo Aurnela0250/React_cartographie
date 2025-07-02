@@ -24,7 +24,7 @@ export interface IMentionRepository {
             domainId?: number;
         }
     ): Promise<Mention>;
-    delete(token: string, id: number): Promise<void>;
+    delete(token: string, id: number): Promise<boolean>;
     filter(
         token: string,
         filters: MentionFilter
