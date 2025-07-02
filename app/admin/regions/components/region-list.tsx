@@ -27,7 +27,7 @@ export function RegionList() {
     const setIsAddEditDialogOpen = useRegionStore(
         (s) => s.setIsAddEditDialogOpen
     );
-    const setDeleteRegionData = useRegionStore((s) => s.setDeleteRegionData);
+
     const setIsDeleteDialogOpen = useRegionStore(
         (s) => s.setIsDeleteDialogOpen
     );
@@ -173,7 +173,7 @@ export function RegionList() {
                                                     size="icon"
                                                     variant="destructive"
                                                     onClick={() => {
-                                                        setDeleteRegionData(
+                                                        setSelectedRegion(
                                                             region
                                                         );
                                                         setIsDeleteDialogOpen(

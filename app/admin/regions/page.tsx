@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
 
-import { RegionAddButton } from "./components/region-ddd-button";
+import { RegionAddButton } from "./components/region-add-button";
 import { RegionDeleteDialog } from "./components/region-delete-dialog";
 import { RegionDialog } from "./components/region-dialog";
 import { RegionList } from "./components/region-list";

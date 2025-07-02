@@ -35,6 +35,7 @@ export function RegionDeleteDialog() {
     });
 
     const handleConfirm = () => {
+        console.log("handleConfirm", selectedRegion);
         if (selectedRegion?.id) {
             deleteMutation.mutate(selectedRegion.id);
         }

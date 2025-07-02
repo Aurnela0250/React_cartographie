@@ -18,7 +18,7 @@ import {
 } from "@/presentation/components/ui/card";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { DomainDeleteDialog } from "./components/DomainDeleteDialog";
+import { DomainDeleteDialog } from "./components/domain-delete-dialog";
 import { DomainDialog } from "./components/DomainDialog";
 import { DomainList } from "./components/DomainList";
 
