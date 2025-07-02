@@ -1,15 +1,14 @@
+import { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
-import { Toaster } from "@/presentation/components/ui/toaster";
-import QueryProvider from "@/presentation/providers/query-provider";
-import { AuthProvider } from "@/presentation/providers/session-provider";
-import { ThemeProvider } from "@/presentation/providers/theme-provider";
+import ClientProviders from "@/presentation/providers/client-providers";
 
 import "@/styles/globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata = {
+export const metadata: Metadata = {
     title: "OrientaMada - Plateforme d'Orientation",
     description: "Trouvez votre établissement d'enseignement supérieur idéal",
     generator: "v0.dev",
@@ -23,20 +22,9 @@ export default function RootLayout({
     return (
         <html suppressHydrationWarning lang="fr">
             <body className={inter.className}>
-                <AuthProvider>
-                    <QueryProvider>
-                        <ThemeProvider
-                            disableTransitionOnChange
-                            enableSystem
-                            attribute="class"
-                            defaultTheme="light"
-                        >
-                            {children}
-                            <Toaster />
-                            {/* <ChatAI /> */}
-                        </ThemeProvider>
-                    </QueryProvider>
-                </AuthProvider>
+                <ClientProviders>
+                    <NuqsAdapter>{children}</NuqsAdapter>
+                </ClientProviders>
             </body>
         </html>
     );

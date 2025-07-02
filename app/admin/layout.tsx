@@ -1,18 +1,11 @@
 import * as React from "react";
 
-import { AdminSidebar } from "@/presentation/components/admin-sidebar";
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/presentation/components/ui/breadcrumb";
+import { AdminLayoutClient } from "@/presentation/components/admin-layout-client";
+import { AdminSidebarServer } from "@/presentation/components/admin-sidebar-server";
+import { DynamicBreadcrumb } from "@/presentation/components/dynamic-breadcrumb";
 import { Separator } from "@/presentation/components/ui/separator";
 import {
     SidebarInset,
-    SidebarProvider,
     SidebarTrigger,
 } from "@/presentation/components/ui/sidebar";
 
@@ -24,35 +17,21 @@ export default function AdminLayout({
     children: React.ReactNode;
 }) {
     return (
-        <SidebarProvider>
-            <AdminSidebar />
+        <AdminLayoutClient>
+            <AdminSidebarServer />
             <SidebarInset>
-                <header className="flex h-16 shrink-0 items-center gap-2">
+                <header className="flex h-16 shrink-0 items-center gap-2 border-b">
                     <div className="flex items-center gap-2 px-4">
                         <SidebarTrigger className="-ml-1" />
                         <Separator
                             className="mr-2 h-4"
                             orientation="vertical"
                         />
-                        <Breadcrumb>
-                            <BreadcrumbList>
-                                <BreadcrumbItem className="hidden md:block">
-                                    <BreadcrumbLink href="#">
-                                        Building Your Application
-                                    </BreadcrumbLink>
-                                </BreadcrumbItem>
-                                <BreadcrumbSeparator className="hidden md:block" />
-                                <BreadcrumbItem>
-                                    <BreadcrumbPage>
-                                        Data Fetching
-                                    </BreadcrumbPage>
-                                </BreadcrumbItem>
-                            </BreadcrumbList>
-                        </Breadcrumb>
+                        <DynamicBreadcrumb />
                     </div>
                 </header>
                 <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
             </SidebarInset>
-        </SidebarProvider>
+        </AdminLayoutClient>
     );
 }
