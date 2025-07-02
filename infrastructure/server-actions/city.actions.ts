@@ -1,14 +1,17 @@
 "use server";
 
 import { CityApiRepository } from "@/infrastructure/repositories/city.repository";
-
-import { getTokenServerSide } from "./token";
+import { getAuthTokens } from "@/shared/utils/auth-utils";
 
 const repo = new CityApiRepository();
 
 export async function createCity(data: { name: string; regionId: number }) {
-    const token = await getTokenServerSide();
-    const city = await repo.create(token, {
+    const { accessToken } = await getAuthTokens();
+
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+    const city = await repo.create(accessToken, {
         name: data.name,
         regionId: data.regionId,
     });
@@ -20,8 +23,12 @@ export async function updateCity(
     id: number,
     data: { name?: string; regionId?: number }
 ) {
-    const token = await getTokenServerSide();
-    const city = await repo.update(token, id, {
+    const { accessToken } = await getAuthTokens();
+
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+    const city = await repo.update(accessToken, id, {
         name: data.name,
         regionId: data.regionId,
     });
@@ -30,7 +37,11 @@ export async function updateCity(
 }
 
 export async function deleteCity(id: number) {
-    const token = await getTokenServerSide();
+    const { accessToken } = await getAuthTokens();
 
-    return repo.delete(token, id);
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+
+    return repo.delete(accessToken, id);
 }

@@ -1,18 +1,18 @@
 "use server";
 
+import { cookies } from "next/headers";
+
 import { AuthDjangoApiRepository } from "@/infrastructure/repositories/auth.repository";
 import { actionClient } from "@/infrastructure/services/safe-action";
 import { loginSchema } from "@/presentation/schemas/auth.schema";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { UnauthorizedError } from "@/shared/utils/api-errors.types";
+
 // Plus besoin d'importer ces erreurs car on retourne directement des objets d'erreur
 // import {
 //     InternalServerError,
 //     InvalidCredentialError,
 // } from "@/shared/utils/app-errors";
-import { tokenToSessionData } from "@/shared/utils/auth";
-
-import { getServerActionSession } from "./get-session.action";
 
 // Instancier le repository
 const authRepository = new AuthDjangoApiRepository();
@@ -37,19 +37,57 @@ export const login = actionClient
                 };
             }
 
-            // Obtenir la session
-            const session = await getServerActionSession();
+            // Mettre à jour les cookies
+            const getTimeUntilExpiry = (exp: number): number => {
+                const currentTimeUTC = Math.floor(
+                    Date.UTC(
+                        new Date().getUTCFullYear(),
+                        new Date().getUTCMonth(),
+                        new Date().getUTCDate(),
+                        new Date().getUTCHours(),
+                        new Date().getUTCMinutes(),
+                        new Date().getUTCSeconds()
+                    ) / 1000
+                );
 
-            // Convertir le token en données de session et les stocker
-            const sessionData = tokenToSessionData(tokenData);
+                return Math.max(0, exp - currentTimeUTC);
+            };
 
-            // Mettre à jour la session
-            session.isLoggedIn = sessionData.isLoggedIn;
-            session.token = sessionData.token;
-            session.user = sessionData.user;
+            const timeUntilExpiry = getTimeUntilExpiry(tokenData.exp);
 
-            // Sauvegarder la session
-            await session.save();
+            const cookieStore = await cookies();
+
+            cookieStore.set("accessToken", tokenData.accessToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "strict",
+                maxAge: timeUntilExpiry,
+                path: "/",
+            });
+
+            cookieStore.set("refreshToken", tokenData.refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "strict",
+                maxAge: 7 * 24 * 60 * 60, // 7 jours
+                path: "/",
+            });
+
+            cookieStore.set(
+                "tokenMeta",
+                JSON.stringify({
+                    exp: tokenData.exp,
+                    iat: tokenData.iat,
+                    userId: tokenData.userId,
+                }),
+                {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === "production",
+                    sameSite: "strict",
+                    maxAge: getTimeUntilExpiry(tokenData.exp),
+                    path: "/",
+                }
+            );
 
             // Retourner succès et URL de redirection
             return { success: true, redirectTo: DEFAULT_LOGIN_REDIRECT };

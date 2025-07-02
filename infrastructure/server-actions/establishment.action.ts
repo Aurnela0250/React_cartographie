@@ -1,8 +1,7 @@
 "use server";
 
 import { EstablishmentApiRepository } from "@/infrastructure/repositories/establishment.repository";
-
-import { getTokenServerSide } from "./token";
+import { getAuthTokens } from "@/shared/utils/auth-utils";
 
 const repository = new EstablishmentApiRepository();
 
@@ -19,9 +18,13 @@ export async function createEstablishment(data: {
     sectorId: number;
 }) {
     try {
-        const token = await getTokenServerSide();
+        const { accessToken } = await getAuthTokens();
 
-        const establishment = await repository.create(token, data);
+        if (!accessToken) {
+            throw new Error("Non authentifié");
+        }
+
+        const establishment = await repository.create(accessToken, data);
 
         return { ...establishment };
     } catch (error) {
@@ -46,9 +49,13 @@ export async function updateEstablishment(
     }
 ) {
     try {
-        const token = await getTokenServerSide();
+        const { accessToken } = await getAuthTokens();
 
-        const establishment = await repository.update(token, id, data);
+        if (!accessToken) {
+            throw new Error("Non authentifié");
+        }
+
+        const establishment = await repository.update(accessToken, id, data);
 
         return { ...establishment };
     } catch (error) {
@@ -59,9 +66,13 @@ export async function updateEstablishment(
 
 export async function deleteEstablishment(id: number): Promise<boolean> {
     try {
-        const token = await getTokenServerSide();
+        const { accessToken } = await getAuthTokens();
 
-        return await repository.delete(token, id);
+        if (!accessToken) {
+            throw new Error("Non authentifié");
+        }
+
+        return await repository.delete(accessToken, id);
     } catch (error) {
         console.error("Error deleting establishment:", error);
         throw new Error("Failed to delete establishment");
@@ -73,9 +84,13 @@ export async function rateEstablishment(
     rating: number
 ): Promise<boolean> {
     try {
-        const token = await getTokenServerSide();
+        const { accessToken } = await getAuthTokens();
 
-        return await repository.rate(token, id, { rating });
+        if (!accessToken) {
+            throw new Error("Non authentifié");
+        }
+
+        return await repository.rate(accessToken, id, { rating });
     } catch (error) {
         console.error("Error rating establishment:", error);
         throw new Error("Failed to rate establishment");

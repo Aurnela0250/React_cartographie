@@ -1,30 +1,40 @@
 "use server";
 
 import { RegionApiRepository } from "@/infrastructure/repositories/region.repository";
-
-import { getTokenServerSide } from "./token";
+import { getAuthTokens } from "@/shared/utils/auth-utils";
 
 const repo = new RegionApiRepository();
 
-export async function createRegion(data: { name: string; code?: string }) {
-    const token = await getTokenServerSide();
-    const region = await repo.create(token, data);
+export async function createRegion(data: { name: string }) {
+    const { accessToken } = await getAuthTokens();
+
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+
+    const region = await repo.create(accessToken, data);
 
     return { ...region };
 }
 
-export async function updateRegion(
-    id: number,
-    data: { name?: string; code?: string }
-) {
-    const token = await getTokenServerSide();
-    const region = await repo.update(token, id, data);
+export async function updateRegion(id: number, data: { name: string }) {
+    const { accessToken } = await getAuthTokens();
+
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+
+    const region = await repo.update(accessToken, id, data);
 
     return { ...region };
 }
 
 export async function deleteRegion(id: number) {
-    const token = await getTokenServerSide();
+    const { accessToken } = await getAuthTokens();
 
-    return repo.delete(token, id);
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+
+    return repo.delete(accessToken, id);
 }

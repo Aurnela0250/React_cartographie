@@ -1,14 +1,18 @@
 "use server";
 
 import { MentionApiRepository } from "@/infrastructure/repositories/mention.repository";
-
-import { getTokenServerSide } from "./token";
+import { getAuthTokens } from "@/shared/utils/auth-utils";
 
 const repo = new MentionApiRepository();
 
 export async function createMention(data: { name: string; domainId: number }) {
-    const token = await getTokenServerSide();
-    const mention = await repo.create(token, data);
+    const { accessToken } = await getAuthTokens();
+
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+
+    const mention = await repo.create(accessToken, data);
 
     return { ...mention };
 }
@@ -17,14 +21,23 @@ export async function updateMention(
     id: number,
     data: { name?: string; domainId?: number }
 ) {
-    const token = await getTokenServerSide();
-    const mention = await repo.update(token, id, data);
+    const { accessToken } = await getAuthTokens();
+
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+
+    const mention = await repo.update(accessToken, id, data);
 
     return { ...mention };
 }
 
 export async function deleteMention(id: number) {
-    const token = await getTokenServerSide();
+    const { accessToken } = await getAuthTokens();
 
-    return repo.delete(token, id);
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+
+    return repo.delete(accessToken, id);
 }

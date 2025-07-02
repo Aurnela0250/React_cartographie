@@ -1,27 +1,38 @@
 "use server";
 
 import { DomainApiRepository } from "@/infrastructure/repositories/domain.repository";
-
-import { getTokenServerSide } from "./token";
+import { getAuthTokens } from "@/shared/utils/auth-utils";
 
 const repo = new DomainApiRepository();
 
 export async function createDomain(data: { name: string }) {
-    const token = await getTokenServerSide();
-    const domain = await repo.create(token, data);
+    const { accessToken } = await getAuthTokens();
+
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+    const domain = await repo.create(accessToken, data);
 
     return { ...domain };
 }
 
 export async function updateDomain(id: number, data: { name?: string }) {
-    const token = await getTokenServerSide();
-    const domain = await repo.update(token, id, data);
+    const { accessToken } = await getAuthTokens();
+
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+    const domain = await repo.update(accessToken, id, data);
 
     return { ...domain };
 }
 
 export async function deleteDomain(id: number) {
-    const token = await getTokenServerSide();
+    const { accessToken } = await getAuthTokens();
 
-    return repo.delete(token, id);
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+
+    return repo.delete(accessToken, id);
 }

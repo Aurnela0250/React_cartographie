@@ -1,14 +1,18 @@
 "use server";
 
 import { LevelApiRepository } from "@/infrastructure/repositories/level.repository";
-
-import { getTokenServerSide } from "./token";
+import { getAuthTokens } from "@/shared/utils/auth-utils";
 
 const repo = new LevelApiRepository();
 
 export async function createLevel(data: { name: string; acronyme?: string }) {
-    const token = await getTokenServerSide();
-    const level = await repo.create(token, data);
+    const { accessToken } = await getAuthTokens();
+
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+
+    const level = await repo.create(accessToken, data);
 
     return { ...level };
 }
@@ -17,14 +21,23 @@ export async function updateLevel(
     id: number,
     data: { name?: string; acronyme?: string }
 ) {
-    const token = await getTokenServerSide();
-    const level = await repo.update(token, id, data);
+    const { accessToken } = await getAuthTokens();
+
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+
+    const level = await repo.update(accessToken, id, data);
 
     return { ...level };
 }
 
 export async function deleteLevel(id: number) {
-    const token = await getTokenServerSide();
+    const { accessToken } = await getAuthTokens();
 
-    return repo.delete(token, id);
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+
+    return repo.delete(accessToken, id);
 }

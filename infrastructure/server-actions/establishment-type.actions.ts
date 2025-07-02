@@ -1,8 +1,7 @@
 "use server";
 
 import { EstablishmentTypeApiRepository } from "@/infrastructure/repositories/establishment-type.repository";
-
-import { getTokenServerSide } from "./token";
+import { getAuthTokens } from "@/shared/utils/auth-utils";
 
 const repo = new EstablishmentTypeApiRepository();
 
@@ -10,8 +9,12 @@ export async function createEstablishmentType(data: {
     name: string;
     description?: string;
 }) {
-    const token = await getTokenServerSide();
-    const establishmentType = await repo.create(token, data);
+    const { accessToken } = await getAuthTokens();
+
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+    const establishmentType = await repo.create(accessToken, data);
 
     return { ...establishmentType };
 }
@@ -20,14 +23,22 @@ export async function updateEstablishmentType(
     id: number,
     data: { name?: string; description?: string }
 ) {
-    const token = await getTokenServerSide();
-    const establishmentType = await repo.update(token, id, data);
+    const { accessToken } = await getAuthTokens();
+
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+    const establishmentType = await repo.update(accessToken, id, data);
 
     return { ...establishmentType };
 }
 
 export async function deleteEstablishmentType(id: number) {
-    const token = await getTokenServerSide();
+    const { accessToken } = await getAuthTokens();
 
-    return repo.delete(token, id);
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+
+    return repo.delete(accessToken, id);
 }

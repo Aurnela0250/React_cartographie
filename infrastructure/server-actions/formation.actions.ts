@@ -2,8 +2,7 @@
 
 import { IFormation } from "@/core/entities/formation.entity";
 import { FormationApiRepository } from "@/infrastructure/repositories/formation.repository";
-
-import { getTokenServerSide } from "./token";
+import { getAuthTokens } from "@/shared/utils/auth-utils";
 
 // --- Formation Authorization actions ---
 export async function createFormationAuthorization(
@@ -15,7 +14,11 @@ export async function createFormationAuthorization(
         arrete?: string;
     }
 ) {
-    const token = await getTokenServerSide();
+    const { accessToken } = await getAuthTokens();
+
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
     // Nettoyage des champs vides
     const cleanData = {
         ...data,
@@ -24,7 +27,7 @@ export async function createFormationAuthorization(
     };
 
     const formation = await repo.createFormationAuthorization(
-        token,
+        accessToken,
         formationId,
         cleanData
     );
@@ -41,7 +44,11 @@ export async function updateFormationAuthorization(
         arrete?: string;
     }
 ) {
-    const token = await getTokenServerSide();
+    const { accessToken } = await getAuthTokens();
+
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
     // Nettoyage des champs vides
     const cleanData = {
         ...data,
@@ -50,7 +57,7 @@ export async function updateFormationAuthorization(
     };
 
     const formation = await repo.updateFormationAuthorization(
-        token,
+        accessToken,
         formationId,
         cleanData
     );
@@ -63,10 +70,14 @@ export async function createAnnualHeadcount(
     formationId: number,
     data: { academicYear: number; students: number }
 ) {
-    const token = await getTokenServerSide();
+    const { accessToken } = await getAuthTokens();
+
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
 
     const formation = await repo.createFormationAnnualHeadCount(
-        token,
+        accessToken,
         formationId,
         data
     );
@@ -79,10 +90,14 @@ export async function updateAnnualHeadcount(
     id: number,
     data: { academicYear?: number; students?: number }
 ) {
-    const token = await getTokenServerSide();
+    const { accessToken } = await getAuthTokens();
+
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
 
     const formation = await repo.updateFormationAnnualHeadCount(
-        token,
+        accessToken,
         formationId,
         id,
         data
@@ -92,9 +107,17 @@ export async function updateAnnualHeadcount(
 }
 
 export async function deleteAnnualHeadcount(formationId: number, id: number) {
-    const token = await getTokenServerSide();
+    const { accessToken } = await getAuthTokens();
 
-    return await repo.deleteFormationAnnualHeadCount(token, formationId, id);
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+
+    return await repo.deleteFormationAnnualHeadCount(
+        accessToken,
+        formationId,
+        id
+    );
 }
 
 const repo = new FormationApiRepository();
@@ -108,8 +131,13 @@ export async function createFormation(data: {
     establishmentId: number;
     authorizationId?: number;
 }) {
-    const token = await getTokenServerSide();
-    const formation = await repo.create(token, data);
+    const { accessToken } = await getAuthTokens();
+
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+
+    const formation = await repo.create(accessToken, data);
 
     return { ...formation };
 }
@@ -132,14 +160,23 @@ export async function updateFormation(
         >
     >
 ) {
-    const token = await getTokenServerSide();
-    const formation = await repo.update(token, id, data);
+    const { accessToken } = await getAuthTokens();
+
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+
+    const formation = await repo.update(accessToken, id, data);
 
     return { ...formation };
 }
 
 export async function deleteFormation(id: number) {
-    const token = await getTokenServerSide();
+    const { accessToken } = await getAuthTokens();
 
-    return await repo.delete(token, id);
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+
+    return await repo.delete(accessToken, id);
 }

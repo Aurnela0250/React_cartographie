@@ -1,13 +1,13 @@
 import { redirect } from "next/navigation";
 
-import { auth } from "@/auth";
+import { getAuthTokens } from "@/shared/utils/auth-utils";
 
 export async function getTokenServerSide(): Promise<string> {
-    const session = await auth();
+    const { accessToken } = await getAuthTokens();
 
-    if (!session) {
+    if (!accessToken) {
         redirect("/login");
     }
 
-    return session.accessToken;
+    return accessToken;
 }

@@ -2,30 +2,30 @@
 
 import { ChatInput } from "@/core/entities/chat.entity";
 import { ChatApiRepository } from "@/infrastructure/repositories/chat.repository";
-import { getServerActionSession } from "@/infrastructure/server-actions/get-session.action";
+import { getAuthTokens } from "@/shared/utils/auth-utils";
 
 const repo = new ChatApiRepository();
 
-async function getTokenServerSide(): Promise<string> {
-    const session = await getServerActionSession();
+export async function sendChatMessage(data: ChatInput) {
+    const { accessToken } = await getAuthTokens();
 
-    if (!session.isLoggedIn || !session.token?.accessToken) {
+    if (!accessToken) {
         throw new Error("Non authentifié");
     }
 
-    return session.token.accessToken;
-}
-
-export async function sendChatMessage(data: ChatInput) {
-    const token = await getTokenServerSide();
-    const chat = await repo.sendMessage(token, data);
+    const chat = await repo.sendMessage(accessToken, data);
 
     return { ...chat };
 }
 
 export async function getChatHistory() {
-    const token = await getTokenServerSide();
-    const history = await repo.getHistory(token);
+    const { accessToken } = await getAuthTokens();
+
+    if (!accessToken) {
+        throw new Error("Non authentifié");
+    }
+
+    const history = await repo.getHistory(accessToken);
 
     return { ...history };
 }
