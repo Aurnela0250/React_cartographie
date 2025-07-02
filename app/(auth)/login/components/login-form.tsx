@@ -59,6 +59,7 @@ export function LoginForm() {
 
             // Construire l'URL avec les paramètres de redirection
             const loginUrl = new URL("/api/auth/login", window.location.origin);
+
             if (redirectTo) {
                 loginUrl.searchParams.set("redirectTo", redirectTo);
             }
