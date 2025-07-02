@@ -1,9 +1,14 @@
+"use client";
+
 import { useEffect } from "react";
 import { Save, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { Domain } from "@/core/entities/domain.entity";
+import {
+    createDomain,
+    updateDomain,
+} from "@/infrastructure/server-actions/domain.actions";
 import { Button } from "@/presentation/components/ui/button";
 import {
     Dialog,
@@ -22,6 +27,9 @@ import {
 } from "@/presentation/components/ui/form";
 import { Input } from "@/presentation/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { useDomainStore } from "./domain-store";
 
 const formSchema = z.object({
     name: z.string().min(1, "Le nom est requis"),
@@ -29,19 +37,81 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export function DomainDialog({
-    open,
-    onClose,
-    onSubmit,
-    initialData,
-    error,
-}: {
-    open: boolean;
-    onClose: () => void;
-    onSubmit: (data: { name: string }) => void;
-    initialData?: Partial<Domain>;
-    error?: string | null;
-}) {
+export function DomainDialog() {
+    const queryClient = useQueryClient();
+    const {
+        isAddEditDialogOpen: open,
+        setIsAddEditDialogOpen: setOpen,
+        selectedDomain: initialData,
+        formError: error,
+        setFormError,
+        setSelectedDomain,
+    } = useDomainStore();
+
+    type MutationError =
+        | { statusCode?: number; name?: string; message?: string }
+        | unknown;
+
+    const createMutation = useMutation({
+        mutationFn: createDomain,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["domains"] });
+            setOpen(false);
+            setFormError(null);
+        },
+        onError: (error: MutationError) => {
+            if (
+                typeof error === "object" &&
+                error !== null &&
+                ("statusCode" in error || "name" in error)
+            ) {
+                const err = error as {
+                    statusCode?: number;
+                    name?: string;
+                    message?: string;
+                };
+
+                if (err.statusCode === 409 || err.name === "ConflictError") {
+                    setFormError(err.message || "Ce domaine existe déjà.");
+
+                    return;
+                }
+            }
+            setFormError("Erreur lors de la création du domaine.");
+        },
+    });
+
+    const updateMutation = useMutation({
+        mutationFn: ({ id, data }: { id: number; data: { name?: string } }) =>
+            updateDomain(id, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["domains"] });
+            setOpen(false);
+            setSelectedDomain(null);
+            setFormError(null);
+        },
+        onError: (error: MutationError) => {
+            if (
+                typeof error === "object" &&
+                error !== null &&
+                ("statusCode" in error || "name" in error)
+            ) {
+                const err = error as {
+                    statusCode?: number;
+                    name?: string;
+                    message?: string;
+                };
+
+                if (err.statusCode === 409 || err.name === "ConflictError") {
+                    setFormError(err.message || "Ce domaine existe déjà.");
+
+                    return;
+                }
+            }
+            setFormError("Erreur lors de la modification du domaine.");
+        },
+    });
+
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -60,11 +130,16 @@ export function DomainDialog({
     }, [initialData, open, form]);
 
     function handleSubmit(data: FormValues) {
-        onSubmit(data);
+        setFormError(null);
+        if (initialData?.id) {
+            updateMutation.mutate({ id: initialData.id, data });
+        } else {
+            createMutation.mutate(data);
+        }
     }
 
     return (
-        <Dialog open={open} onOpenChange={onClose}>
+        <Dialog open={open} onOpenChange={() => setOpen(false)}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>
@@ -99,12 +174,11 @@ export function DomainDialog({
                                 </FormItem>
                             )}
                         />
-                        {/* Description supprimée */}
                         <DialogFooter>
                             <Button
                                 type="button"
                                 variant="outline"
-                                onClick={onClose}
+                                onClick={() => setOpen(false)}
                             >
                                 <X className="mr-2 size-4" />
                                 Annuler

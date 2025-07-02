@@ -1,49 +1,25 @@
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { instanceToPlain } from "class-transformer";
 
 import { DomainApiRepository } from "@/infrastructure/repositories/domain.repository";
-import { getCurrentUser } from "@/shared/utils/auth-utils";
+import { getAuthTokens } from "@/shared/utils/auth-utils";
 
 const repo = new DomainApiRepository();
 
-async function authHandler() {
-    const user = await getCurrentUser();
-
-    if (!user) {
-        return {
-            error: NextResponse.json(
-                { message: "Non authentifié" },
-                { status: 401 }
-            ),
-        };
-    }
-
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("accessToken")?.value;
+export async function GET(req: NextRequest) {
+    const { accessToken } = await getAuthTokens();
 
     if (!accessToken) {
-        return {
-            error: NextResponse.json(
-                { message: "Token manquant" },
-                { status: 401 }
-            ),
-        };
+        return NextResponse.json(
+            { message: "Token manquant" },
+            { status: 401 }
+        );
     }
-
-    return { accessToken };
-}
-
-export async function GET(req: NextRequest) {
-    const authResult = await authHandler();
-
-    if (authResult.error) return authResult.error;
-    const { accessToken } = authResult;
 
     try {
         const { searchParams } = new URL(req.url);
         const page = Number(searchParams.get("page") || 1);
-        const perPage = Number(searchParams.get("per_page") || 10);
+        const perPage = Number(searchParams.get("per_page") || 100);
 
         const data = await repo.getAll(accessToken, { page, perPage });
         const plainData = JSON.parse(JSON.stringify(data));
@@ -58,10 +34,14 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-    const authResult = await authHandler();
+    const { accessToken } = await getAuthTokens();
 
-    if (authResult.error) return authResult.error;
-    const { accessToken } = authResult;
+    if (!accessToken) {
+        return NextResponse.json(
+            { message: "Token manquant" },
+            { status: 401 }
+        );
+    }
 
     try {
         const body = await req.json();

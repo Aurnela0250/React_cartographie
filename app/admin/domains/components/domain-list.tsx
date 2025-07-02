@@ -1,41 +1,41 @@
+"use client";
+
 import { useCallback, useRef } from "react";
 import { Edit, Trash } from "lucide-react";
 
 import { Domain } from "@/core/entities/domain.entity";
 import { PaginatedResult } from "@/core/entities/pagination";
 import { Button } from "@/presentation/components/ui/button";
+import { fetchWithAutoRefresh } from "@/shared/utils/fetch-with-refresh";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-export function DomainList({
-    onEdit,
-    onDelete,
-}: {
-    onEdit: (domain: Domain) => void;
-    onDelete: (domain: Domain) => void;
-}) {
-    const fetchDomains = async ({
-        pageParam = 1,
-    }): Promise<PaginatedResult<Domain>> => {
-        const res = await fetch(`/api/domains?page=${pageParam}&per_page=5`);
+import { useDomainStore } from "./domain-store";
+
+// Ce composant est déjà conforme au pattern : il utilise uniquement le store pour piloter l'état UI (édition, suppression).
+
+export function DomainList() {
+    const {
+        setSelectedDomain,
+        setIsAddEditDialogOpen,
+        setIsDeleteDialogOpen,
+        setDeleteDomainData,
+        setFormError,
+    } = useDomainStore();
+
+    const fetchDomains = async (): Promise<PaginatedResult<Domain>> => {
+        const res = await fetchWithAutoRefresh(`/api/domains`);
 
         return res.json();
     };
 
-    const {
-        data,
-        fetchNextPage,
-        hasNextPage,
-        isFetchingNextPage,
-        isFetching,
-        isError,
-        error,
-    } = useInfiniteQuery({
-        queryKey: ["domains"],
-        queryFn: fetchDomains,
-        getNextPageParam: (lastPage: PaginatedResult<Domain>) =>
-            lastPage.nextPage ? lastPage.nextPage : undefined,
-        initialPageParam: 1,
-    });
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+        useInfiniteQuery({
+            queryKey: ["domains", "all"],
+            queryFn: fetchDomains,
+            getNextPageParam: (lastPage: PaginatedResult<Domain>) =>
+                lastPage.nextPage ? lastPage.nextPage : undefined,
+            initialPageParam: 1,
+        });
 
     const observer = useRef<IntersectionObserver | null>(null);
     const lastDomainRef = useCallback(
@@ -80,14 +80,22 @@ export function DomainList({
                                 <Button
                                     size="icon"
                                     variant="outline"
-                                    onClick={() => onEdit(domain)}
+                                    onClick={() => {
+                                        setFormError(null);
+                                        setSelectedDomain(domain);
+                                        setIsAddEditDialogOpen(true);
+                                    }}
                                 >
                                     <Edit className="size-4" />
                                 </Button>
                                 <Button
                                     size="icon"
                                     variant="destructive"
-                                    onClick={() => onDelete(domain)}
+                                    onClick={() => {
+                                        setFormError(null);
+                                        setDeleteDomainData(domain);
+                                        setIsDeleteDialogOpen(true);
+                                    }}
                                 >
                                     <Trash className="size-4" />
                                 </Button>

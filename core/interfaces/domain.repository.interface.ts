@@ -22,7 +22,7 @@ export interface IDomainRepository {
             name?: string;
         }
     ): Promise<Domain>;
-    delete(token: string, id: number): Promise<void>;
+    delete(token: string, id: number): Promise<boolean>;
     filter(
         token: string,
         filters: DomainFilter

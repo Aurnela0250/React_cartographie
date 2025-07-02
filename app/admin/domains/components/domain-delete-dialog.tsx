@@ -1,5 +1,8 @@
+"use client";
+
 import { AlertTriangle, Check, X } from "lucide-react";
 
+import { deleteDomain } from "@/infrastructure/server-actions/domain.actions";
 import { Button } from "@/presentation/components/ui/button";
 import {
     Dialog,
@@ -8,20 +11,37 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/presentation/components/ui/dialog";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export function DomainDeleteDialog({
-    open,
-    onClose,
-    onConfirm,
-    domainName,
-}: {
-    open: boolean;
-    onClose: () => void;
-    onConfirm: () => void;
-    domainName: string;
-}) {
+import { useDomainStore } from "./domain-store";
+
+export function DomainDeleteDialog() {
+    const queryClient = useQueryClient();
+    const {
+        isDeleteDialogOpen: open,
+        setIsDeleteDialogOpen: setOpen,
+        selectedDomain,
+        setSelectedDomain,
+    } = useDomainStore();
+    const domainName = selectedDomain?.name || "";
+
+    const deleteMutation = useMutation({
+        mutationFn: (id: number) => deleteDomain(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["domains"] });
+            setOpen(false);
+            setSelectedDomain(null);
+        },
+    });
+
+    function handleConfirm() {
+        if (selectedDomain?.id) {
+            deleteMutation.mutate(selectedDomain.id);
+        }
+    }
+
     return (
-        <Dialog open={open} onOpenChange={onClose}>
+        <Dialog open={open} onOpenChange={() => setOpen(false)}>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle className="flex items-center text-destructive">
@@ -39,16 +59,11 @@ export function DomainDeleteDialog({
                     </p>
                 </div>
                 <DialogFooter>
-                    <Button variant="outline" onClick={onClose}>
+                    <Button variant="outline" onClick={() => setOpen(false)}>
                         <X className="mr-2 size-4" />
                         Annuler
                     </Button>
-                    <Button
-                        variant="destructive"
-                        onClick={() => {
-                            onConfirm();
-                        }}
-                    >
+                    <Button variant="destructive" onClick={handleConfirm}>
                         <Check className="mr-2 size-4" />
                         Confirmer
                     </Button>
