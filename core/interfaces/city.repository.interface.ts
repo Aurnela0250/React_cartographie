@@ -24,6 +24,6 @@ export interface ICityRepository {
             regionId?: number;
         }
     ): Promise<City>;
-    delete(token: string, id: number): Promise<void>;
+    delete(token: string, id: number): Promise<boolean>;
     filter(token: string, filters: CityFilter): Promise<PaginatedResult<City>>;
 }

@@ -1,23 +1,15 @@
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 import { CityApiRepository } from "@/infrastructure/repositories/city.repository";
-import { getCurrentUser } from "@/shared/utils/auth-utils";
+import { getAuthTokens } from "@/shared/utils/auth-utils";
 
 const repo = new CityApiRepository();
 
 export async function GET(req: NextRequest) {
-    const user = await getCurrentUser();
-
-    if (!user) {
-        return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
-    }
-
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("accessToken")?.value;
+    const { accessToken } = await getAuthTokens();
 
     if (!accessToken) {
-        return NextResponse.json({ error: "Token manquant" }, { status: 401 });
+        return new NextResponse("Unauthorized", { status: 401 });
     }
 
     try {
@@ -37,17 +29,10 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-    const user = await getCurrentUser();
-
-    if (!user) {
-        return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
-    }
-
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("accessToken")?.value;
+    const { accessToken } = await getAuthTokens();
 
     if (!accessToken) {
-        return NextResponse.json({ error: "Token manquant" }, { status: 401 });
+        return new NextResponse("Unauthorized", { status: 401 });
     }
 
     try {

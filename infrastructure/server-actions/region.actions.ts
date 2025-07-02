@@ -30,6 +30,7 @@ export async function updateRegion(id: number, data: { name: string }) {
 }
 
 export async function deleteRegion(id: number) {
+    console.log("deleteRegion", id);
     const { accessToken } = await getAuthTokens();
 
     if (!accessToken) {

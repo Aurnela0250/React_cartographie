@@ -1,33 +1,17 @@
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { instanceToPlain } from "class-transformer";
 
 import { RegionApiRepository } from "@/infrastructure/repositories/region.repository";
-import { getCurrentUser } from "@/shared/utils/auth-utils";
+import { getAuthTokens } from "@/shared/utils/auth-utils";
 
 const repo = new RegionApiRepository();
 
-async function authHandler() {
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("accessToken")?.value;
+export async function GET(req: NextRequest) {
+    const { accessToken } = await getAuthTokens();
 
     if (!accessToken) {
-        return {
-            error: NextResponse.json(
-                { message: "Token manquant" },
-                { status: 401 }
-            ),
-        };
+        return new NextResponse("Unauthorized", { status: 401 });
     }
-
-    return { accessToken };
-}
-
-export async function GET(req: NextRequest) {
-    const authResult = await authHandler();
-
-    if (authResult.error) return authResult.error;
-    const { accessToken } = authResult;
 
     try {
         const { searchParams } = new URL(req.url);
@@ -49,10 +33,11 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-    const authResult = await authHandler();
+    const { accessToken } = await getAuthTokens();
 
-    if (authResult.error) return authResult.error;
-    const { accessToken } = authResult;
+    if (!accessToken) {
+        return new NextResponse("Unauthorized", { status: 401 });
+    }
 
     try {
         const body = await req.json();
