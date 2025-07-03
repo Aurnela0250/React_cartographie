@@ -1,4 +1,4 @@
-export type EstablishmentTypeArgs = {
+export type IEstablishmentType = {
     id: number;
     name: string;
     description?: string;
@@ -8,11 +8,9 @@ export type EstablishmentTypeArgs = {
     updatedBy?: number;
 };
 
-export type IEstablishmentType = Partial<EstablishmentTypeArgs>;
-
 export class EstablishmentType implements IEstablishmentType {
-    id?: number;
-    name?: string;
+    id: number;
+    name: string;
     description?: string;
     createdAt?: string;
     updatedAt?: string;

@@ -1,5 +1,6 @@
 "use server";
 
+import { Rate } from "@/core/entities/rate.entity";
 import { EstablishmentApiRepository } from "@/infrastructure/repositories/establishment.repository";
 import { getAuthTokens } from "@/shared/utils/auth-utils";
 
@@ -7,15 +8,15 @@ const repository = new EstablishmentApiRepository();
 
 export async function createEstablishment(data: {
     name: string;
-    acronyme?: string;
+    acronym?: string;
     address: string;
     contacts?: string[];
-    siteUrl?: string;
+    website?: string;
     description?: string;
     latitude?: number;
     longitude?: number;
     establishmentTypeId: number;
-    sectorId: number;
+    cityId: number;
 }) {
     try {
         const { accessToken } = await getAuthTokens();
@@ -36,16 +37,16 @@ export async function createEstablishment(data: {
 export async function updateEstablishment(
     id: number,
     data: {
-        name?: string;
-        acronyme?: string;
+        name: string;
+        acronym?: string;
         address?: string;
         contacts?: string[];
-        siteUrl?: string;
+        website?: string;
         description?: string;
         latitude?: number;
         longitude?: number;
-        establishmentTypeId?: number;
-        sectorId?: number;
+        establishmentTypeId: number;
+        cityId: number;
     }
 ) {
     try {
@@ -82,7 +83,7 @@ export async function deleteEstablishment(id: number): Promise<boolean> {
 export async function rateEstablishment(
     id: number,
     rating: number
-): Promise<boolean> {
+): Promise<Rate> {
     try {
         const { accessToken } = await getAuthTokens();
 

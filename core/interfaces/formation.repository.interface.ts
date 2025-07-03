@@ -34,7 +34,7 @@ export interface IFormationRepository {
             authorizationId?: number;
         }
     ): Promise<Formation>;
-    delete(token: string, id: number): Promise<void>;
+    delete(token: string, id: number): Promise<boolean>;
     filter(
         token: string,
         filters: FormationFilter

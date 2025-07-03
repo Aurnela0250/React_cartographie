@@ -1,8 +1,7 @@
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 import { EstablishmentApiRepository } from "@/infrastructure/repositories/establishment.repository";
-import { getCurrentUser } from "@/shared/utils/auth-utils";
+import { getAuthTokens } from "@/shared/utils/auth-utils";
 
 const repo = new EstablishmentApiRepository();
 
@@ -10,17 +9,10 @@ export async function POST(
     req: NextRequest,
     { params }: { params: { id: string } }
 ) {
-    const user = await getCurrentUser();
-
-    if (!user) {
-        return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
-    }
-
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("accessToken")?.value;
+    const { accessToken } = await getAuthTokens();
 
     if (!accessToken) {
-        return NextResponse.json({ error: "Token manquant" }, { status: 401 });
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     try {
@@ -34,11 +26,11 @@ export async function POST(
             );
         }
 
-        const result = await repo.rate(accessToken, id, {
+        await repo.rate(accessToken, id, {
             rating: body.rating,
         });
 
-        return NextResponse.json({ success: result });
+        return NextResponse.json({ success: true });
     } catch (error) {
         const errorMsg =
             error instanceof Error ? error.message : "Erreur inconnue";

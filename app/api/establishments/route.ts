@@ -1,43 +1,16 @@
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 import { EstablishmentApiRepository } from "@/infrastructure/repositories/establishment.repository";
-import { getCurrentUser } from "@/shared/utils/auth-utils";
+import { getAuthTokens } from "@/shared/utils/auth-utils";
 
 const repo = new EstablishmentApiRepository();
 
-async function authHandler() {
-    const user = await getCurrentUser();
-
-    if (!user) {
-        return {
-            error: NextResponse.json(
-                { message: "Non authentifié" },
-                { status: 401 }
-            ),
-        };
-    }
-
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("accessToken")?.value;
+export async function GET(req: NextRequest) {
+    const { accessToken } = await getAuthTokens();
 
     if (!accessToken) {
-        return {
-            error: NextResponse.json(
-                { message: "Token manquant" },
-                { status: 401 }
-            ),
-        };
+        return NextResponse.json({ error: "Token manquant" }, { status: 401 });
     }
-
-    return { accessToken };
-}
-
-export async function GET(req: NextRequest) {
-    const authResult = await authHandler();
-
-    if (authResult.error) return authResult.error;
-    const { accessToken } = authResult;
 
     try {
         const { searchParams } = new URL(req.url);
@@ -46,7 +19,6 @@ export async function GET(req: NextRequest) {
 
         const data = await repo.getAll(accessToken, { page, perPage });
 
-        // Convertir l'instance de classe en objet JavaScript simple
         const plainData = JSON.parse(JSON.stringify(data));
 
         return NextResponse.json(plainData);
@@ -59,16 +31,16 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-    const authResult = await authHandler();
+    const { accessToken } = await getAuthTokens();
 
-    if (authResult.error) return authResult.error;
-    const { accessToken } = authResult;
+    if (!accessToken) {
+        return NextResponse.json({ error: "Token manquant" }, { status: 401 });
+    }
 
     try {
         const body = await req.json();
         const establishment = await repo.create(accessToken, body);
 
-        // Convertir l'instance de classe en objet simple
         const plainEstablishment = JSON.parse(JSON.stringify(establishment));
 
         return NextResponse.json(plainEstablishment);

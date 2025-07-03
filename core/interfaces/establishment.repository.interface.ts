@@ -41,7 +41,7 @@ export interface IEstablishmentRepository {
             cityId: number;
         }
     ): Promise<Establishment>;
-    delete(token: string, id: number): Promise<void>;
+    delete(token: string, id: number): Promise<boolean>;
     filter(
         token: string,
         filters: EstablishmentFilter

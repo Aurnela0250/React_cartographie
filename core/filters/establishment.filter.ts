@@ -14,4 +14,14 @@ export interface EstablishmentFilter extends PaginationFilter {
     nameEndsWith?: string | null;
     /** ID de la ville */
     cityId?: number | null;
+    /** ID du type d'établissement */
+    establishmentTypeId?: number | null;
+    /** Acronyme exact */
+    acronym?: string | null;
+    /** Acronyme contenant */
+    acronymContains?: string | null;
+    /** Acronyme commençant par */
+    acronymStartsWith?: string | null;
+    /** Acronyme finissant par */
+    acronymEndsWith?: string | null;
 }

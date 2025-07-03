@@ -24,7 +24,7 @@ export interface IEstablishmentTypeRepository {
             description?: string;
         }
     ): Promise<EstablishmentType>;
-    delete(token: string, id: number): Promise<void>;
+    delete(token: string, id: number): Promise<boolean>;
     filter(
         token: string,
         filters: EstablishmentTypeFilter

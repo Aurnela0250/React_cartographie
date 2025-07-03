@@ -1,19 +1,17 @@
-export type RateArgs = {
+export type IRate = {
     id: number;
     establishmentId: number;
     userId: number;
     rating: number;
-    createdAt: string;
-    updatedAt: string;
+    createdAt?: string;
+    updatedAt?: string;
 };
 
-export type IRate = Partial<RateArgs>;
-
 export class Rate implements IRate {
-    id?: number;
-    establishmentId?: number;
-    userId?: number;
-    rating?: number;
+    id: number;
+    establishmentId: number;
+    userId: number;
+    rating: number;
     createdAt?: string;
     updatedAt?: string;
 

@@ -123,7 +123,7 @@ export async function deleteAnnualHeadcount(formationId: number, id: number) {
 const repo = new FormationApiRepository();
 
 export async function createFormation(data: {
-    intitule: string;
+    name: string;
     description?: string;
     duration: number;
     levelId: number;

@@ -13,8 +13,7 @@ export interface HasFromUnknown<E> {
 /** Forme brute (objet JSON ou littéral) attendue */
 export type PaginatedPlain<U> = {
     items: U[];
-    totalItems?: number;
-    totalItem?: number; // alias toléré
+    totalItems: number;
     page: number;
     perPage: number;
     totalPages: number;
@@ -40,7 +39,7 @@ export class PaginatedResult<T> {
     static fromPlain<U>(obj: PaginatedPlain<U>): PaginatedResult<U> {
         return new PaginatedResult<U>(
             obj.items,
-            obj.totalItems ?? obj.totalItem ?? 0,
+            obj.totalItems,
             obj.page,
             obj.perPage,
             obj.totalPages,
@@ -66,7 +65,6 @@ export class PaginatedResult<T> {
         const {
             items,
             totalItems,
-            totalItem,
             page,
             perPage,
             totalPages,
@@ -80,7 +78,7 @@ export class PaginatedResult<T> {
 
         return new PaginatedResult<E>(
             items.map(convert),
-            totalItems ?? totalItem ?? 0,
+            totalItems,
             page,
             perPage,
             totalPages,

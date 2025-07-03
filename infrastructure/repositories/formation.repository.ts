@@ -4,17 +4,42 @@ import {
     PaginatedResult,
     PaginationParams,
 } from "@/core/entities/pagination";
+import { FormationFilter } from "@/core/filters/formation.filter";
 import { IFormationRepository } from "@/core/interfaces/formation.repository.interface";
 import { env } from "@/env.mjs";
 import { toCamelCaseRecursive, toSnakeCaseRecursive } from "@/shared/utils";
 import { handleApiResponse } from "@/shared/utils/api-errors";
 
 export class FormationApiRepository implements IFormationRepository {
+    async filter(
+        token: string,
+        filters: FormationFilter
+    ): Promise<PaginatedResult<Formation>> {
+        const cleanedFilters = Object.fromEntries(
+            Object.entries(filters).filter(
+                ([, value]) =>
+                    value !== null && value !== undefined && value !== ""
+            )
+        );
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/filter/?${new URLSearchParams(toSnakeCaseRecursive(cleanedFilters as Record<string, string>)).toString()}`;
+        const response = await fetch(url, {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await handleApiResponse<PaginatedPlain<unknown>>(response);
+        const camelCasedData = toCamelCaseRecursive(data);
+        const paginatedRaw = PaginatedResult.fromPlain(camelCasedData);
+        const result = PaginatedResult.mapItemsToEntity(
+            paginatedRaw,
+            Formation
+        );
+        return result;
+    }
     async getAll(
         token: string,
         param: PaginationParams
     ): Promise<PaginatedResult<Formation>> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations?page=${param.page}&per_page=${param.perPage || 10}`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/?page=${param.page}&per_page=${param.perPage || 10}`;
         const response = await fetch(url, {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -38,7 +63,7 @@ export class FormationApiRepository implements IFormationRepository {
     async create(
         token: string,
         data: {
-            intitule: string;
+            name: string;
             description?: string;
             duration: number;
             levelId: number;
@@ -47,7 +72,7 @@ export class FormationApiRepository implements IFormationRepository {
             authorizationId?: number;
         }
     ): Promise<Formation> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/`;
         const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "POST",
@@ -74,7 +99,7 @@ export class FormationApiRepository implements IFormationRepository {
             authorizationId?: number;
         }
     ): Promise<Formation> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${id}`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${id}/`;
         const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "PUT",
@@ -89,7 +114,7 @@ export class FormationApiRepository implements IFormationRepository {
         return Formation.fromUnknown(toCamelCaseRecursive(res));
     }
     async delete(token: string, id: number): Promise<boolean> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${id}`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${id}/`;
         const response = await fetch(url, {
             method: "DELETE",
             headers: { Authorization: `Bearer ${token}` },
@@ -110,7 +135,7 @@ export class FormationApiRepository implements IFormationRepository {
             arrete?: string;
         }
     ): Promise<Formation> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${id}/authorization`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${id}/authorization/`;
         const payload = toSnakeCaseRecursive(data);
 
         console.log("payload", payload);
@@ -136,7 +161,7 @@ export class FormationApiRepository implements IFormationRepository {
             arrete?: string;
         }
     ): Promise<Formation> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${formationId}/authorization`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${formationId}/authorization/`;
         const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "PUT",
@@ -158,7 +183,7 @@ export class FormationApiRepository implements IFormationRepository {
             students: number;
         }
     ): Promise<Formation> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${formationId}/annual-headcount`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${formationId}/annual-headcount/`;
         const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "POST",
@@ -181,7 +206,7 @@ export class FormationApiRepository implements IFormationRepository {
             students?: number;
         }
     ): Promise<Formation> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${formationId}/annual-headcount/${id}`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${formationId}/annual-headcount/${id}/`;
         const payload = toSnakeCaseRecursive(data);
         const response = await fetch(url, {
             method: "PUT",
@@ -200,7 +225,7 @@ export class FormationApiRepository implements IFormationRepository {
         formationId: number,
         id: number
     ): Promise<boolean> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${formationId}/annual-headcount/${id}`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/formations/${formationId}/annual-headcount/${id}/`;
         const response = await fetch(url, {
             method: "DELETE",
             headers: { Authorization: `Bearer ${token}` },

@@ -37,7 +37,13 @@ export class MentionApiRepository implements IMentionRepository {
         token: string,
         param: PaginationParams
     ): Promise<PaginatedResult<Mention>> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/mentions?page=${param.page}&per_page=${param.perPage || 10}`;
+        const cleanedFilters = Object.fromEntries(
+            Object.entries(param).filter(
+                ([, value]) =>
+                    value !== null && value !== undefined && value !== ""
+            )
+        );
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/mentions/?${new URLSearchParams(toSnakeCaseRecursive(cleanedFilters as Record<string, string>)).toString()}`;
         const response = await fetch(url, {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },

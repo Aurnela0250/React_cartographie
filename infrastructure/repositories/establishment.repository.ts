@@ -4,6 +4,8 @@ import {
     PaginatedResult,
     PaginationParams,
 } from "@/core/entities/pagination";
+import { Rate } from "@/core/entities/rate.entity";
+import { EstablishmentFilter } from "@/core/filters/establishment.filter";
 import { IEstablishmentRepository } from "@/core/interfaces/establishment.repository.interface";
 import { env } from "@/env.mjs";
 import { toCamelCaseRecursive, toSnakeCaseRecursive } from "@/shared/utils";
@@ -31,7 +33,7 @@ export class EstablishmentApiRepository implements IEstablishmentRepository {
         return result;
     }
     async get(token: string, id: number): Promise<Establishment> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/establishments/${id}`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/establishments/${id}/`;
         const response = await fetch(url, {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -44,18 +46,18 @@ export class EstablishmentApiRepository implements IEstablishmentRepository {
         token: string,
         data: {
             name: string;
-            acronyme?: string;
-            address: string;
+            acronym?: string;
+            address?: string;
             contacts?: string[];
-            siteUrl?: string;
+            website?: string;
             description?: string;
             latitude?: number;
             longitude?: number;
             establishmentTypeId: number;
-            sectorId: number;
+            cityId: number;
         }
     ): Promise<Establishment> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/establishments`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/establishments/`;
         const response = await fetch(url, {
             method: "POST",
             headers: {
@@ -72,7 +74,7 @@ export class EstablishmentApiRepository implements IEstablishmentRepository {
         token: string,
         id: number,
         data: { rating: number }
-    ): Promise<boolean> {
+    ): Promise<Rate> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/establishments/${id}/rate`;
         const response = await fetch(url, {
             method: "POST",
@@ -83,27 +85,29 @@ export class EstablishmentApiRepository implements IEstablishmentRepository {
             body: JSON.stringify(toSnakeCaseRecursive(data)),
         });
 
-        await handleApiResponse<unknown>(response);
+        const responseData = await handleApiResponse<unknown>(response);
 
-        return true;
+        const rate = Rate.fromUnknown(toCamelCaseRecursive(responseData));
+
+        return rate;
     }
     async update(
         token: string,
         id: number,
         data: {
-            name?: string;
-            acronyme?: string;
+            name: string;
+            acronym?: string;
             address?: string;
             contacts?: string[];
-            siteUrl?: string;
+            website?: string;
             description?: string;
             latitude?: number;
             longitude?: number;
-            establishmentTypeId?: number;
-            sectorId?: number;
+            establishmentTypeId: number;
+            cityId: number;
         }
     ): Promise<Establishment> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/establishments/${id}`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/establishments/${id}/`;
 
         console.log("data", data);
         const response = await fetch(url, {
@@ -119,7 +123,7 @@ export class EstablishmentApiRepository implements IEstablishmentRepository {
         return Establishment.fromUnknown(toCamelCaseRecursive(res));
     }
     async delete(token: string, id: number): Promise<boolean> {
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/establishments/${id}`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/establishments/${id}/`;
         const response = await fetch(url, {
             method: "DELETE",
             headers: { Authorization: `Bearer ${token}` },
@@ -131,34 +135,16 @@ export class EstablishmentApiRepository implements IEstablishmentRepository {
     }
     async filter(
         token: string,
-        param: PaginationParams,
-        filters: {
-            name?: string;
-            acronyme?: string;
-            establishmentTypeId?: number;
-            cityId?: number;
-            regionId?: number;
-        }
+        filters: EstablishmentFilter
     ): Promise<PaginatedResult<Establishment>> {
-        const queryParams = new URLSearchParams();
-        const { page = 1, perPage = 10 } = param;
+        const cleanedFilters = Object.fromEntries(
+            Object.entries(filters).filter(
+                ([, value]) =>
+                    value !== null && value !== undefined && value !== ""
+            )
+        );
 
-        queryParams.append("page", page.toString());
-        queryParams.append("per_page", perPage.toString());
-
-        if (filters.name) queryParams.append("name", filters.name);
-        if (filters.acronyme) queryParams.append("acronyme", filters.acronyme);
-        if (filters.establishmentTypeId)
-            queryParams.append(
-                "establishment_type_id",
-                filters.establishmentTypeId.toString()
-            );
-        if (filters.cityId)
-            queryParams.append("city_id", filters.cityId.toString());
-        if (filters.regionId)
-            queryParams.append("region_id", filters.regionId.toString());
-
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/establishments/filter?${queryParams.toString()}`;
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/establishments/filter/?${new URLSearchParams(toSnakeCaseRecursive(cleanedFilters as Record<string, string>)).toString()}`;
         const response = await fetch(url, {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
