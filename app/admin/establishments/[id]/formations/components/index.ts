@@ -1,1 +1,1 @@
-export * from "./FormationsList";
+export * from "./formation-list";
