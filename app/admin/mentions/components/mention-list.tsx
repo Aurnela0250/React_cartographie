@@ -3,8 +3,9 @@
 import { Edit, Search, Trash } from "lucide-react";
 import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
 
-import type { Mention } from "@/core/entities/mention.entity";
-import type { PaginatedResult } from "@/core/entities/pagination";
+import { Domain } from "@/core/entities/domain.entity";
+import { Mention } from "@/core/entities/mention.entity";
+import { PaginatedResult } from "@/core/entities/pagination";
 import { Button } from "@/presentation/components/ui/button";
 import { Input } from "@/presentation/components/ui/input";
 import {
@@ -23,6 +24,7 @@ import {
     TableRow,
 } from "@/presentation/components/ui/table";
 import { useDebounce } from "@/presentation/hooks/use-debounce";
+import { fetchWithAutoRefresh } from "@/shared/utils/fetch-with-refresh";
 import { useQuery } from "@tanstack/react-query";
 
 import { MentionListSkeleton } from "./mention-list-skeleton";
@@ -45,15 +47,16 @@ export function MentionList() {
     const debouncedName = useDebounce(name, 500);
 
     // Récupérer la liste des domaines (cache 24h)
-    const { data: domains, isLoading: isLoadingDomains } = useQuery<
-        { id: number; name: string }[]
-    >({
+    const { data: domains, isLoading: isLoadingDomains } = useQuery<Domain[]>({
         queryKey: ["domains", "all"],
         queryFn: async () => {
-            const res = await fetch("/api/domains?page=1&per_page=100");
+            const res = await fetchWithAutoRefresh(
+                "/api/domains?page=1&per_page=100"
+            );
             const json = await res.json();
+            const paginated = PaginatedResult.fromJson(json, Domain);
 
-            return Array.isArray(json) ? json : json.items || [];
+            return paginated.items;
         },
         staleTime: 1000 * 60 * 60 * 24,
         gcTime: 1000 * 60 * 60 * 24,
@@ -74,13 +77,18 @@ export function MentionList() {
         if (domainIdStr !== "all") {
             params.set("domainId", domainIdStr);
         }
-        const res = await fetch(`/api/mentions/filter?${params.toString()}`);
+        const res = await fetchWithAutoRefresh(
+            `/api/mentions/filter?${params.toString()}`
+        );
 
         if (!res.ok) {
             throw new Error("Failed to fetch mentions");
         }
 
-        return res.json();
+        const json = await res.json();
+        const paginated = PaginatedResult.fromJson(json, Mention);
+
+        return paginated;
     };
 
     const { data, isLoading } = useQuery<PaginatedResult<Mention>>({

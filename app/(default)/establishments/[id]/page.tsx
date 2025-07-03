@@ -115,8 +115,7 @@ export default function EstablishmentPage() {
                     </div>
                     <h1 className="text-3xl font-bold">
                         {establishment.name || "Établissement non trouvé"}
-                        {establishment.acronyme &&
-                            ` (${establishment.acronyme})`}
+                        {establishment.acronym && ` (${establishment.acronym})`}
                     </h1>
                 </div>
                 <div className="flex gap-2">
@@ -152,13 +151,13 @@ export default function EstablishmentPage() {
                                         </span>
                                     </div>
                                 )}
-                                {!!establishment.rating && (
+                                {/* {!!establishment.rating && (
                                     <div className="flex items-center gap-2">
                                         <Star className="size-5 text-muted-foreground" />
                                         <span>{establishment.rating} / 5</span>
                                     </div>
-                                )}
-                                {!!establishment.createdAt && (
+                                )} */}
+                                {/* {!!establishment.createdAt && (
                                     <div className="flex items-center gap-2">
                                         <Calendar className="size-5 text-muted-foreground" />
                                         <span>
@@ -168,15 +167,7 @@ export default function EstablishmentPage() {
                                             ).toLocaleDateString()}
                                         </span>
                                     </div>
-                                )}
-                                {!!establishment.sector && (
-                                    <div className="flex items-center gap-2">
-                                        <Award className="size-5 text-muted-foreground" />
-                                        <span>
-                                            Secteur: {establishment.sector.name}
-                                        </span>
-                                    </div>
-                                )}
+                                )} */}
                             </div>
 
                             <h3 className="mb-2 mt-6 text-xl font-semibold">
@@ -259,12 +250,12 @@ export default function EstablishmentPage() {
                                     </div>
                                 )}
 
-                            {!!establishment.siteUrl && (
+                            {!!establishment.website && (
                                 <div className="flex items-center gap-3">
                                     <Globe className="size-5 text-muted-foreground" />
                                     <a
                                         className="hover:underline"
-                                        href={establishment.siteUrl}
+                                        href={establishment.website}
                                         rel="noopener noreferrer"
                                         target="_blank"
                                     >
