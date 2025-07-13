@@ -1,244 +1,72 @@
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { jwtDecode } from "jwt-decode";
 
-import { AuthDjangoApiRepository } from "@/infrastructure/repositories/auth.repository";
-import { UnauthorizedError } from "@/shared/utils/app-errors";
-
-const authRepository = new AuthDjangoApiRepository();
-
-interface JWTPayload {
-    exp: number;
-    iat: number;
-    user_id?: string;
-    userId?: string;
-}
+import { AuthTokenService } from "@/infrastructure/services/auth-token.service";
 
 export async function GET(request: NextRequest) {
     const isAjaxRefresh = request.headers.get("x-refresh-request") === "true";
 
     try {
-        const cookieStore = await cookies();
-        const refreshToken = cookieStore.get("refreshToken")?.value;
+        console.log("Refresh: Tentative de rafraîchissement du token");
+        
+        // Utiliser le service centralisé pour vérifier l'authentification
+        // Le service gère automatiquement le refresh si nécessaire
+        const authService = AuthTokenService.getInstance();
+        const authResult = await authService.isAuthenticated();
 
-        if (!refreshToken) {
-            console.log(
-                "Refresh: Pas de refresh token, redirection vers login"
-            );
-            const loginUrl = new URL("/login", request.url);
-            const originalUrl =
-                request.nextUrl.searchParams.get("redirectTo") || request.url;
-
-            loginUrl.searchParams.set("redirectTo", originalUrl);
-            loginUrl.searchParams.set("toast", "session-expired");
+        if (!authResult.authenticated) {
+            console.log("Refresh: Échec du rafraîchissement, redirection vers login");
+            
             if (isAjaxRefresh) {
                 return NextResponse.json(
-                    { success: false, reason: "no-refresh-token" },
+                    { 
+                        success: false, 
+                        reason: authResult.requiresLogin ? "session-expired" : "refresh-failed" 
+                    },
                     { status: 401 }
                 );
             }
 
-            return NextResponse.redirect(loginUrl);
-        }
-
-        // Vérifier si le refresh token est encore valide
-        try {
-            const decodedRefreshToken = jwtDecode<JWTPayload>(refreshToken);
-            const currentTime = Math.floor(
-                Date.UTC(
-                    new Date().getUTCFullYear(),
-                    new Date().getUTCMonth(),
-                    new Date().getUTCDate(),
-                    new Date().getUTCHours(),
-                    new Date().getUTCMinutes(),
-                    new Date().getUTCSeconds()
-                ) / 1000
-            );
-
-            if (decodedRefreshToken.exp <= currentTime) {
-                console.log(
-                    "Refresh: Refresh token expiré, redirection vers login"
-                );
-                // Nettoyer les cookies expirés
-                cookieStore.delete("accessToken");
-                cookieStore.delete("refreshToken");
-                cookieStore.delete("user");
-                cookieStore.delete("tokenMeta");
-
-                const loginUrl = new URL("/login", request.url);
-                const originalUrl =
-                    request.nextUrl.searchParams.get("redirectTo") ||
-                    request.url;
-
-                loginUrl.searchParams.set("redirectTo", originalUrl);
-                loginUrl.searchParams.set("toast", "session-expired");
-                if (isAjaxRefresh) {
-                    return NextResponse.json(
-                        { success: false, reason: "refresh-token-expired" },
-                        { status: 401 }
-                    );
-                }
-
-                return NextResponse.redirect(loginUrl);
-            }
-        } catch (error) {
-            console.error(
-                "Refresh: Erreur lors du décodage du refresh token:",
-                error
-            );
-
+            // Rediriger vers la page de login
             const loginUrl = new URL("/login", request.url);
-            const originalUrl =
-                request.nextUrl.searchParams.get("redirectTo") || request.url;
-
+            const originalUrl = request.nextUrl.searchParams.get("redirectTo") || request.url;
+            
             loginUrl.searchParams.set("redirectTo", originalUrl);
             loginUrl.searchParams.set("toast", "session-expired");
-            if (isAjaxRefresh) {
-                return NextResponse.json(
-                    { success: false, reason: "decode-error" },
-                    { status: 401 }
-                );
-            }
-
+            
             return NextResponse.redirect(loginUrl);
         }
 
-        // Appeler l'API pour rafraîchir le token
-        const newTokenData = await authRepository.refresh(refreshToken);
-
-        // Vérifier que les nouvelles données de token sont complètes
-        if (
-            !newTokenData ||
-            !newTokenData.accessToken ||
-            !newTokenData.refreshToken ||
-            !newTokenData.exp
-        ) {
-            console.error(
-                "Refresh: Données de token incomplètes après refresh"
-            );
-
-            const loginUrl = new URL("/login", request.url);
-            const originalUrl =
-                request.nextUrl.searchParams.get("redirectTo") || request.url;
-
-            loginUrl.searchParams.set("redirectTo", originalUrl);
-            loginUrl.searchParams.set("toast", "session-expired");
-            if (isAjaxRefresh) {
-                return NextResponse.json(
-                    { success: false, reason: "incomplete-token" },
-                    { status: 401 }
-                );
-            }
-
-            return NextResponse.redirect(loginUrl);
-        }
-
-        // Calculer la durée jusqu'à l'expiration
-        const getTimeUntilExpiry = (exp: number): number => {
-            const currentTimeUTC = Math.floor(
-                Date.UTC(
-                    new Date().getUTCFullYear(),
-                    new Date().getUTCMonth(),
-                    new Date().getUTCDate(),
-                    new Date().getUTCHours(),
-                    new Date().getUTCMinutes(),
-                    new Date().getUTCSeconds()
-                ) / 1000
-            );
-
-            return Math.max(0, exp - currentTimeUTC);
-        };
-
-        // Mettre à jour les tokens dans les cookies
-        cookieStore.set("accessToken", newTokenData.accessToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: getTimeUntilExpiry(newTokenData.exp),
-            path: "/",
-        });
-
-        cookieStore.set("refreshToken", newTokenData.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 7 * 24 * 60 * 60, // 7 jours
-            path: "/",
-        });
-
-        // Mettre à jour les métadonnées du token
-        cookieStore.set(
-            "tokenMeta",
-            JSON.stringify({
-                exp: newTokenData.exp,
-                iat: newTokenData.iat,
-                userId: newTokenData.userId,
-            }),
-            {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "strict",
-                maxAge: getTimeUntilExpiry(newTokenData.exp),
-                path: "/",
-            }
-        );
+        console.log("Refresh: Token rafraîchi avec succès");
 
         if (isAjaxRefresh) {
-            return NextResponse.json({ success: true });
+            return NextResponse.json({ 
+                success: true,
+                user: authResult.user ? {
+                    id: authResult.user.id,
+                    email: authResult.user.email,
+                    active: authResult.user.active,
+                    isAdmin: authResult.user.isAdmin,
+                } : undefined
+            });
         }
 
         // Récupérer l'URL de redirection depuis les paramètres ou utiliser une URL par défaut
-        const redirectTo =
-            request.nextUrl.searchParams.get("redirectTo") || "/dashboard";
-
-        console.log(
-            "Refresh: Token rafraîchi avec succès, redirection vers:",
-            redirectTo
-        );
-
+        const redirectTo = request.nextUrl.searchParams.get("redirectTo") || "/dashboard";
+        
+        console.log("Refresh: Redirection vers:", redirectTo);
         return NextResponse.redirect(new URL(redirectTo, request.url));
+
     } catch (error) {
-        console.error(
-            "Refresh: Erreur lors du rafraîchissement du token:",
-            error
-        );
+        console.error("Refresh: Erreur lors du rafraîchissement:", error);
 
-        // Nettoyer les cookies en cas d'erreur
-        const cookieStore = await cookies();
-
-        cookieStore.delete("accessToken");
-        cookieStore.delete("refreshToken");
-        cookieStore.delete("user");
-        cookieStore.delete("tokenMeta");
-
-        // Gérer les erreurs spécifiques
-        if (error instanceof UnauthorizedError) {
-            console.log(
-                "Refresh: Token de rafraîchissement invalide, redirection vers login"
-            );
-
-            const loginUrl = new URL("/login", request.url);
-            const originalUrl =
-                request.nextUrl.searchParams.get("redirectTo") || request.url;
-
-            loginUrl.searchParams.set("redirectTo", originalUrl);
-            loginUrl.searchParams.set("toast", "session-expired");
-            if (isAjaxRefresh) {
-                return NextResponse.json(
-                    { success: false, reason: "unauthorized" },
-                    { status: 401 }
-                );
-            }
-
-            return NextResponse.redirect(loginUrl);
+        // En cas d'erreur, nettoyer les cookies et rediriger vers login
+        try {
+            const authService = AuthTokenService.getInstance();
+            await authService.clearTokens();
+        } catch (clearError) {
+            console.error("Refresh: Erreur lors du nettoyage des cookies:", clearError);
         }
 
-        const loginUrl = new URL("/login", request.url);
-        const originalUrl =
-            request.nextUrl.searchParams.get("redirectTo") || request.url;
-
-        loginUrl.searchParams.set("redirectTo", originalUrl);
-        loginUrl.searchParams.set("toast", "session-expired");
         if (isAjaxRefresh) {
             return NextResponse.json(
                 { success: false, reason: "error" },
@@ -246,6 +74,12 @@ export async function GET(request: NextRequest) {
             );
         }
 
+        const loginUrl = new URL("/login", request.url);
+        const originalUrl = request.nextUrl.searchParams.get("redirectTo") || request.url;
+        
+        loginUrl.searchParams.set("redirectTo", originalUrl);
+        loginUrl.searchParams.set("toast", "session-expired");
+        
         return NextResponse.redirect(loginUrl);
     }
 }
