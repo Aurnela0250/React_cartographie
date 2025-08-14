@@ -9,6 +9,7 @@ import {
     Sparkles,
 } from "lucide-react";
 
+import { User } from "@/core/entities/users.entity";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -28,7 +29,7 @@ import {
 import UserAvatar from "./user-avatar";
 
 type navUserProps = {
-    user?: unknown;
+    user?: User | null;
 };
 
 export function NavUser({ user }: navUserProps) {
@@ -66,8 +67,7 @@ export function NavUser({ user }: navUserProps) {
                                 <UserAvatar email={user?.email ?? "USER"} />
                                 <div className="grid flex-1 text-left text-sm leading-tight">
                                     <span className="truncate font-semibold">
-                                        {user?.name ??
-                                            user?.email?.split("@")[0]}
+                                        {user?.email?.split("@")[0]}
                                     </span>
                                     <span className="truncate text-xs">
                                         {user?.email}

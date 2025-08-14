@@ -1,6 +1,8 @@
 import { EstablishmentList } from "@/presentation/components/features/establishments/establishment-list";
 
 export default async function EstablishmentsPage() {
+    console.log("EstablishmentsPage");
+
     return (
         <div className="min-h-0 space-y-6">
             <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">

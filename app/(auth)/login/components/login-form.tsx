@@ -88,8 +88,7 @@ export function LoginForm() {
 
             // Utiliser l'URL de redirection fournie par l'API ou redirection par défaut selon le rôle
             const redirectPath =
-                result.redirectTo ||
-                (result.user?.isAdmin ? "/admin" : "/dashboard");
+                result.redirectTo || (result.user?.isAdmin ? "/admin" : "/");
 
             router.push(redirectPath);
             router.refresh();

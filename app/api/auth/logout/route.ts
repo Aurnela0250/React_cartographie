@@ -1,36 +1,13 @@
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-import { AuthDjangoApiRepository } from "@/infrastructure/repositories/auth.repository";
-
-const authRepository = new AuthDjangoApiRepository();
+import { AuthTokenService } from "@/infrastructure/services/auth-token.service";
 
 export async function POST(_: NextRequest) {
     try {
-        const cookieStore = await cookies();
+        // Utiliser le service centralisé pour la déconnexion
+        const authService = AuthTokenService.getInstance();
 
-        // Récupérer les tokens depuis les cookies
-        const accessToken = cookieStore.get("accessToken")?.value;
-        const refreshToken = cookieStore.get("refreshToken")?.value;
-
-        // Si on a des tokens, appeler l'API de déconnexion
-        if (accessToken && refreshToken) {
-            try {
-                await authRepository.logout(accessToken, refreshToken);
-            } catch (error) {
-                // On log l'erreur mais on continue la déconnexion côté client
-                console.error(
-                    "Erreur lors de la déconnexion côté serveur:",
-                    error
-                );
-            }
-        }
-
-        // Nettoyer tous les cookies d'authentification
-        cookieStore.delete("accessToken");
-        cookieStore.delete("refreshToken");
-        cookieStore.delete("user");
-        cookieStore.delete("tokenMeta");
+        await authService.logout();
 
         return NextResponse.json({
             success: true,
@@ -39,13 +16,14 @@ export async function POST(_: NextRequest) {
     } catch (error) {
         console.error("Erreur lors de la déconnexion:", error);
 
-        // Même en cas d'erreur, on nettoie les cookies locaux
-        const cookieStore = await cookies();
+        // En cas d'erreur, forcer le nettoyage des cookies
+        try {
+            const authService = AuthTokenService.getInstance();
 
-        cookieStore.delete("accessToken");
-        cookieStore.delete("refreshToken");
-        cookieStore.delete("user");
-        cookieStore.delete("tokenMeta");
+            await authService.clearTokens();
+        } catch (clearError) {
+            console.error("Erreur lors du nettoyage des cookies:", clearError);
+        }
 
         return NextResponse.json({
             success: true,

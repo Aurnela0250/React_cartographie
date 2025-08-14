@@ -3,6 +3,7 @@
 import { ReactNode, useEffect } from "react";
 import { toast, Toaster } from "sonner";
 
+import { SessionProvider } from "@/lib/auth-client";
 // import { Toaster } from "@/presentation/components/ui/toaster";
 import QueryProvider from "@/presentation/providers/query-provider";
 import { ThemeProvider } from "@/presentation/providers/theme-provider";
@@ -40,18 +41,23 @@ export default function ClientProviders({ children }: ClientProvidersProps) {
     return (
         <>
             <TwentyFirstToolbar config={{ plugins: [ReactPlugin] }} />
-            <QueryProvider>
-                <ThemeProvider
-                    disableTransitionOnChange
-                    enableSystem
-                    attribute="class"
-                    defaultTheme="light"
-                >
-                    {children}
-                    <Toaster richColors />
-                    {/* <ChatAI /> */}
-                </ThemeProvider>
-            </QueryProvider>
+            <SessionProvider
+                refetchInterval={5 * 60} // 5 minutes comme Auth.js
+                refetchOnWindowFocus={true}
+            >
+                <QueryProvider>
+                    <ThemeProvider
+                        disableTransitionOnChange
+                        enableSystem
+                        attribute="class"
+                        defaultTheme="light"
+                    >
+                        {children}
+                        <Toaster richColors />
+                        {/* <ChatAI /> */}
+                    </ThemeProvider>
+                </QueryProvider>
+            </SessionProvider>
         </>
     );
 }

@@ -1,0 +1,133 @@
+---
+trigger: glob
+description:
+globs: **/page.tsx
+---
+
+# Règle : Pattern de module admin/[entity]/ (exemple : admin/cities/)
+
+## 0. SSR obligatoire pour les pages admin
+
+- **Les pages admin doivent impérativement être des React Server Components (RSC/SSR)** :
+    - **Aucune directive 'use client'** dans la page.
+    - **Aucune logique métier, mutation ou état local** dans la page.
+    - La page ne fait que composer l'UI : imports des composants, structure JSX, Suspense, et portails pour les dialogs.
+    - Toute la logique d'état et de mutation est déléguée aux composants clients et au store Zustand.
+
+## 1. Structure de dossier et nommage
+
+```
+app/
+  admin/
+    cities/
+      components/
+        city-add-button.tsx
+        city-delete-dialog.tsx
+        city-dialog.tsx
+        city-list-skeleton.tsx
+        city-list.tsx
+        city-store.ts
+      page.tsx
+```
+
+- Dossier : pluriel, kebab-case (`cities`)
+- Fichiers composants : singulier, kebab-case (`city-dialog.tsx`)
+- Store : `[entity]-store.ts` (`city-store.ts`)
+- Skeleton : `[entity]-list-skeleton.tsx`
+- Dialogs : `[entity]-dialog.tsx`, `[entity]-delete-dialog.tsx`
+- Bouton d'ajout : `[entity]-add-button.tsx`
+- Liste principale : `[entity]-list.tsx`
+
+## 2. Page principale (SSR + Suspense + Portails)
+
+```tsx
+// app/admin/cities/page.tsx
+import React, { Suspense } from "react";
+import { CityAddButton } from "./components/city-add-button";
+import { CityDeleteDialog } from "./components/city-delete-dialog";
+import { CityDialog } from "./components/city-dialog";
+import { CityList } from "./components/city-list";
+import { CityListSkeleton } from "./components/city-list-skeleton";
+
+export default function CityPage() {
+  return (
+    <div className="container space-y-6 py-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Villes</h1>
+        <CityAddButton />
+      </div>
+      <Suspense fallback={<CityListSkeleton />}>
+        <CityList />
+      </Suspense>
+      {/* Les dialogs sont des portails, ils peuvent être ici */}
+      <CityDialog />
+      <CityDeleteDialog />
+    </div>
+  );
+}
+```
+
+// ... reste de la règle inchangé ... # Règle : Pattern de module admin/[entity]/ (exemple : admin/cities/)
+
+## 0. SSR obligatoire pour les pages admin
+
+- **Les pages admin doivent impérativement être des React Server Components (RSC/SSR)** :
+    - **Aucune directive 'use client'** dans la page.
+    - **Aucune logique métier, mutation ou état local** dans la page.
+    - La page ne fait que composer l'UI : imports des composants, structure JSX, Suspense, et portails pour les dialogs.
+    - Toute la logique d'état et de mutation est déléguée aux composants clients et au store Zustand.
+
+## 1. Structure de dossier et nommage
+
+```
+app/
+  admin/
+    cities/
+      components/
+        city-add-button.tsx
+        city-delete-dialog.tsx
+        city-dialog.tsx
+        city-list-skeleton.tsx
+        city-list.tsx
+        city-store.ts
+      page.tsx
+```
+
+- Dossier : pluriel, kebab-case (`cities`)
+- Fichiers composants : singulier, kebab-case (`city-dialog.tsx`)
+- Store : `[entity]-store.ts` (`city-store.ts`)
+- Skeleton : `[entity]-list-skeleton.tsx`
+- Dialogs : `[entity]-dialog.tsx`, `[entity]-delete-dialog.tsx`
+- Bouton d'ajout : `[entity]-add-button.tsx`
+- Liste principale : `[entity]-list.tsx`
+
+## 2. Page principale (SSR + Suspense + Portails)
+
+```tsx
+// app/admin/cities/page.tsx
+import React, { Suspense } from "react";
+import { CityAddButton } from "./components/city-add-button";
+import { CityDeleteDialog } from "./components/city-delete-dialog";
+import { CityDialog } from "./components/city-dialog";
+import { CityList } from "./components/city-list";
+import { CityListSkeleton } from "./components/city-list-skeleton";
+
+export default function CityPage() {
+  return (
+    <div className="container space-y-6 py-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Villes</h1>
+        <CityAddButton />
+      </div>
+      <Suspense fallback={<CityListSkeleton />}>
+        <CityList />
+      </Suspense>
+      {/* Les dialogs sont des portails, ils peuvent être ici */}
+      <CityDialog />
+      <CityDeleteDialog />
+    </div>
+  );
+}
+```
+
+// ... reste de la règle inchangé ...

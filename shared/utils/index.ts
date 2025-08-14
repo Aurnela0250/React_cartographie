@@ -2,6 +2,16 @@ import { camelCase, snakeCase } from "change-case";
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+import { UnauthorizedError } from "@/src/entities/errors/auth";
+import {
+    ApiError,
+    ApiErrorDetail,
+    ApiErrorResponse,
+    BadRequestError,
+    ConflictError,
+    NotFoundError,
+} from "@/src/entities/errors/common";
+
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
@@ -65,4 +75,53 @@ export function toSnakeCaseRecursive<T>(obj: T): T {
     }
 
     return obj;
+}
+
+export async function handleApiResponse<T>(response: Response): Promise<T> {
+    if (response.ok) {
+        // Vérifier si la réponse a un statut 204 (No Content)
+        if (response.status === 204) {
+            return undefined as T; // Pas de contenu à parser
+        }
+
+        return (await response.json()) as T;
+    }
+
+    let errorData: ApiErrorResponse;
+
+    try {
+        errorData = (await response.json()) as ApiErrorResponse;
+    } catch (e) {
+        throw createErrorByStatusCode(
+            response.status,
+            `Erreur HTTP: ${response.status} ${response.statusText}`,
+            []
+        );
+    }
+
+    throw createErrorByStatusCode(
+        response.status,
+        errorData.message || `Erreur HTTP: ${response.status}`,
+        errorData.details || []
+    );
+}
+
+function createErrorByStatusCode(
+    statusCode: number,
+    message: string,
+    details: ApiErrorDetail[]
+): ApiError {
+    switch (statusCode) {
+        case 400:
+            return new BadRequestError(message);
+        case 401:
+            return new UnauthorizedError(message);
+        case 404:
+            return new NotFoundError(message);
+        case 409:
+            return new ConflictError(message);
+        // Ajoutez d'autres cas selon vos besoins
+        default:
+            return new ApiError(message);
+    }
 }

@@ -1,329 +1,164 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { Bell, LogOut, Menu, Search, X } from "lucide-react";
+import { Menu } from "lucide-react";
 
-// Nous utilisons maintenant un fetch direct vers l'API au lieu du server-action
-import { ModeToggle } from "@/presentation/components/features/mode-toggle";
+import { auth } from "@/lib/auth";
 import { Button } from "@/presentation/components/ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/presentation/components/ui/dropdown-menu";
-import { Input } from "@/presentation/components/ui/input";
 import {
     Sheet,
     SheetContent,
     SheetTrigger,
 } from "@/presentation/components/ui/sheet";
-import { useSession } from "@/presentation/hooks/use-session";
 
-import UserAvatar from "../user-avatar";
+import NavbarUserMenu from "./navbar-user-menu";
+import { ThemeToggle } from "./theme-toggle";
 
-export default function Navbar() {
-    const router = useRouter();
-    const pathname = usePathname();
-    const { user, isLoggedIn } = useSession();
-    const [showSearch, setShowSearch] = useState(false);
-    const [isLoggingOut, setIsLoggingOut] = useState(false);
+const navigation = [
+    { name: "Accueil", href: "/" },
+    { name: "Établissements", href: "/establishments" },
+    { name: "Carte", href: "/map" },
+];
 
+interface MobileMenuContentProps {
+    navigation: Array<{ name: string; href: string }>;
+    session: any;
+}
+
+function MobileMenuContent({ navigation, session }: MobileMenuContentProps) {
     return (
-        <header className="sticky top-0 z-30 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="flex h-16 items-center px-4">
-                <div className="mr-2 md:hidden">
-                    <Sheet>
-                        <SheetTrigger asChild>
-                            <Button size="icon" variant="ghost">
-                                <Menu className="size-5" />
-                                <span className="sr-only">Toggle menu</span>
-                            </Button>
-                        </SheetTrigger>
-                        <SheetContent
-                            className="w-[240px] sm:w-[300px]"
-                            side="left"
-                        >
-                            <nav className="mt-8 flex flex-col gap-4">
-                                <Link
-                                    className={`rounded-md px-2 py-1 ${pathname === "/" ? "bg-muted font-medium" : ""}`}
-                                    href="/"
-                                >
-                                    Accueil
-                                </Link>
-                                <Link
-                                    className={`rounded-md px-2 py-1 ${pathname === "/map" ? "bg-muted font-medium" : ""}`}
-                                    href="/map"
-                                >
-                                    Carte
-                                </Link>
-                                <Link
-                                    className={`rounded-md px-2 py-1 ${pathname === "/establishments" ? "bg-muted font-medium" : ""}`}
-                                    href="/establishments"
-                                >
-                                    Établissements
-                                </Link>
-                                <Link
-                                    className={`rounded-md px-2 py-1 ${
-                                        (user?.name ??
-                                            user?.email?.split("@")[0]) ===
-                                        "admin"
-                                            ? pathname === "/admin"
-                                                ? "bg-muted font-medium"
-                                                : ""
-                                            : (user?.name ??
-                                                    user?.email?.split(
-                                                        "@"
-                                                    )[0]) === "adminEtab"
-                                              ? pathname === "/admin-etab"
-                                                  ? "bg-muted font-medium"
-                                                  : ""
-                                              : ""
-                                    }`}
-                                    href={
-                                        (user?.name ??
-                                            user?.email?.split("@")[0]) ===
-                                        "admin"
-                                            ? "/admin"
-                                            : (user?.name ??
-                                                    user?.email?.split(
-                                                        "@"
-                                                    )[0]) === "adminEtab"
-                                              ? "/admin-etab"
-                                              : "/admin"
-                                    }
-                                >
-                                    Admin
-                                </Link>
-                                {/* {user?.role !== "visitor" && (
-                                    <Link
-                                        className={`rounded-md px-2 py-1 ${pathname === "/dashboard" ? "bg-muted font-medium" : ""}`}
-                                        href="/dashboard"
-                                    >
-                                        Tableau de bord
-                                    </Link>
-                                )} */}
-                            </nav>
-                        </SheetContent>
-                    </Sheet>
-                </div>
-
-                <div className="mr-4 flex items-center gap-2">
-                    <Link className="flex items-center gap-2" href="/">
-                        <div className="flex size-8 items-center justify-center rounded-full bg-primary">
-                            <span className="font-bold text-primary-foreground">
-                                PS
-                            </span>
-                        </div>
-                        <span className="hidden font-bold md:inline-block">
-                            Parcours Sup
-                        </span>
-                    </Link>
-                </div>
-
-                <nav className="mx-6 hidden items-center gap-6 md:flex">
-                    <Link
-                        className={`text-sm font-medium ${
-                            pathname === "/"
-                                ? "text-foreground"
-                                : "text-muted-foreground"
-                        } transition-colors hover:text-foreground`}
-                        href="/"
-                    >
-                        Accueil
-                    </Link>
-                    <Link
-                        className={`text-sm font-medium ${
-                            pathname === "/map"
-                                ? "text-foreground"
-                                : "text-muted-foreground"
-                        } transition-colors hover:text-foreground`}
-                        href="/map"
-                    >
-                        Carte
-                    </Link>
-                    <Link
-                        className={`text-sm font-medium ${
-                            pathname === "/establishments"
-                                ? "text-foreground"
-                                : "text-muted-foreground"
-                        } transition-colors hover:text-foreground`}
-                        href="/establishments"
-                    >
-                        Établissements
-                    </Link>
-                    <Link
-                        className={`text-sm font-medium ${
-                            (user?.name ?? user?.email?.split("@")[0]) ===
-                            "admin"
-                                ? pathname === "/admin"
-                                    ? "text-foreground"
-                                    : "text-muted-foreground"
-                                : (user?.name ?? user?.email?.split("@")[0]) ===
-                                    "adminEtab"
-                                  ? pathname === "/admin-etab"
-                                      ? "text-foreground"
-                                      : "text-muted-foreground"
-                                  : "text-muted-foreground"
-                        } transition-colors hover:text-foreground`}
-                        href={
-                            (user?.name ?? user?.email?.split("@")[0]) ===
-                            "admin"
-                                ? "/admin"
-                                : (user?.name ?? user?.email?.split("@")[0]) ===
-                                    "adminEtab"
-                                  ? "/admin-etab"
-                                  : "/admin"
-                        }
-                    >
-                        Admin
-                    </Link>
-                    {/* {user?.role !== "visitor" && (
-                        <Link
-                            className={`text-sm font-medium ${
-                                pathname === "/dashboard"
-                                    ? "text-foreground"
-                                    : "text-muted-foreground"
-                            } transition-colors hover:text-foreground`}
-                            href="/dashboard"
-                        >
-                            Tableau de bord
-                        </Link>
-                    )} */}
-                </nav>
-
-                <div className="ml-auto flex items-center gap-2">
-                    {showSearch ? (
-                        <div className="relative">
-                            <Input
-                                className="w-[200px] md:w-[300px]"
-                                placeholder="Rechercher..."
-                            />
-                            <Button
-                                className="absolute right-0 top-0"
-                                size="icon"
-                                variant="ghost"
-                                onClick={() => setShowSearch(false)}
+        <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+            <div className="flex items-center justify-between">
+                <Link className="-m-1.5 p-1.5" href="/">
+                    <span className="sr-only">Orientation Mada</span>
+                    <div className="text-xl font-bold text-primary">
+                        Orientation Mada
+                    </div>
+                </Link>
+            </div>
+            <div className="mt-6 flow-root">
+                <div className="-my-6 divide-y divide-border">
+                    <div className="space-y-2 py-6">
+                        {navigation.map((item) => (
+                            <Link
+                                key={item.name}
+                                className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold text-foreground hover:bg-accent"
+                                href={item.href}
                             >
-                                <X className="size-4" />
-                            </Button>
+                                {item.name}
+                            </Link>
+                        ))}
+                    </div>
+                    <div className="py-6 space-y-2">
+                        <div className="-mx-3 flex items-center justify-between py-2">
+                            <span className="text-base font-semibold">Thème</span>
+                            <ThemeToggle />
                         </div>
-                    ) : (
-                        <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => setShowSearch(true)}
-                        >
-                            <Search className="size-5" />
-                            <span className="sr-only">Rechercher</span>
-                        </Button>
-                    )}
-                    <ModeToggle />
-                    <Button size="icon" variant="ghost">
-                        <Bell className="size-5" />
-                        <span className="sr-only">Notifications</span>
-                    </Button>
-                    {user && (
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
+                        
+                        {!session?.user && (
+                            <>
                                 <Button
-                                    className="relative size-8 rounded-full"
-                                    variant="ghost"
+                                    asChild
+                                    variant="secondary"
+                                    className="-mx-3 w-full justify-start rounded-lg px-3 py-2.5 text-base font-semibold"
                                 >
-                                    <UserAvatar email={user.email ?? "USER"} />
+                                    <Link href="/login">Connexion</Link>
                                 </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent
-                                align="end"
-                                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                                side="bottom"
-                                sideOffset={4}
-                            >
-                                <DropdownMenuLabel className="font-normal">
-                                    <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                                        <UserAvatar
-                                            email={user.email ?? "USER"}
-                                        />
-                                        <div className="grid flex-1 text-left text-sm leading-tight">
-                                            <span className="truncate font-semibold">
-                                                {user?.name ?? "Utilisateur"}
-                                            </span>
-                                            <span className="truncate text-xs">
-                                                {user?.email}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem asChild>
-                                    <Link href="/profile">Mon profil</Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild>
-                                    <Link href="/favorites">Mes favoris</Link>
-                                </DropdownMenuItem>
-                                {/* {user.role !== "visitor" && (
-                                    <DropdownMenuItem asChild>
-                                        <Link href="/dashboard">
-                                            Tableau de bord
-                                        </Link>
-                                    </DropdownMenuItem>
-                                )} */}
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem asChild>
-                                    <button
-                                        className="flex w-full items-center"
-                                        disabled={isLoggingOut}
-                                        type="button"
-                                        onClick={async () => {
-                                            setIsLoggingOut(true);
-                                            try {
-                                                await fetch("/api/logout", {
-                                                    method: "POST",
-                                                    headers: {
-                                                        "Content-Type":
-                                                            "application/json",
-                                                    },
-                                                });
-                                            } catch (error) {
-                                                console.error(
-                                                    "Erreur lors de la déconnexion:",
-                                                    error
-                                                );
-                                            } finally {
-                                                // Toujours rediriger côté client, car fetch ne suit pas la redirection Next.js côté client
-                                                router.push("/login");
-                                                router.refresh();
-                                                setIsLoggingOut(false);
-                                            }
-                                        }}
-                                    >
-                                        <LogOut className="mr-2 size-4" />
-                                        <span>
-                                            {isLoggingOut
-                                                ? "Déconnexion..."
-                                                : "Déconnexion"}
-                                        </span>
-                                    </button>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    )}
-                    {!isLoggedIn && (
-                        <div className="flex items-center gap-2">
-                            <Button asChild variant="ghost">
-                                <Link href="/login">Connexion</Link>
-                            </Button>
-                            <Button asChild>
-                                <Link href="/register">Inscription</Link>
-                            </Button>
-                        </div>
-                    )}
+                                <Button
+                                    asChild
+                                    className="-mx-3 w-full justify-start rounded-lg px-3 py-2.5 text-base font-semibold"
+                                >
+                                    <Link href="/register">Inscription</Link>
+                                </Button>
+                            </>
+                        )}
+                        
+                        {session?.user && (
+                            <div className="-mx-3 py-2">
+                                <NavbarUserMenu user={session.user} />
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
+        </SheetContent>
+    );
+}
+
+export default async function Navbar() {
+    const session = await auth();
+    
+    return (
+        <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+            <nav
+                aria-label="Global"
+                className="flex items-center justify-between p-6 lg:px-8"
+            >
+                <div className="flex lg:flex-1">
+                    <Link className="-m-1.5 p-1.5" href="/">
+                        <span className="sr-only">Orientation Mada</span>
+                        <div className="text-xl font-bold text-primary">
+                            Orientation Mada
+                        </div>
+                    </Link>
+                </div>
+                <div className="flex lg:hidden">
+                    <Sheet>
+                        <SheetTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="-m-2.5 p-2.5 text-foreground"
+                            >
+                                <span className="sr-only">Open main menu</span>
+                                <Menu aria-hidden="true" className="size-6" />
+                            </Button>
+                        </SheetTrigger>
+                        <MobileMenuContent
+                            navigation={navigation}
+                            session={session}
+                        />
+                    </Sheet>
+                </div>
+                <div className="hidden lg:flex lg:gap-x-12">
+                    {navigation.map((item) => (
+                        <Link
+                            key={item.name}
+                            className="text-sm font-semibold text-foreground hover:text-primary transition-colors"
+                            href={item.href}
+                        >
+                            {item.name}
+                        </Link>
+                    ))}
+                </div>
+                <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-2">
+                    <ThemeToggle />
+                    
+                    {!session?.user && (
+                        <>
+                            <Button
+                                asChild
+                                variant="secondary"
+                                size="sm"
+                                className="text-sm font-semibold"
+                            >
+                                <Link href="/login">
+                                    Connexion
+                                </Link>
+                            </Button>
+                            <Button
+                                asChild
+                                size="sm"
+                                className="text-sm font-semibold"
+                            >
+                                <Link href="/register">
+                                    Inscription
+                                </Link>
+                            </Button>
+                        </>
+                    )}
+
+                    {session?.user && <NavbarUserMenu user={session.user} />}
+                </div>
+            </nav>
         </header>
     );
 }

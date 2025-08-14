@@ -1,3 +1,5 @@
-# React_cartographie/pnpm-workspace.yaml
 packages:
-    - "packages/*"
+  - packages/*
+
+ignoredBuiltDependencies:
+  - '@tailwindcss/oxide'

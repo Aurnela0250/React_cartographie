@@ -1,27 +1,26 @@
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-import { AuthDjangoApiRepository } from "@/infrastructure/repositories/auth.repository";
-
-const authRepository = new AuthDjangoApiRepository();
+import { AuthTokenService } from "@/infrastructure/services/auth-token.service";
 
 export async function GET(_: NextRequest) {
     try {
-        const cookieStore = await cookies();
-        const accessToken = cookieStore.get("accessToken")?.value;
+        // Utiliser le service centralisé pour vérifier l'authentification
+        // et récupérer l'utilisateur avec refresh automatique si nécessaire
+        const authService = AuthTokenService.getInstance();
+        const authResult = await authService.isAuthenticated();
 
-        // Le middleware garantit que le token est présent et valide
-        if (!accessToken) {
+        if (!authResult.authenticated) {
             return NextResponse.json(
-                { error: "Non authentifié - token manquant" },
+                { 
+                    error: "Non authentifié",
+                    requiresLogin: authResult.requiresLogin || false 
+                },
                 { status: 401 }
             );
         }
 
-        // Récupérer les données utilisateur directement depuis l'API backend
-        const user = await authRepository.me(accessToken);
-
-        return NextResponse.json(user);
+        // Retourner les données utilisateur
+        return NextResponse.json(authResult.user);
     } catch (error) {
         console.error(
             "Me: Erreur lors de la récupération des données utilisateur:",

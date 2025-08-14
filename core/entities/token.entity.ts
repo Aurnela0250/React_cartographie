@@ -1,7 +1,7 @@
 import { IUser, User } from "./users.entity";
 
 export type IToken = {
-    userId: string;
+    userId: number;
     exp: number;
     iat: number;
     jti: string;
@@ -17,7 +17,7 @@ export class Token implements IToken {
     accessToken: string;
     refreshToken: string;
     tokenType: string;
-    userId: string;
+    userId: number;
     jti: string;
     iss: string;
     aud: string;
