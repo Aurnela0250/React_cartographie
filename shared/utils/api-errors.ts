@@ -1,3 +1,4 @@
+import { UnauthorizedError } from "@/src/entities/errors/auth";
 import {
     ApiError,
     ApiErrorDetail,
@@ -5,8 +6,7 @@ import {
     BadRequestError,
     ConflictError,
     NotFoundError,
-    UnauthorizedError,
-} from "./api-errors.types";
+} from "@/src/entities/errors/common";
 
 export async function handleApiResponse<T>(response: Response): Promise<T> {
     if (response.ok) {
@@ -44,18 +44,15 @@ function createErrorByStatusCode(
 ): ApiError {
     switch (statusCode) {
         case 400:
-            return new BadRequestError(message, details);
+            return new BadRequestError(message);
         case 401:
-            return new UnauthorizedError(message, details);
+            return new UnauthorizedError(message);
         case 404:
-            return new NotFoundError(message, details);
+            return new NotFoundError(message);
         case 409:
-            return new ConflictError(
-                "Une entité avec ces informations existe déjà.",
-                details
-            );
+            return new ConflictError(message);
         // Ajoutez d'autres cas selon vos besoins
         default:
-            return new ApiError(message, details, statusCode);
+            return new ApiError(message);
     }
 }
