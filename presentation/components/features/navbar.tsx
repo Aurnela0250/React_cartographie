@@ -1,104 +1,164 @@
 import Link from "next/link";
+import { Menu } from "lucide-react";
 
 import { auth } from "@/lib/auth";
-import Logo from "@/presentation/components/features/logo";
 import { Button } from "@/presentation/components/ui/button";
 import {
-    NavigationMenu,
-    NavigationMenuItem,
-    NavigationMenuLink,
-    NavigationMenuList,
-} from "@/presentation/components/ui/navigation-menu";
+    Sheet,
+    SheetContent,
+    SheetTrigger,
+} from "@/presentation/components/ui/sheet";
 
-import NavbarMobileMenu from "./navbar-mobile-menu";
 import NavbarUserMenu from "./navbar-user-menu";
+import { ThemeToggle } from "./theme-toggle";
 
-// Navigation links array
-const navigationLinks = [
-    { href: "/", label: "Accueil" },
-    { href: "/establishments", label: "Établissements" },
-    { href: "/map", label: "Carte" },
+const navigation = [
+    { name: "Accueil", href: "/" },
+    { name: "Établissements", href: "/establishments" },
+    { name: "Carte", href: "/map" },
 ];
 
-/**
- * Navbar Server Component - Rendu côté serveur uniquement
- * Utilise auth() pour récupérer la session de manière élégante
- *
- * Avantages:
- * - Pas de flash de contenu non-authentifié
- * - SEO-friendly
- * - Performance optimale
- * - Pas de JavaScript côté client pour l'authentification
- */
-export default async function Navbar() {
-    // Récupérer la session côté serveur avec auth()
-    const session = await auth();
+interface MobileMenuContentProps {
+    navigation: Array<{ name: string; href: string }>;
+    session: any;
+}
 
+function MobileMenuContent({ navigation, session }: MobileMenuContentProps) {
     return (
-        <header className="border-b px-4 md:px-6">
-            <div className="flex h-16 justify-between gap-4">
-                {/* Left side */}
-                <div className="flex gap-2">
-                    {/* Mobile menu */}
-                    <div className="flex items-center md:hidden">
-                        <NavbarMobileMenu
-                            isLoggedIn={!!session?.user}
-                            navigationLinks={navigationLinks}
-                            user={session?.user}
-                        />
+        <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+            <div className="flex items-center justify-between">
+                <Link className="-m-1.5 p-1.5" href="/">
+                    <span className="sr-only">Orientation Mada</span>
+                    <div className="text-xl font-bold text-primary">
+                        Orientation Mada
                     </div>
-
-                    {/* Main nav */}
-                    <div className="flex items-center gap-6">
-                        <Link
-                            className="text-primary hover:text-primary/90"
-                            href="/"
-                        >
-                            <Logo />
-                        </Link>
-
-                        {/* Desktop Navigation menu */}
-                        <NavigationMenu className="h-full *:h-full max-md:hidden">
-                            <NavigationMenuList className="h-full gap-2">
-                                {navigationLinks.map((link, index) => (
-                                    <NavigationMenuItem
-                                        key={index}
-                                        className="h-full"
-                                    >
-                                        <NavigationMenuLink
-                                            className="h-full justify-center rounded-none border-y-2 border-transparent border-b-primary py-1.5 font-medium text-muted-foreground hover:border-b-primary hover:bg-transparent hover:text-primary"
-                                            href={link.href}
-                                        >
-                                            {link.label}
-                                        </NavigationMenuLink>
-                                    </NavigationMenuItem>
-                                ))}
-                            </NavigationMenuList>
-                        </NavigationMenu>
+                </Link>
+            </div>
+            <div className="mt-6 flow-root">
+                <div className="-my-6 divide-y divide-border">
+                    <div className="space-y-2 py-6">
+                        {navigation.map((item) => (
+                            <Link
+                                key={item.name}
+                                className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold text-foreground hover:bg-accent"
+                                href={item.href}
+                            >
+                                {item.name}
+                            </Link>
+                        ))}
+                    </div>
+                    <div className="py-6 space-y-2">
+                        <div className="-mx-3 flex items-center justify-between py-2">
+                            <span className="text-base font-semibold">Thème</span>
+                            <ThemeToggle />
+                        </div>
+                        
+                        {!session?.user && (
+                            <>
+                                <Button
+                                    asChild
+                                    variant="secondary"
+                                    className="-mx-3 w-full justify-start rounded-lg px-3 py-2.5 text-base font-semibold"
+                                >
+                                    <Link href="/login">Connexion</Link>
+                                </Button>
+                                <Button
+                                    asChild
+                                    className="-mx-3 w-full justify-start rounded-lg px-3 py-2.5 text-base font-semibold"
+                                >
+                                    <Link href="/register">Inscription</Link>
+                                </Button>
+                            </>
+                        )}
+                        
+                        {session?.user && (
+                            <div className="-mx-3 py-2">
+                                <NavbarUserMenu user={session.user} />
+                            </div>
+                        )}
                     </div>
                 </div>
+            </div>
+        </SheetContent>
+    );
+}
 
-                {/* Right side */}
-                <div className="flex items-center gap-2">
+export default async function Navbar() {
+    const session = await auth();
+    
+    return (
+        <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+            <nav
+                aria-label="Global"
+                className="flex items-center justify-between p-6 lg:px-8"
+            >
+                <div className="flex lg:flex-1">
+                    <Link className="-m-1.5 p-1.5" href="/">
+                        <span className="sr-only">Orientation Mada</span>
+                        <div className="text-xl font-bold text-primary">
+                            Orientation Mada
+                        </div>
+                    </Link>
+                </div>
+                <div className="flex lg:hidden">
+                    <Sheet>
+                        <SheetTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="-m-2.5 p-2.5 text-foreground"
+                            >
+                                <span className="sr-only">Open main menu</span>
+                                <Menu aria-hidden="true" className="size-6" />
+                            </Button>
+                        </SheetTrigger>
+                        <MobileMenuContent
+                            navigation={navigation}
+                            session={session}
+                        />
+                    </Sheet>
+                </div>
+                <div className="hidden lg:flex lg:gap-x-12">
+                    {navigation.map((item) => (
+                        <Link
+                            key={item.name}
+                            className="text-sm font-semibold text-foreground hover:text-primary transition-colors"
+                            href={item.href}
+                        >
+                            {item.name}
+                        </Link>
+                    ))}
+                </div>
+                <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-2">
+                    <ThemeToggle />
+                    
                     {!session?.user && (
                         <>
                             <Button
                                 asChild
-                                className="text-sm"
+                                variant="secondary"
                                 size="sm"
-                                variant="ghost"
+                                className="text-sm font-semibold"
                             >
-                                <Link href="/login">Connexion</Link>
+                                <Link href="/login">
+                                    Connexion
+                                </Link>
                             </Button>
-                            <Button asChild className="text-sm" size="sm">
-                                <Link href="/register">Inscription</Link>
+                            <Button
+                                asChild
+                                size="sm"
+                                className="text-sm font-semibold"
+                            >
+                                <Link href="/register">
+                                    Inscription
+                                </Link>
                             </Button>
                         </>
                     )}
 
                     {session?.user && <NavbarUserMenu user={session.user} />}
                 </div>
-            </div>
+            </nav>
         </header>
     );
 }

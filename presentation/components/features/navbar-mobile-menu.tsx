@@ -14,6 +14,8 @@ import {
     PopoverTrigger,
 } from "@/presentation/components/ui/popover";
 
+import { ThemeToggle } from "./theme-toggle";
+
 interface NavbarMobileMenuProps {
     navigationLinks: Array<{ href: string; label: string }>;
     isLoggedIn: boolean;
@@ -90,6 +92,14 @@ export default function NavbarMobileMenu({
                                 </NavigationMenuLink>
                             </NavigationMenuItem>
                         ))}
+
+                        {/* Theme Toggle */}
+                        <NavigationMenuItem className="w-full">
+                            <div className="flex items-center justify-between py-1.5">
+                                <span className="text-sm">Thème</span>
+                                <ThemeToggle />
+                            </div>
+                        </NavigationMenuItem>
 
                         {!isLoggedIn && (
                             <>
