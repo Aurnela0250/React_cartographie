@@ -1,0 +1,213 @@
+---
+trigger: glob
+description:
+globs: app/admin/domains/**/*.tsx
+---
+
+# Règle : Pattern de module admin/[entity]/ (exemple : admin/cities/)
+
+## 1. Structure de dossier et nommage
+
+```
+app/
+  admin/
+    cities/
+      components/
+        city-add-button.tsx
+        city-delete-dialog.tsx
+        city-dialog.tsx
+        city-list-skeleton.tsx
+        city-list.tsx
+        city-store.ts
+      page.tsx
+```
+
+- Dossier : pluriel, kebab-case (`cities`)
+- Fichiers composants : singulier, kebab-case (`city-dialog.tsx`)
+- Store : `[entity]-store.ts` (`city-store.ts`)
+- Skeleton : `[entity]-list-skeleton.tsx`
+- Dialogs : `[entity]-dialog.tsx`, `[entity]-delete-dialog.tsx`
+- Bouton d’ajout : `[entity]-add-button.tsx`
+- Liste principale : `[entity]-list.tsx`
+
+## 2. Page principale (SSR + Suspense + Portails)
+
+```tsx
+// app/admin/cities/page.tsx
+import React, { Suspense } from "react";
+import { CityAddButton } from "./components/city-add-button";
+import { CityDeleteDialog } from "./components/city-delete-dialog";
+import { CityDialog } from "./components/city-dialog";
+import { CityList } from "./components/city-list";
+import { CityListSkeleton } from "./components/city-list-skeleton";
+
+export default function CityPage() {
+  return (
+    <div className="container space-y-6 py-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Villes</h1>
+        <CityAddButton />
+      </div>
+      <Suspense fallback={<CityListSkeleton />}>
+        <CityList />
+      </Suspense>
+      {/* Les dialogs sont des portails, ils peuvent être ici */}
+      <CityDialog />
+      <CityDeleteDialog />
+    </div>
+  );
+}
+```
+
+## 3. Store Zustand centralisé
+
+```ts
+// app/admin/cities/components/city-store.ts
+"use client";
+import { create } from "zustand";
+import type { City } from "@/core/entities/city.entity";
+
+interface CityState {
+  selectedCity: City | null;
+  isAddEditDialogOpen: boolean;
+  isDeleteDialogOpen: boolean;
+  formError: string | null;
+  setSelectedCity: (city: City | null) => void;
+  setIsAddEditDialogOpen: (open: boolean) => void;
+  setIsDeleteDialogOpen: (open: boolean) => void;
+  setFormError: (error: string | null) => void;
+}
+
+export const useCityStore = create<CityState>((set) => ({
+  selectedCity: null,
+  isAddEditDialogOpen: false,
+  isDeleteDialogOpen: false,
+  formError: null,
+  setSelectedCity: (city) => set({ selectedCity: city }),
+  setIsAddEditDialogOpen: (open) => set({ isAddEditDialogOpen: open }),
+  setIsDeleteDialogOpen: (open) => set({ isDeleteDialogOpen: open }),
+  setFormError: (error) => set({ formError: error }),
+}));
+```
+
+## 4. Composant d’ajout
+
+```tsx
+// app/admin/cities/components/city-add-button.tsx
+"use client";
+import { Plus } from "lucide-react";
+import { Button } from "@/presentation/components/ui/button";
+import { useCityStore } from "./city-store";
+
+export function CityAddButton() {
+  const { setIsAddEditDialogOpen, setSelectedCity } = useCityStore();
+  const handleAdd = () => {
+    setSelectedCity(null);
+    setIsAddEditDialogOpen(true);
+  };
+  return (
+    <Button className="bg-primary hover:bg-primary/90" onClick={handleAdd}>
+      <Plus className="mr-2 size-4" /> Ajouter une ville
+    </Button>
+  );
+}
+```
+
+## 5. Liste paginée/filtrable
+
+```tsx
+// app/admin/cities/components/city-list.tsx
+"use client";
+import { useQueryStates, parseAsInteger, parseAsString } from "nuqs";
+import { useQuery } from "@tanstack/react-query";
+import { useDebounce } from "@/presentation/hooks/use-debounce";
+import { fetchWithAutoRefresh } from "@/shared/utils/fetch-with-refresh";
+import { useCityStore } from "./city-store";
+import { CityListSkeleton } from "./city-list-skeleton";
+import { Button, Input, Select, Table, ... } from "@/presentation/components/ui/...";
+
+export function CityList() {
+  const setSelectedCity = useCityStore((s) => s.setSelectedCity);
+  const setIsAddEditDialogOpen = useCityStore((s) => s.setIsAddEditDialogOpen);
+  const setIsDeleteDialogOpen = useCityStore((s) => s.setIsDeleteDialogOpen);
+
+  const [{ page, name, regionId: regionIdStr }, setQuery] = useQueryStates({
+    page: parseAsInteger.withDefault(1),
+    name: parseAsString.withDefault(""),
+    regionId: parseAsString.withDefault("all"),
+  });
+  const debouncedName = useDebounce(name, 500);
+
+  // ...fetch des régions et des villes (voir code complet)...
+
+  return (
+    <>
+      {/* Filtres, Table paginée, Skeleton dans TableBody, Pagination */}
+    </>
+  );
+}
+```
+
+## 6. Skeleton de table
+
+```tsx
+// app/admin/cities/components/city-list-skeleton.tsx
+import { TableRow, TableCell } from "@/presentation/components/ui/table";
+export function CityListSkeleton() {
+  return (
+    <>
+      {[...Array(5)].map((_, i) => (
+        <TableRow key={i}>
+          <TableCell colSpan={4}>
+            <div className="h-6 w-full animate-pulse bg-muted" />
+          </TableCell>
+        </TableRow>
+      ))}
+    </>
+  );
+}
+```
+
+## 7. Patterns à respecter
+
+- Dossier : `admin/[entities]/components/`
+- Fichiers : `[entity]-list.tsx`, `[entity]-list-skeleton.tsx`, `[entity]-dialog.tsx`, `[entity]-delete-dialog.tsx`, `[entity]-add-button.tsx`, `[entity]-store.ts`
+- Page : SSR, Suspense, portails pour dialogs, aucun état local.
+
+## 8. À faire / À ne pas faire
+
+| ✅ À FAIRE                               | ❌ À NE PAS FAIRE                         |
+| ---------------------------------------- | ----------------------------------------- |
+| Centraliser l'état UI dans le store      | Prop drilling d'état                      |
+| Utiliser React Query pour data/mutations | État local hors formulaire                |
+| Filtres synchronisés URL (nuqs)          | Dupliquer la logique de pagination/filtre |
+| Skeleton dans TableBody                  | Cacher la table en loading                |
+| Dialogs en portails                      | Dialogs imbriqués dans la table           |
+| Respecter le pattern regions             | Mélanger mutation et affichage            |
+
+## 9. Template de structure de dossier
+
+```
+admin/
+  [entities]/
+    components/
+      [entity]-add-button.tsx
+      [entity]-delete-dialog.tsx
+      [entity]-dialog.tsx
+      [entity]-list-skeleton.tsx
+      [entity]-list.tsx
+      [entity]-store.ts
+    page.tsx
+```
+
+# Fichiers de référence pour chaque composant et page
+
+- **Page principale** : [`app/admin/cities/page.tsx`](../../../app/admin/cities/page.tsx)
+- **Bouton d'ajout** : [`app/admin/cities/components/city-add-button.tsx`](../../../app/admin/cities/components/city-add-button.tsx)
+- **Dialog d'ajout/édition** : [`app/admin/cities/components/city-dialog.tsx`](../../../app/admin/cities/components/city-dialog.tsx)
+- **Dialog de suppression** : [`app/admin/cities/components/city-delete-dialog.tsx`](../../../app/admin/cities/components/city-delete-dialog.tsx)
+- **Liste paginée/filtrable** : [`app/admin/cities/components/city-list.tsx`](../../../app/admin/cities/components/city-list.tsx)
+- **Skeleton de la liste** : [`app/admin/cities/components/city-list-skeleton.tsx`](../../../app/admin/cities/components/city-list-skeleton.tsx)
+- **Store Zustand** : [`app/admin/cities/components/city-store.ts`](../../../app/admin/cities/components/city-store.ts)
+
+> Utilise ces fichiers comme référence pour l'implémentation de chaque composant ou page d'une nouvelle entité admin.

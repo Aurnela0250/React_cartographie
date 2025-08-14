@@ -1,0 +1,380 @@
+---
+trigger: always_on
+description:
+globs:
+---
+
+# Bonnes Pratiques de Commit Messages Git 🚀
+
+Ce guide décrit les standards pour rédiger des commit messages efficaces selon les conventions modernes de 2024.
+
+## **Structure Standard d'un Commit Message**
+
+### **Format Conventional Commits (Recommandé)**
+
+```
+<type>(<scope>): <subject>
+<LIGNE VIDE>
+<body>
+<LIGNE VIDE>
+<footer>
+```
+
+**Exemple complet :**
+
+```
+feat(auth): implement OAuth2 Google authentication
+
+- Add Google OAuth2 provider configuration
+- Create OAuth callback handler with token validation
+- Update user model to store OAuth provider data
+- Add environment variables for Google client credentials
+
+Closes #123
+Breaking Change: Requires new GOOGLE_CLIENT_ID env var
+```
+
+## **✅ Bonnes Pratiques**
+
+### **1. Types de Commit Standards**
+
+| Type       | Description                             | Exemple                                              |
+| ---------- | --------------------------------------- | ---------------------------------------------------- |
+| `feat`     | Nouvelle fonctionnalité                 | `feat(user): add profile picture upload`             |
+| `fix`      | Correction de bug                       | `fix(auth): resolve token expiration issue`          |
+| `docs`     | Documentation                           | `docs(README): update installation guide`            |
+| `style`    | Formatage, espaces                      | `style(css): fix indentation in main.css`            |
+| `refactor` | Refactoring sans changement fonctionnel | `refactor(api): extract validation logic`            |
+| `test`     | Ajout/modification de tests             | `test(user): add unit tests for password validation` |
+| `chore`    | Tâches de maintenance                   | `chore(deps): update dependencies to latest`         |
+| `perf`     | Amélioration de performance             | `perf(db): optimize user query with indexes`         |
+| `ci`       | Configuration CI/CD                     | `ci(github): add automated testing workflow`         |
+| `revert`   | Annulation d'un commit                  | `revert: "feat(auth): add OAuth2 support"`           |
+
+### **2. Règles du Subject (Ligne de titre)**
+
+- **✅ Maximum 50 caractères**
+- **✅ Commencer par une majuscule**
+- **✅ Pas de point final**
+- **✅ Mode impératif** (comme si vous donniez un ordre)
+- **✅ En anglais** (convention internationale)
+
+**Exemples corrects :**
+
+```
+feat(payment): add Stripe integration
+fix(validation): prevent SQL injection in search
+docs(API): update authentication endpoints
+```
+
+**❌ Exemples incorrects :**
+
+```
+Fixed the login bug.                    # Point final + passé
+added new feature for payments          # Pas de majuscule + passé
+Update documentation and fix some bugs  # Trop long + multiple actions
+```
+
+### **3. Body (Corps du message)**
+
+- **✅ Ligne vide obligatoire** après le subject
+- **✅ Wrapping à 72 caractères**
+- **✅ Expliquer le POURQUOI**, pas le comment
+- **✅ Utiliser des listes à puces** pour les détails
+- **✅ Inclure le contexte** et la motivation
+
+**Exemple :**
+
+```
+fix(auth): resolve session timeout during file uploads
+
+- Extend session timeout from 30min to 2h for upload operations
+- Add heartbeat mechanism to keep session alive during long uploads
+- Prevent data loss when users upload large files
+
+The previous 30-minute timeout was causing user frustration
+when uploading large documents, resulting in lost work.
+```
+
+### **4. Footer (Pied de page)**
+
+- **✅ Références aux issues** : `Closes #123`, `Fixes #456`
+- **✅ Breaking changes** : `BREAKING CHANGE: API endpoint changed`
+- **✅ Co-auteurs** : `Co-authored-by: Name <email@example.com>`
+
+## **🔧 Organisation des Commits avec Plusieurs Fichiers**
+
+### **Principe des Commits Atomiques**
+
+**✅ UN commit = UNE fonctionnalité logique**
+
+```bash
+# ✅ BON : Grouper les fichiers liés à la même fonctionnalité
+git add src/auth/login.js src/auth/validation.js tests/auth/
+git commit -m "feat(auth): implement password strength validation"
+
+# ❌ MAUVAIS : Mélanger des changements non liés
+git add src/auth/login.js src/ui/header.css src/api/users.js
+git commit -m "various fixes and updates"
+```
+
+### **Techniques de Staging Avancées**
+
+**1. Staging Interactif (`git add -p`)**
+
+```bash
+git add -p                    # Réviser chaque hunk individuellement
+git add -p src/auth/         # Staging partiel d'un dossier
+```
+
+**2. Staging Sélectif**
+
+```bash
+git add src/auth/login.js src/auth/validation.js    # Fichiers spécifiques
+git add src/auth/                                   # Dossier entier
+git add . --dry-run                                # Prévisualiser avant staging
+```
+
+**3. Vérification avant Commit**
+
+```bash
+git diff --staged            # Voir ce qui va être commité
+git status                   # État actuel du staging
+```
+
+### **Workflow Recommandé pour Plusieurs Fichiers**
+
+```bash
+# 1. Réviser tous les changements
+git status
+git diff
+
+# 2. Grouper par fonctionnalité logique
+git add src/auth/           # Feature 1: Authentication
+git commit -m "feat(auth): implement OAuth2 login"
+
+git add src/ui/             # Feature 2: UI improvements
+git commit -m "style(ui): update button components"
+
+git add tests/              # Feature 3: Tests
+git commit -m "test: add integration tests for auth flow"
+```
+
+## **❌ Anti-Patterns à Éviter**
+
+### **Messages Vagues**
+
+```bash
+# ❌ MAUVAIS
+git commit -m "fix stuff"
+git commit -m "update"
+git commit -m "changes"
+git commit -m "wip"
+
+# ✅ BON
+git commit -m "fix(api): resolve 500 error in user creation endpoint"
+```
+
+### **Commits Trop Gros**
+
+```bash
+# ❌ MAUVAIS : Tout en un commit
+git add .
+git commit -m "implement entire user management system"
+
+# ✅ BON : Décomposer en commits logiques
+git commit -m "feat(user): add user model and validation"
+git commit -m "feat(user): implement CRUD operations"
+git commit -m "feat(user): add user authentication"
+git commit -m "test(user): add comprehensive test suite"
+```
+
+### **Mélange de Types**
+
+```bash
+# ❌ MAUVAIS
+git commit -m "feat(auth): add login + fix(css): button alignment"
+
+# ✅ BON : Séparer en deux commits
+git commit -m "feat(auth): implement user login functionality"
+git commit -m "fix(ui): correct button alignment in header"
+```
+
+## **🛠️ Outils et Scripts Recommandés**
+
+### **Makefile pour les Commits**
+
+Ajouter dans votre [Makefile](mdc:Makefile) :
+
+```makefile
+# Validation des commits
+.PHONY: commit-lint
+commit-lint:
+	@echo "🔍 Validation du dernier commit message..."
+	@git log -1 --pretty=format:"%s" | grep -E "^(feat|fix|docs|style|refactor|test|chore|perf|ci|revert)(\(.+\))?: .{1,50}$$" || \
+	(echo "❌ Format de commit invalide. Utilisez: type(scope): description" && exit 1)
+	@echo "✅ Format de commit valide"
+
+# Commit interactif avec validation
+.PHONY: commit
+commit:
+	@echo "📝 Staging interactif..."
+	git add -p
+	@echo "📋 Révision des changements staged..."
+	git diff --staged
+	@echo "💬 Commit avec éditeur..."
+	git commit -v
+
+# Commit rapide avec validation
+.PHONY: quick-commit
+quick-commit:
+	@read -p "Type (feat/fix/docs/etc): " type; \
+	read -p "Scope (optionnel): " scope; \
+	read -p "Description: " desc; \
+	if [ -n "$$scope" ]; then \
+		git commit -m "$$type($$scope): $$desc"; \
+	else \
+		git commit -m "$$type: $$desc"; \
+	fi
+	@make commit-lint
+```
+
+### **Hooks Git**
+
+**Pre-commit hook** (`.git/hooks/pre-commit`) :
+
+```bash
+#!/bin/sh
+# Validation avant commit
+make commit-lint 2>/dev/null || echo "⚠️  Attention au format du commit"
+```
+
+### **Outils CLI Recommandés**
+
+```bash
+# Installation d'outils de validation
+pnpm install -g @commitlint/cli @commitlint/config-conventional
+pnpm install -g commitizen cz-conventional-changelog
+
+# Configuration commitizen
+echo '{ "path": "cz-conventional-changelog" }' > ~/.czrc
+```
+
+## **📊 Exemples Pratiques par Contexte**
+
+### **Bug Fix avec Plusieurs Fichiers**
+
+```bash
+# Contexte: Bug dans l'authentification affectant 3 fichiers
+git add src/auth/jwt.js src/middleware/auth.js tests/auth/jwt.test.js
+git commit -m "fix(auth): resolve JWT token validation race condition
+
+- Add mutex lock for token refresh operations
+- Update middleware to handle concurrent requests
+- Add test cases for race condition scenarios
+
+Fixes #456 - Users experiencing random logouts"
+```
+
+### **Nouvelle Feature Complexe**
+
+```bash
+# Commit 1: Modèle de données
+git add src/models/subscription.js src/migrations/
+git commit -m "feat(subscription): add subscription model and migration"
+
+# Commit 2: API endpoints
+git add src/routes/subscription.js src/controllers/subscription.js
+git commit -m "feat(subscription): implement CRUD API endpoints"
+
+# Commit 3: Tests
+git add tests/subscription/
+git commit -m "test(subscription): add comprehensive test suite"
+
+# Commit 4: Documentation
+git add docs/api/subscription.md
+git commit -m "docs(subscription): add API documentation"
+```
+
+### **Refactoring Majeur**
+
+```bash
+git add src/utils/ src/services/
+git commit -m "refactor(services): extract common utilities
+
+- Move validation helpers to utils/validation.js
+- Extract email service from user service
+- Improve code reusability across modules
+
+No functional changes, improves maintainability"
+```
+
+## **🎯 Conseils pour les Équipes**
+
+### **Convention d'Équipe**
+
+- **✅ Définir les scopes** utilisés dans le projet
+- **✅ Documenter les types** spécifiques au projet
+- **✅ Utiliser des templates** de commit messages
+- **✅ Réviser les commits** en code review
+
+### **Exemple de Scopes Projet**
+
+```
+(auth)     - Authentification et autorisation
+(api)      - Endpoints API
+(ui)       - Interface utilisateur
+(db)       - Base de données et migrations
+(config)   - Configuration et environnement
+(deploy)   - Déploiement et infrastructure
+(docs)     - Documentation
+```
+
+### **Template de Commit**
+
+Créer `.gitmessage` :
+
+```
+# <type>(<scope>): <subject>
+#
+# <body>
+#
+# <footer>
+
+# Types: feat, fix, docs, style, refactor, test, chore, perf, ci, revert
+# Scope: auth, api, ui, db, config, deploy, docs
+# Subject: 50 chars max, imperative, no period
+# Body: 72 chars per line, explain WHY not HOW
+# Footer: Closes #123, BREAKING CHANGE: description
+```
+
+Puis configurer :
+
+```bash
+git config commit.template .gitmessage
+```
+
+## **🔍 Validation et Qualité**
+
+### **Checklist avant Commit**
+
+- [ ] **Un seul concept** par commit
+- [ ] **Message descriptif** et complet
+- [ ] **Tests passent** (`make test`)
+- [ ] **Linting OK** (`make lint`)
+- [ ] **Fichiers liés** seulement
+- [ ] **Pas de secrets** ou données sensibles
+
+### **Commandes de Vérification**
+
+```bash
+# Révision complète avant commit
+git status                    # État du staging
+git diff --staged            # Changements à commiter
+git log --oneline -10        # Historique récent
+make test                    # Vérifier que tout fonctionne
+```
+
+---
+
+**💡 Rappel** : Un bon commit message raconte une histoire claire de l'évolution du code. Pensez aux futurs développeurs (y compris vous-même) qui liront ces messages dans 6 mois !
