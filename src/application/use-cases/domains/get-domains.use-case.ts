@@ -1,5 +1,4 @@
 import { IDomainsRepository } from "@/src/application/repositories/domains.repository.interface";
-import { City } from "@/src/entities/models/city.entity";
 import { Domain } from "@/src/entities/models/domain.entity";
 import {
     PaginatedResult,

@@ -10,7 +10,7 @@ export default function DefaultLayout({
     return (
         <>
             <Navbar />
-            <main className="min-h-screen">{children}</main>
+            <main className="">{children}</main>
         </>
     );
 }

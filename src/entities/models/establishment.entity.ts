@@ -1,9 +1,5 @@
 import { z } from "zod";
 
-import { City } from "./city.entity";
-import { IEstablishmentType } from "./establishment-type.entity";
-import { IFormation } from "./formation.entity";
-
 // Zod schema for Establishment validation
 export const EstablishmentSchema = z.object({
     id: z.number(),
@@ -22,8 +18,4 @@ export const EstablishmentSchema = z.object({
     formations: z.array(z.any()).optional(), // Will be refined when other models are converted
 });
 
-// Partial schema for Establishment updates/creation
-export const PartialEstablishmentSchema = EstablishmentSchema.partial();
-
-// Type inference from Zod schemas
 export type Establishment = z.infer<typeof EstablishmentSchema>;

@@ -1,12 +1,15 @@
 ---
-trigger: model_decision
-description: 
+trigger: glob
 globs: **/*.tsx,**/*.ts
 ---
+
 ---
+
 description: Applies general coding principles and best practices for TypeScript and React development across the project.
-globs: **/*.{ts,tsx}
+globs: \*_/_.{ts,tsx}
+
 ---
+
 - Write concise, readable TypeScript code.
 - Use functional and declarative programming patterns; avoid classes
 - Write concise, technical TypeScript code with accurate examples.

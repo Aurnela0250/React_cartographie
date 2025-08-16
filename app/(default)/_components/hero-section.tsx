@@ -1,10 +1,7 @@
-import { Search } from "lucide-react";
-
-import { Button } from "@/presentation/components/ui/button";
-
 import { CitySelector } from "./city-selector";
 import { DomainSelector } from "./domain-selector";
 import { LevelSelector } from "./level-selector";
+import { SearchButton } from "./search-button";
 
 export function HeroSection() {
     return (
@@ -52,15 +49,7 @@ export function HeroSection() {
                                         <LevelSelector />
                                     </div>
                                     <div className="flex-shrink-0 lg:max-w-60">
-                                        <Button
-                                            size="lg"
-                                            className="w-full lg:w-full"
-                                        >
-                                            <Search className="size-4 sm:mr-2" />
-                                            <span className="lg:hidden">
-                                                Rechercher des établissements
-                                            </span>
-                                        </Button>
+                                        <SearchButton />
                                     </div>
                                 </div>
                             </div>

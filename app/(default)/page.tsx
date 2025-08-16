@@ -1,10 +1,10 @@
-import { HeroSection } from "./components/hero-section";
-import { KeyFeaturesSection } from "./components/key-features-section";
-import { InteractiveMapSection } from "./components/interactive-map-section";
-import { FeaturedEstablishmentsSection } from "./components/featured-establishments-section";
-import { TestimonialsSection } from "./components/testimonials-section";
-import { InformationSection } from "./components/information-section";
-import { CTASection } from "./components/cta-section";
+import { CTASection } from "./_components/cta-section";
+import { FeaturedEstablishmentsSection } from "./_components/featured-establishments-section";
+import { HeroSection } from "./_components/hero-section";
+import { InformationSection } from "./_components/information-section";
+import { InteractiveMapSection } from "./_components/interactive-map-section";
+import { KeyFeaturesSection } from "./_components/key-features-section";
+import { TestimonialsSection } from "./_components/testimonials-section";
 
 export default function HomePage() {
     return (

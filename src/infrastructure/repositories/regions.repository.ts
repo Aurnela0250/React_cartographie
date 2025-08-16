@@ -1,13 +1,17 @@
 import { env } from "@/env.mjs";
-import { handleApiResponse, toCamelCaseRecursive, toSnakeCaseRecursive } from "@/shared/utils";
+import {
+    handleApiResponse,
+    toCamelCaseRecursive,
+    toSnakeCaseRecursive,
+} from "@/shared/utils";
 import { IRegionsRepository } from "@/src/application/repositories/region.repository.interface";
 import { RegionFilter } from "@/src/entities/filters/region.filter";
-import { Region, RegionEntity } from "@/src/entities/models/region.entity";
 import {
     PaginatedPlain,
     PaginatedResult,
     PaginationParams,
 } from "@/src/entities/models/pagination";
+import { Region, RegionEntity } from "@/src/entities/models/region.entity";
 
 export class RegionsRepository implements IRegionsRepository {
     async filterRegions(
@@ -15,7 +19,7 @@ export class RegionsRepository implements IRegionsRepository {
         options?: { params: PaginationParams; filters: RegionFilter }
     ): Promise<PaginatedResult<Region>> {
         const { params = { page: 1, perPage: 10 }, filters } = options || {};
-        
+
         // Clean filters to remove null/undefined/empty values
         const cleanedFilters = Object.fromEntries(
             Object.entries(filters || {}).filter(
@@ -28,7 +32,7 @@ export class RegionsRepository implements IRegionsRepository {
         const filterParams = new URLSearchParams({
             page: params.page?.toString() || "1",
             per_page: params.perPage?.toString() || "10",
-            ...toSnakeCaseRecursive(cleanedFilters as Record<string, string>)
+            ...toSnakeCaseRecursive(cleanedFilters as Record<string, string>),
         });
 
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/regions/filter/?${filterParams.toString()}`;
@@ -44,7 +48,7 @@ export class RegionsRepository implements IRegionsRepository {
         const data = await handleApiResponse<PaginatedPlain<Region>>(response);
         const camelCasedData = toCamelCaseRecursive(data);
         const paginatedRaw = PaginatedResult.fromPlain(camelCasedData);
-        
+
         return PaginatedResult.mapItemsToEntity(paginatedRaw, RegionEntity);
     }
 
@@ -68,7 +72,7 @@ export class RegionsRepository implements IRegionsRepository {
         const data = await handleApiResponse<PaginatedPlain<Region>>(response);
         const camelCasedData = toCamelCaseRecursive(data);
         const paginatedRaw = PaginatedResult.fromPlain(camelCasedData);
-        
+
         return PaginatedResult.mapItemsToEntity(paginatedRaw, RegionEntity);
     }
 
@@ -85,16 +89,13 @@ export class RegionsRepository implements IRegionsRepository {
 
         const data = await handleApiResponse<unknown>(response);
         const camelCasedData = toCamelCaseRecursive(data);
-        
+
         return RegionEntity.fromUnknown(camelCasedData);
     }
 
-    async createRegion(
-        token: string,
-        data: { name: string }
-    ): Promise<Region> {
+    async createRegion(token: string, data: { name: string }): Promise<Region> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/regions`;
-        
+
         // Convert to snake_case for API compatibility
         const payload = toSnakeCaseRecursive(data);
 
@@ -109,7 +110,7 @@ export class RegionsRepository implements IRegionsRepository {
 
         const res = await handleApiResponse<unknown>(response);
         const camelCasedData = toCamelCaseRecursive(res);
-        
+
         return RegionEntity.fromUnknown(camelCasedData);
     }
 
@@ -119,7 +120,7 @@ export class RegionsRepository implements IRegionsRepository {
         data: { name?: string }
     ): Promise<Region> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/regions/${id}`;
-        
+
         // Convert to snake_case for API compatibility
         const payload = toSnakeCaseRecursive(data);
 
@@ -134,7 +135,7 @@ export class RegionsRepository implements IRegionsRepository {
 
         const res = await handleApiResponse<unknown>(response);
         const camelCasedData = toCamelCaseRecursive(res);
-        
+
         return RegionEntity.fromUnknown(camelCasedData);
     }
 

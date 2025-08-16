@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@custom-variant dark (&:is(.dark *));
+
 :root {
     --background: oklch(0.9383 0.0042 236.4993);
     --foreground: oklch(0.3211 0 0);
@@ -174,4 +176,13 @@
 
 .text-balance {
     text-wrap: balance;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    }
+  body {
+    @apply bg-background text-foreground;
+    }
 }
