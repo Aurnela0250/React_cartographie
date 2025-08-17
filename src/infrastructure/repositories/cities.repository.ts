@@ -1,8 +1,12 @@
 import { env } from "@/env.mjs";
-import { handleApiResponse, toCamelCaseRecursive, toSnakeCaseRecursive } from "@/shared/utils";
+import {
+    handleApiResponse,
+    toCamelCaseRecursive,
+    toSnakeCaseRecursive,
+} from "@/shared/utils";
 import { ICitiesRepository } from "@/src/application/repositories/cities.repository.interface";
 import { CityFilter } from "@/src/entities/filters/city.filter";
-import { City, CityEntity } from "@/src/entities/models/city.entity";
+import { City } from "@/src/entities/models/city.entity";
 import {
     PaginatedPlain,
     PaginatedResult,
@@ -12,10 +16,16 @@ import {
 export class CitiesRepository implements ICitiesRepository {
     async filterCities(
         token: string,
-        options?: { params: PaginationParams; filters: CityFilter }
+        options?: {
+            params?: PaginationParams;
+            filters?: CityFilter;
+        }
     ): Promise<PaginatedResult<City>> {
-        const { params = { page: 1, perPage: 10 }, filters } = options || {};
-        
+        const { params = { page: 1, perPage: 10 }, filters } = options || {
+            params: { page: 1, perPage: 10 },
+            filters: {},
+        };
+
         // Clean filters to remove null/undefined/empty values
         const cleanedFilters = Object.fromEntries(
             Object.entries(filters || {}).filter(
@@ -28,7 +38,7 @@ export class CitiesRepository implements ICitiesRepository {
         const filterParams = new URLSearchParams({
             page: params.page?.toString() || "1",
             per_page: params.perPage?.toString() || "10",
-            ...toSnakeCaseRecursive(cleanedFilters as Record<string, string>)
+            ...toSnakeCaseRecursive(cleanedFilters as Record<string, string>),
         });
 
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/cities/filter/?${filterParams.toString()}`;
@@ -42,10 +52,10 @@ export class CitiesRepository implements ICitiesRepository {
         });
 
         const data = await handleApiResponse<PaginatedPlain<City>>(response);
-        const camelCasedData = toCamelCaseRecursive(data);
-        const paginatedRaw = PaginatedResult.fromPlain(camelCasedData);
-        
-        return PaginatedResult.mapItemsToEntity(paginatedRaw, CityEntity);
+
+        const result = toCamelCaseRecursive(data);
+
+        return result;
     }
 
     async getCities(
@@ -66,10 +76,9 @@ export class CitiesRepository implements ICitiesRepository {
         });
 
         const data = await handleApiResponse<PaginatedPlain<City>>(response);
-        const camelCasedData = toCamelCaseRecursive(data);
-        const paginatedRaw = PaginatedResult.fromPlain(camelCasedData);
-        
-        return PaginatedResult.mapItemsToEntity(paginatedRaw, CityEntity);
+        const result = toCamelCaseRecursive(data);
+
+        return result;
     }
 
     async getCity(token: string, id: number): Promise<City> {
@@ -83,10 +92,10 @@ export class CitiesRepository implements ICitiesRepository {
             },
         });
 
-        const data = await handleApiResponse<unknown>(response);
-        const camelCasedData = toCamelCaseRecursive(data);
-        
-        return CityEntity.fromUnknown(camelCasedData);
+        const data = await handleApiResponse<City>(response);
+        const result = toCamelCaseRecursive(data);
+
+        return result;
     }
 
     async createCity(
@@ -94,7 +103,7 @@ export class CitiesRepository implements ICitiesRepository {
         data: { name: string; regionId: number }
     ): Promise<City> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/cities`;
-        
+
         // Convert to snake_case for API compatibility
         const payload = toSnakeCaseRecursive(data);
 
@@ -107,10 +116,10 @@ export class CitiesRepository implements ICitiesRepository {
             body: JSON.stringify(payload),
         });
 
-        const res = await handleApiResponse<unknown>(response);
-        const camelCasedData = toCamelCaseRecursive(res);
-        
-        return CityEntity.fromUnknown(camelCasedData);
+        const res = await handleApiResponse<City>(response);
+        const result = toCamelCaseRecursive(res);
+
+        return result;
     }
 
     async updateCity(
@@ -119,7 +128,7 @@ export class CitiesRepository implements ICitiesRepository {
         data: { name?: string; regionId?: number }
     ): Promise<City> {
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/cities/${id}`;
-        
+
         // Convert to snake_case for API compatibility
         const payload = toSnakeCaseRecursive(data);
 
@@ -132,10 +141,10 @@ export class CitiesRepository implements ICitiesRepository {
             body: JSON.stringify(payload),
         });
 
-        const res = await handleApiResponse<unknown>(response);
-        const camelCasedData = toCamelCaseRecursive(res);
-        
-        return CityEntity.fromUnknown(camelCasedData);
+        const res = await handleApiResponse<City>(response);
+        const result = toCamelCaseRecursive(res);
+
+        return result;
     }
 
     async deleteCity(token: string, id: number): Promise<boolean> {

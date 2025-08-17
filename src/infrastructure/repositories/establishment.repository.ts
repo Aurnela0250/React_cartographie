@@ -68,12 +68,74 @@ export class EstablishmentRepository implements IEstablishmentRepository {
         const { params } = options || { params: { page: 1, perPage: 10 } };
         const { page, perPage } = params || { page: 1, perPage: 10 };
 
-        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/establishments/filter/?page=${page}&per_page=${perPage}`;
+        // Build query params with duplication for arrays
+        const qp = new URLSearchParams();
+        qp.set("page", String(page ?? 1));
+        qp.set("per_page", String(perPage ?? 10));
+
+        const filters = options?.filters ?? {};
+        // Remove null/undefined/empty string values
+        const cleanedFilters = Object.fromEntries(
+            Object.entries(filters).filter(
+                ([, value]) =>
+                    value !== null && value !== undefined && value !== ""
+            )
+        ) as EstablishmentFilter;
+
+        const appendParam = (
+            key: string,
+            value?: string | number | (string | number)[] | null
+        ) => {
+            if (value === null || value === undefined) return;
+            if (Array.isArray(value)) {
+                for (const v of value) {
+                    if (v !== null && v !== undefined && `${v}` !== "")
+                        qp.append(key, String(v));
+                }
+            } else if (`${value}` !== "") {
+                qp.append(key, String(value));
+            }
+        };
+
+        // Map camelCase filters to snake_case API params
+        appendParam("name", cleanedFilters.name ?? null);
+        appendParam("name_contains", cleanedFilters.nameContains ?? null);
+        appendParam("name_starts_with", cleanedFilters.nameStartsWith ?? null);
+        appendParam("name_ends_with", cleanedFilters.nameEndsWith ?? null);
+        appendParam("city_ids", cleanedFilters.cityIds ?? null);
+        appendParam(
+            "establishment_type_ids",
+            cleanedFilters.establishmentTypeIds ?? null
+        );
+        appendParam("level_ids", cleanedFilters.levelIds ?? null);
+        appendParam("domain_ids", cleanedFilters.domainIds ?? null);
+        appendParam("mention_ids", cleanedFilters.mentionIds ?? null);
+        appendParam("legal_statuses", cleanedFilters.legalStatuses ?? null);
+        appendParam("acronym", cleanedFilters.acronym ?? null);
+        appendParam("acronym_contains", cleanedFilters.acronymContains ?? null);
+        appendParam(
+            "acronym_starts_with",
+            cleanedFilters.acronymStartsWith ?? null
+        );
+        appendParam(
+            "acronym_ends_with",
+            cleanedFilters.acronymEndsWith ?? null
+        );
+
+        const base = `${env.API_PREFIX_URL}/${env.API_VERSION}/establishments/filter/`;
+        const url = `${base}?${qp.toString()}`;
+
         const response = await fetch(url, {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
             next: {
-                tags: ["establishments"],
+                // Vary cache by pagination + filters
+                tags: [
+                    "establishments",
+                    `establishments:page:${page}`,
+                    `establishments:per_page:${perPage}`,
+                    `establishments:filters:${qp.toString()}`,
+                ],
             },
         });
         const data =

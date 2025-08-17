@@ -14,4 +14,6 @@ export interface CityFilter extends PaginationFilter {
     nameEndsWith?: string | null;
     /** ID de la région */
     regionId?: number | null;
+    /** Villes avec des établissements */
+    haveEstablishment?: boolean | null;
 }

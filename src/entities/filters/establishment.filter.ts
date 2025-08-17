@@ -13,9 +13,17 @@ export interface EstablishmentFilter extends PaginationFilter {
     /** Nom finissant par */
     nameEndsWith?: string | null;
     /** ID de la ville */
-    cityId?: number | null;
+    cityIds?: number[] | null;
     /** ID du type d'établissement */
-    establishmentTypeId?: number | null;
+    establishmentTypeIds?: number[] | null;
+    /** ID du niveau */
+    levelIds?: number[] | null;
+    /** ID du domaine */
+    domainIds?: number[] | null;
+    /** ID de la mention */
+    mentionIds?: number[] | null;
+    /** Statut juridique */
+    legalStatuses?: string[] | null;
     /** Acronyme exact */
     acronym?: string | null;
     /** Acronyme contenant */
