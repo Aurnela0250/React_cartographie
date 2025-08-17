@@ -1,4 +1,4 @@
-import { IFilterEstablishmentsUseCase } from "@/src/application/use-cases/establisments/filter-establishment.use-case";
+import { IFilterEstablishmentsUseCase } from "@/src/application/use-cases/establishments/filter-establishment.use-case";
 import { UnauthenticatedError } from "@/src/entities/errors/auth";
 import { EstablishmentFilter } from "@/src/entities/filters/establishment.filter";
 import { Establishment } from "@/src/entities/models/establishment.entity";
@@ -15,7 +15,10 @@ export const filterEstablishmentsController =
     (filterEstablishmentsUseCase: IFilterEstablishmentsUseCase) =>
     async (
         token?: string,
-        options?: { filters?: EstablishmentFilter; params?: PaginationParams }
+        options?: {
+            filters?: EstablishmentFilter;
+            params?: PaginationParams;
+        }
     ): Promise<PaginatedResult<Establishment>> => {
         if (!token) {
             throw new UnauthenticatedError("Must be logged in");
