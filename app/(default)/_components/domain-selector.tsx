@@ -6,6 +6,7 @@ import {
     AuthenticationError,
     UnauthenticatedError,
 } from "@/src/entities/errors/auth";
+
 import { DomainSelectorClient } from "./domain-selector-client";
 
 async function getDomainsForSelector() {

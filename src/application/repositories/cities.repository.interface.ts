@@ -32,8 +32,8 @@ export interface ICitiesRepository {
     filterCities(
         token: string,
         options?: {
-            params: PaginationParams;
-            filters: CityFilter;
+            params?: PaginationParams;
+            filters?: CityFilter;
         }
     ): Promise<PaginatedResult<City>>;
 }

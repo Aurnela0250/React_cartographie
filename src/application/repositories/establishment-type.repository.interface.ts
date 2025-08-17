@@ -6,19 +6,21 @@ import {
 } from "@/src/entities/models/pagination";
 
 export interface IEstablishmentTypeRepository {
-    getAll(
+    getEstablishmentTypes(
         token: string,
-        param: PaginationParams
+        options?: {
+            params?: PaginationParams;
+        }
     ): Promise<PaginatedResult<EstablishmentType>>;
-    get(token: string, id: number): Promise<EstablishmentType>;
-    create(
+    getEstablishmentType(token: string, id: number): Promise<EstablishmentType>;
+    createEstablishmentType(
         token: string,
         data: {
             name: string;
             description?: string;
         }
     ): Promise<EstablishmentType>;
-    update(
+    updateEstablishmentType(
         token: string,
         id: number,
         data: {
@@ -26,9 +28,12 @@ export interface IEstablishmentTypeRepository {
             description?: string;
         }
     ): Promise<EstablishmentType>;
-    delete(token: string, id: number): Promise<boolean>;
-    filter(
+    deleteEstablishmentType(token: string, id: number): Promise<boolean>;
+    filterEstablishmentTypes(
         token: string,
-        filters: EstablishmentTypeFilter
+        options?: {
+            params?: PaginationParams;
+            filters?: EstablishmentTypeFilter;
+        }
     ): Promise<PaginatedResult<EstablishmentType>>;
 }

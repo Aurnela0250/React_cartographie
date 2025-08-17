@@ -1,12 +1,8 @@
+import { LevelSelectorClient } from "./level-selector-client";
+import { getInjection } from "@/di/container";
+import { AuthenticationError, UnauthenticatedError } from "@/src/entities/errors/auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-
-import { getInjection } from "@/di/container";
-import {
-    AuthenticationError,
-    UnauthenticatedError,
-} from "@/src/entities/errors/auth";
-import { LevelSelectorClient } from "./level-selector-client";
 
 async function getLevelsForSelector() {
     try {
