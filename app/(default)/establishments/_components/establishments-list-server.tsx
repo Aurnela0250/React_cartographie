@@ -9,23 +9,45 @@ import { EstablishmentsErrorState } from "./establishments-error-state";
 import { EstablishmentsListSkeleton } from "./establishments-list-skeleton";
 
 interface EstablishmentsListServerProps {
-    searchParams?: {
-        page?: string;
-        cities?: string;
-        domains?: string;
-        levels?: string;
-        search?: string;
-    };
+    // Next.js 15 may pass a Promise; support both shapes
+    searchParams?:
+        | Record<string, string | string[] | undefined>
+        | Promise<Record<string, string | string[] | undefined>>;
+}
+
+function parseStringsFromParam(
+    param?: string | string[]
+): string[] | undefined {
+    if (!param) return undefined;
+    const raw = Array.isArray(param) ? param.join(",") : param;
+    if (!raw) return undefined;
+    return raw
+        .split(",")
+        .map((entry) => entry.trim())
+        .filter((s) => s.length > 0);
 }
 
 // Server-side data fetching function
+function parseIdsFromParam(param?: string | string[]): number[] | undefined {
+    if (!param) return undefined;
+    const raw = Array.isArray(param) ? param.join(",") : param;
+    if (!raw) return undefined;
+    return raw
+        .split(",")
+        .map((entry) => entry.split(":")[0]!.trim())
+        .map((id) => Number.parseInt(id, 10))
+        .filter((n) => Number.isFinite(n));
+}
+
 async function getEstablishments(params: {
     page?: number;
     perPage?: number;
-    cities?: string;
-    domains?: string;
-    levels?: string;
-    search?: string;
+    cities?: string | string[];
+    domains?: string | string[];
+    levels?: string | string[];
+    establishmentTypes?: string | string[];
+    legalStatuses?: string | string[];
+    search?: string | string[];
 }) {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
@@ -34,11 +56,31 @@ async function getEstablishments(params: {
         "IFilterEstablishmentsController"
     );
 
+    const cityIds = parseIdsFromParam(params.cities);
+    const domainIds = parseIdsFromParam(params.domains);
+    const levelIds = parseIdsFromParam(params.levels);
+    const establishmentTypeIds = parseIdsFromParam(params.establishmentTypes);
+    const legalStatuses = parseStringsFromParam(params.legalStatuses);
+    const nameContains = Array.isArray(params.search)
+        ? params.search[0]
+        : params.search;
+
     const result = await filterEstablishmentsController(accessToken, {
         params: {
             perPage: params.perPage || 12,
             page: params.page || 1,
-            // Filter parameters will be implemented later
+        },
+        filters: {
+            cityIds: cityIds && cityIds.length ? cityIds : null,
+            domainIds: domainIds && domainIds.length ? domainIds : null,
+            levelIds: levelIds && levelIds.length ? levelIds : null,
+            establishmentTypeIds:
+                establishmentTypeIds && establishmentTypeIds.length
+                    ? establishmentTypeIds
+                    : null,
+            legalStatuses:
+                legalStatuses && legalStatuses.length ? legalStatuses : null,
+            nameContains: nameContains || null,
         },
     });
 
@@ -50,9 +92,12 @@ async function EstablishmentsList({
     searchParams,
 }: EstablishmentsListServerProps) {
     const resolvedSearchParams = await searchParams;
-    const page = resolvedSearchParams?.page
-        ? parseInt(resolvedSearchParams.page)
-        : 1;
+    const rawPage = resolvedSearchParams?.page;
+    const page = Array.isArray(rawPage)
+        ? Number.parseInt(rawPage[0] || "1", 10)
+        : rawPage
+          ? Number.parseInt(rawPage, 10)
+          : 1;
 
     try {
         const result = await getEstablishments({
@@ -61,6 +106,8 @@ async function EstablishmentsList({
             cities: resolvedSearchParams?.cities,
             domains: resolvedSearchParams?.domains,
             levels: resolvedSearchParams?.levels,
+            establishmentTypes: resolvedSearchParams?.establishmentTypes,
+            legalStatuses: resolvedSearchParams?.legalStatuses,
             search: resolvedSearchParams?.search,
         });
 

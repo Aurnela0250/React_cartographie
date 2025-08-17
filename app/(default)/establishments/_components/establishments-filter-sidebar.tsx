@@ -1,17 +1,8 @@
-"use client";
-
-import { Building, Filter, GraduationCap, MapPin } from "lucide-react";
+import { Suspense } from "react";
+import { Building, Filter, GraduationCap, MapPin, Layers, Shield } from "lucide-react";
 
 import { Button } from "@/presentation/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/presentation/components/ui/card";
-import { Checkbox } from "@/presentation/components/ui/checkbox";
 import { Input } from "@/presentation/components/ui/input";
-import { Label } from "@/presentation/components/ui/label";
 import { Separator } from "@/presentation/components/ui/separator";
 import {
     Sidebar,
@@ -20,43 +11,19 @@ import {
     SidebarGroupContent,
     SidebarGroupLabel,
     SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
 } from "@/presentation/components/ui/sidebar";
 
-interface EstablishmentsFilterSidebarProps {
-    className?: string;
-}
+import { CitiesFilter } from "./cities-filter";
+import { CollapsibleFilterWrapper } from "./collapsible-filter-wrapper";
+import { DomainsFilter } from "./domains-filter";
+import { FilterSkeleton } from "./filter-skeleton";
+import { LevelsFilter } from "./levels-filter";
+import { EstablishmentTypesFilter } from "./establishment-types-filter";
+import { StatusFilter } from "./status-filter";
 
 export function EstablishmentsFilterSidebar({
     ...props
 }: React.ComponentProps<typeof Sidebar>) {
-    // Mock data for filters - will be replaced with real data later
-    const cities = [
-        { id: "1", name: "Paris", count: 45 },
-        { id: "2", name: "Lyon", count: 23 },
-        { id: "3", name: "Marseille", count: 18 },
-        { id: "4", name: "Toulouse", count: 15 },
-        { id: "5", name: "Nice", count: 12 },
-    ];
-
-    const domains = [
-        { id: "1", name: "Informatique", count: 67 },
-        { id: "2", name: "Commerce", count: 34 },
-        { id: "3", name: "Ingénierie", count: 28 },
-        { id: "4", name: "Santé", count: 22 },
-        { id: "5", name: "Arts", count: 15 },
-    ];
-
-    const levels = [
-        { id: "1", name: "Licence", count: 89 },
-        { id: "2", name: "Master", count: 76 },
-        { id: "3", name: "Doctorat", count: 23 },
-        { id: "4", name: "BTS", count: 45 },
-        { id: "5", name: "DUT", count: 32 },
-    ];
-
     return (
         <Sidebar collapsible="offcanvas" {...props}>
             <SidebarHeader className="border-b">
@@ -83,110 +50,62 @@ export function EstablishmentsFilterSidebar({
                 <Separator />
 
                 {/* Cities Filter */}
-                <SidebarGroup>
-                    <SidebarGroupLabel className="flex items-center gap-2">
-                        <MapPin className="size-4" />
-                        Villes
-                    </SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {cities.map((city) => (
-                                <SidebarMenuItem key={city.id}>
-                                    <SidebarMenuButton asChild>
-                                        <div className="flex w-full items-center justify-between">
-                                            <div className="flex items-center space-x-2">
-                                                <Checkbox
-                                                    id={`city-${city.id}`}
-                                                />
-                                                <Label
-                                                    htmlFor={`city-${city.id}`}
-                                                    className="cursor-pointer text-sm font-normal"
-                                                >
-                                                    {city.name}
-                                                </Label>
-                                            </div>
-                                            <span className="text-muted-foreground text-xs">
-                                                {city.count}
-                                            </span>
-                                        </div>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
+                <CollapsibleFilterWrapper
+                    icon={<MapPin className="size-4" />}
+                    title="Villes"
+                >
+                    <Suspense fallback={<FilterSkeleton />}>
+                        <CitiesFilter />
+                    </Suspense>
+                </CollapsibleFilterWrapper>
 
                 <Separator />
 
                 {/* Domains Filter */}
-                <SidebarGroup>
-                    <SidebarGroupLabel className="flex items-center gap-2">
-                        <Building className="size-4" />
-                        Domaines
-                    </SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {domains.map((domain) => (
-                                <SidebarMenuItem key={domain.id}>
-                                    <SidebarMenuButton asChild>
-                                        <div className="flex w-full items-center justify-between">
-                                            <div className="flex items-center space-x-2">
-                                                <Checkbox
-                                                    id={`domain-${domain.id}`}
-                                                />
-                                                <Label
-                                                    htmlFor={`domain-${domain.id}`}
-                                                    className="cursor-pointer text-sm font-normal"
-                                                >
-                                                    {domain.name}
-                                                </Label>
-                                            </div>
-                                            <span className="text-muted-foreground text-xs">
-                                                {domain.count}
-                                            </span>
-                                        </div>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
+                <CollapsibleFilterWrapper
+                    icon={<Building className="size-4" />}
+                    title="Domaines"
+                >
+                    <Suspense fallback={<FilterSkeleton />}>
+                        <DomainsFilter />
+                    </Suspense>
+                </CollapsibleFilterWrapper>
 
                 <Separator />
 
                 {/* Levels Filter */}
-                <SidebarGroup>
-                    <SidebarGroupLabel className="flex items-center gap-2">
-                        <GraduationCap className="size-4" />
-                        Niveaux
-                    </SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {levels.map((level) => (
-                                <SidebarMenuItem key={level.id}>
-                                    <SidebarMenuButton asChild>
-                                        <div className="flex w-full items-center justify-between">
-                                            <div className="flex items-center space-x-2">
-                                                <Checkbox
-                                                    id={`level-${level.id}`}
-                                                />
-                                                <Label
-                                                    htmlFor={`level-${level.id}`}
-                                                    className="cursor-pointer text-sm font-normal"
-                                                >
-                                                    {level.name}
-                                                </Label>
-                                            </div>
-                                            <span className="text-muted-foreground text-xs">
-                                                {level.count}
-                                            </span>
-                                        </div>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
+                <CollapsibleFilterWrapper
+                    icon={<GraduationCap className="size-4" />}
+                    title="Niveaux"
+                >
+                    <Suspense fallback={<FilterSkeleton />}>
+                        <LevelsFilter />
+                    </Suspense>
+                </CollapsibleFilterWrapper>
+
+                <Separator />
+
+                {/* Status Filter */}
+                <CollapsibleFilterWrapper
+                    icon={<Shield className="size-4" />}
+                    title="Statut"
+                >
+                    <Suspense fallback={<FilterSkeleton />}>
+                        <StatusFilter />
+                    </Suspense>
+                </CollapsibleFilterWrapper>
+
+                <Separator />
+
+                {/* Establishment Types Filter */}
+                <CollapsibleFilterWrapper
+                    icon={<Layers className="size-4" />}
+                    title="Types d'établissement"
+                >
+                    <Suspense fallback={<FilterSkeleton />}>
+                        <EstablishmentTypesFilter />
+                    </Suspense>
+                </CollapsibleFilterWrapper>
 
                 <Separator />
 

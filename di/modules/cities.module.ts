@@ -1,4 +1,6 @@
+import { filterCitiesUseCase } from "@/src/application/use-cases/cities/filter-cities.use-case";
 import { getCitiesUseCase } from "@/src/application/use-cases/cities/get-cities.use-case";
+import { filterCitiesController } from "@/src/controllers/cities/filter-cities.controller";
 import { getCitiesController } from "@/src/controllers/cities/get-cities.controller";
 import { CitiesRepository } from "@/src/infrastructure/repositories/cities.repository";
 import { createModule } from "@evyweb/ioctopus";
@@ -20,6 +22,18 @@ export const createCitiesModule = () => {
         .bind(DI_SYMBOLS.IGetCitiesController)
         .toHigherOrderFunction(getCitiesController, [
             DI_SYMBOLS.IGetCitiesUseCase,
+        ]);
+
+    citiesModule
+        .bind(DI_SYMBOLS.IFilterCitiesUseCase)
+        .toHigherOrderFunction(filterCitiesUseCase, [
+            DI_SYMBOLS.ICitiesRepository,
+        ]);
+
+    citiesModule
+        .bind(DI_SYMBOLS.IFilterCitiesController)
+        .toHigherOrderFunction(filterCitiesController, [
+            DI_SYMBOLS.IFilterCitiesUseCase,
         ]);
 
     return citiesModule;
