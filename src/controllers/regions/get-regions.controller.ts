@@ -1,11 +1,14 @@
-import { PaginatedResult, PaginationParams } from "@/src/entities/models/pagination";
-import { Region } from "@/src/entities/models/region.entity";
 import { IGetRegionsUseCase } from "@/src/application/use-cases/regions/get-regions.use-case";
+import {
+    PaginatedResult,
+    PaginationParams,
+} from "@/src/entities/models/pagination";
+import { Region } from "@/src/entities/models/region.entity";
 
 export interface IGetRegionsController {
     (
         token: string,
-        options?: { params: PaginationParams }
+        options?: { params?: PaginationParams }
     ): Promise<PaginatedResult<Region>>;
 }
 

@@ -3,6 +3,8 @@ import { createContainer } from "@evyweb/ioctopus";
 
 import { createCitiesModule } from "./modules/cities.module";
 import { createDomainsModule } from "./modules/domains.module";
+import { createEstablishmentTypeModule } from "./modules/establishment-types.module";
+import { createEstablishmentModule } from "./modules/establishment.module";
 import { createLevelsModule } from "./modules/levels.module";
 import { createRegionsModule } from "./modules/regions.module";
 
@@ -12,6 +14,14 @@ ApplicationContainer.load(Symbol("CitiesModule"), createCitiesModule());
 ApplicationContainer.load(Symbol("DomainsModule"), createDomainsModule());
 ApplicationContainer.load(Symbol("LevelsModule"), createLevelsModule());
 ApplicationContainer.load(Symbol("RegionsModule"), createRegionsModule());
+ApplicationContainer.load(
+    Symbol("EstablishmentModule"),
+    createEstablishmentModule()
+);
+ApplicationContainer.load(
+    Symbol("EstablishmentTypeModule"),
+    createEstablishmentTypeModule()
+);
 
 export function getInjection<K extends keyof typeof DI_SYMBOLS>(
     symbol: K

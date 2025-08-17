@@ -4,6 +4,7 @@ import { z } from "zod";
 export const CitySchema = z.object({
     id: z.number(),
     name: z.string(),
+    slug: z.string().optional(),
     regionId: z.number(),
     createdAt: z.string().optional(),
     updatedAt: z.string().optional(),
@@ -13,15 +14,3 @@ export const CitySchema = z.object({
 
 // Type inference from Zod schemas
 export type City = z.infer<typeof CitySchema>;
-
-// Static class for compatibility with PaginatedResult.mapItemsToEntity
-export class CityEntity {
-    /**
-     * Creates a City instance from unknown data using Zod validation
-     * @param data Unknown data to transform into a City
-     * @returns Parsed and validated City object
-     */
-    static fromUnknown(data: unknown): City {
-        return CitySchema.parse(data);
-    }
-}

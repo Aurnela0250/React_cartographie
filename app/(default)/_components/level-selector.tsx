@@ -1,6 +1,5 @@
+import { LevelSelectorClient } from "./level-selector-client";
 import { getInjection } from "@/di/container";
-import { Label } from "@/presentation/components/ui/label";
-import MultipleSelector from "@/presentation/components/ui/multiselect";
 import { AuthenticationError, UnauthenticatedError } from "@/src/entities/errors/auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -20,9 +19,9 @@ async function getLevelsForSelector() {
 
         const { items } = result;
 
-        return items.map((city) => ({
-            value: city.id?.toString() || "",
-            label: city.name || "",
+        return items.map((level) => ({
+            value: level.id?.toString() || "",
+            label: level.name || "",
         }));
     } catch (error) {
         if (
@@ -35,28 +34,18 @@ async function getLevelsForSelector() {
     }
 }
 
+/**
+ * Level Selector server component that fetches data and passes to client component
+ * Combines server-side data fetching with client-side interactivity
+ */
 export async function LevelSelector() {
-    let levelsSelector: { value: string; label: string }[] = [];
+    let availableLevels: { value: string; label: string }[] = [];
 
     try {
-        levelsSelector = await getLevelsForSelector();
+        availableLevels = await getLevelsForSelector();
     } catch (error) {
         throw error;
     }
-    return (
-        <div className="space-y-2">
-            <Label htmlFor="level-selector">Niveaux d'études</Label>
-            <MultipleSelector
-                commandProps={{
-                    label: "Sélectionner des niveaux d'études",
-                }}
-                defaultOptions={levelsSelector}
-                placeholder={"Sélectionner des niveaux d'études"}
-                emptyIndicator={
-                    <p className="text-center text-sm">Aucun niveau trouvé</p>
-                }
-                // onChange={}
-            />
-        </div>
-    );
+
+    return <LevelSelectorClient availableLevels={availableLevels} />;
 }

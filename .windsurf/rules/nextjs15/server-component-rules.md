@@ -1,12 +1,15 @@
 ---
-trigger: model_decision
-description: 
+trigger: glob
 globs: **/*.js,**/*.tsx,**/*.ts
 ---
+
 ---
+
 description: Specifies the best practices for building React components within the Next.js 15 App Router structure.
-globs: app/**/*
+globs: app/\*_/_
+
 ---
+
 - Favor React Server Components (RSC) where possible.
 - Minimize `use client`, `useEffect`, and `setState`.
 - Implement proper error boundaries.

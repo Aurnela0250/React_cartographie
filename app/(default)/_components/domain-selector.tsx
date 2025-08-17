@@ -2,12 +2,12 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { getInjection } from "@/di/container";
-import { Label } from "@/presentation/components/ui/label";
-import MultipleSelector from "@/presentation/components/ui/multiselect";
 import {
     AuthenticationError,
     UnauthenticatedError,
 } from "@/src/entities/errors/auth";
+
+import { DomainSelectorClient } from "./domain-selector-client";
 
 async function getDomainsForSelector() {
     try {
@@ -24,9 +24,9 @@ async function getDomainsForSelector() {
 
         const { items } = result;
 
-        return items.map((city) => ({
-            value: city.id?.toString() || "",
-            label: city.name || "",
+        return items.map((domain) => ({
+            value: domain.id?.toString() || "",
+            label: domain.name || "",
         }));
     } catch (error) {
         if (
@@ -39,29 +39,18 @@ async function getDomainsForSelector() {
     }
 }
 
+/**
+ * Domain Selector server component that fetches data and passes to client component
+ * Combines server-side data fetching with client-side interactivity
+ */
 export async function DomainSelector() {
-    let domainsSelector: { value: string; label: string }[] = [];
+    let availableDomains: { value: string; label: string }[] = [];
 
     try {
-        domainsSelector = await getDomainsForSelector();
+        availableDomains = await getDomainsForSelector();
     } catch (error) {
         throw error;
     }
 
-    return (
-        <div className="space-y-2">
-            <Label htmlFor="domain-selector">Domaines d'études</Label>
-            <MultipleSelector
-                commandProps={{
-                    label: "Sélectionner des domaines",
-                }}
-                defaultOptions={domainsSelector}
-                placeholder={"Sélectionner des domaines"}
-                emptyIndicator={
-                    <p className="text-center text-sm">Aucun domaine trouvé</p>
-                }
-                // onChange={onSelectionChange}
-            />
-        </div>
-    );
+    return <DomainSelectorClient availableDomains={availableDomains} />;
 }

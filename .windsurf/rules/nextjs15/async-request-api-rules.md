@@ -1,19 +1,25 @@
 ---
-trigger: model_decision
-description: 
+trigger: glob
 globs: app/**/*
 ---
+
 ---
+
 description: Dictates how asynchronous requests should be handled within Next.js 15, specifically concerning runtime APIs.
-globs: app/**/*
+globs: app/\*_/_
+
 ---
+
 - Always use async versions of runtime APIs:
+
 ```typescript
   const cookieStore = await cookies()
   const headersList = await headers()
   const { isEnabled } = await draftMode()
 ```
+
 - Handle async params in layouts/pages:
+
 ```typescript
   typescript
   const params = await props.params

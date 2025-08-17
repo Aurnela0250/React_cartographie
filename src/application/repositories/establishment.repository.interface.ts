@@ -7,12 +7,14 @@ import {
 import { Rate } from "@/src/entities/models/rate.entity";
 
 export interface IEstablishmentRepository {
-    getAll(
+    getEstablishments(
         token: string,
-        param: PaginationParams
+        options?: {
+            params: PaginationParams;
+        }
     ): Promise<PaginatedResult<Establishment>>;
-    get(token: string, id: number): Promise<Establishment>;
-    create(
+    getEstablishment(token: string, id: number): Promise<Establishment>;
+    createEstablishment(
         token: string,
         data: {
             name: string;
@@ -27,7 +29,7 @@ export interface IEstablishmentRepository {
             cityId: number;
         }
     ): Promise<Establishment>;
-    update(
+    updateEstablishment(
         token: string,
         id: number,
         data: {
@@ -43,10 +45,17 @@ export interface IEstablishmentRepository {
             cityId: number;
         }
     ): Promise<Establishment>;
-    delete(token: string, id: number): Promise<boolean>;
-    filter(
+    deleteEstablishment(token: string, id: number): Promise<boolean>;
+    filterEstablishments(
         token: string,
-        filters: EstablishmentFilter
+        options?: {
+            params?: PaginationParams;
+            filters?: EstablishmentFilter;
+        }
     ): Promise<PaginatedResult<Establishment>>;
-    rate(token: string, id: number, data: { rating: number }): Promise<Rate>;
+    rateEstablishment(
+        token: string,
+        id: number,
+        data: { rating: number }
+    ): Promise<Rate>;
 }

@@ -16,34 +16,61 @@ import {
 export class EstablishmentTypesRepository
     implements IEstablishmentTypeRepository
 {
-    getAll(
+    async getEstablishmentTypes(
         token: string,
-        param: PaginationParams
+        options?: {
+            params?: PaginationParams;
+        }
     ): Promise<PaginatedResult<EstablishmentType>> {
+        const { params } = options || { params: { page: 1, perPage: 10 } };
+        const { page, perPage } = params || { page: 1, perPage: 10 };
+
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/establishment-types/?page=${page}&per_page=${perPage}`;
+
+        const response = await fetch(url, {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` },
+            next: {
+                tags: ["establishment-types"],
+            },
+        });
+        const data =
+            await handleApiResponse<PaginatedPlain<EstablishmentType>>(
+                response
+            );
+
+        const result = toCamelCaseRecursive(data);
+
+        return result;
+    }
+    getEstablishmentType(
+        token: string,
+        id: number
+    ): Promise<EstablishmentType> {
         throw new Error("Method not implemented.");
     }
-    get(token: string, id: number): Promise<EstablishmentType> {
-        throw new Error("Method not implemented.");
-    }
-    create(
+    createEstablishmentType(
         token: string,
         data: { name: string; description?: string }
     ): Promise<EstablishmentType> {
         throw new Error("Method not implemented.");
     }
-    update(
+    updateEstablishmentType(
         token: string,
         id: number,
         data: { name?: string; description?: string }
     ): Promise<EstablishmentType> {
         throw new Error("Method not implemented.");
     }
-    delete(token: string, id: number): Promise<boolean> {
+    deleteEstablishmentType(token: string, id: number): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
-    filter(
+    filterEstablishmentTypes(
         token: string,
-        filters: EstablishmentTypeFilter
+        options?: {
+            params?: PaginationParams;
+            filters?: EstablishmentTypeFilter;
+        }
     ): Promise<PaginatedResult<EstablishmentType>> {
         throw new Error("Method not implemented.");
     }
