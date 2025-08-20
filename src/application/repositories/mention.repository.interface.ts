@@ -1,22 +1,26 @@
-import { Mention } from "@/core/entities/mention.entity";
-import { PaginatedResult, PaginationParams } from "@/core/entities/pagination";
+import { MentionFilter } from "@/src/entities/filters/mention.filter";
+import { Mention } from "@/src/entities/models/mention.entity";
+import {
+    PaginatedResult,
+    PaginationParams,
+} from "@/src/entities/models/pagination";
 
-import { MentionFilter } from "../filters/mention.filter";
-
-export interface IMentionRepository {
-    getAll(
+export interface IMentionsRepository {
+    getMentions(
         token: string,
-        param: PaginationParams
+        options?: {
+            params?: PaginationParams;
+        }
     ): Promise<PaginatedResult<Mention>>;
-    get(token: string, id: number): Promise<Mention>;
-    create(
+    getMention(token: string, id: number): Promise<Mention>;
+    createMention(
         token: string,
         data: {
             name: string;
             domainId: number;
         }
     ): Promise<Mention>;
-    update(
+    updateMention(
         token: string,
         id: number,
         data: {
@@ -24,9 +28,12 @@ export interface IMentionRepository {
             domainId?: number;
         }
     ): Promise<Mention>;
-    delete(token: string, id: number): Promise<boolean>;
-    filter(
+    deleteMention(token: string, id: number): Promise<boolean>;
+    filterMentions(
         token: string,
-        filters: MentionFilter
+        options?: {
+            params?: PaginationParams;
+            filters?: MentionFilter;
+        }
     ): Promise<PaginatedResult<Mention>>;
 }
