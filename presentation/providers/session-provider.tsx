@@ -1,103 +1,82 @@
 "use client";
 
-import React, {
-    createContext,
-    ReactNode,
-    useContext,
-    useEffect,
-    useState,
-} from "react";
-
-import { User } from "@/core/entities/users.entity";
-import {
-    clientSessionService,
-    SessionData,
-} from "@/infrastructure/services/client-session.service";
-
-interface SessionContextType {
-    session: SessionData | null;
-    isLoading: boolean;
-    isLoggedIn: boolean;
-    user: User | null;
-    isExpired: boolean;
-    refreshSession: () => void;
-}
-
-const SessionContext = createContext<SessionContextType | undefined>(undefined);
+import { ReactNode, useCallback, useEffect } from "react";
 
 interface SessionProviderProps {
     children: ReactNode;
+    refetchInterval?: number; // en secondes, par défaut 5 minutes
 }
 
 /**
- * Provider pour gérer la session utilisateur côté client
- * Utilise les cookies accessibles pour récupérer les données sans appel réseau
+ * SessionProvider couplé à l'API /api/auth/session pour la gestion automatique des tokens
+ * Actualise la session (tokens, user-info et cookies) en temps voulu
  */
-export function SessionProvider({ children }: SessionProviderProps) {
-    const [session, setSession] = useState<SessionData | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+export function SessionProvider({
+    children,
+    refetchInterval = 5 * 60, // 5 minutes par défaut
+}: SessionProviderProps) {
+    // Fonction pour vérifier et rafraîchir les tokens via l'API session
+    const checkAndRefreshTokens = useCallback(async () => {
+        try {
+            const response = await fetch("/api/auth/session", {
+                method: "GET",
+                credentials: "include", // Important pour inclure les cookies
+            });
 
-    // Fonction pour rafraîchir la session
-    const refreshSession = () => {
-        const newSession = clientSessionService.getSessionData();
-
-        setSession(newSession);
-    };
-
-    // Initialiser la session au montage
-    useEffect(() => {
-        // Récupérer la session initiale
-        console.log("SessionProvider: Initializing session...");
-        refreshSession();
-        setIsLoading(false);
-        console.log("SessionProvider: Loading set to false");
-
-        // Surveiller les changements de session
-        const unwatch = clientSessionService.watchSession((newSession) => {
-            console.log("SessionProvider: Session mise à jour", newSession);
-            setSession(newSession);
-        });
-
-        // Nettoyage
-        return unwatch;
+            // L'API retourne toujours 204, pas besoin de vérifier le contenu
+            console.log("SessionProvider: Vérification des tokens effectuée");
+        } catch (error) {
+            console.error(
+                "SessionProvider: Erreur lors de la vérification des tokens:",
+                error
+            );
+        }
     }, []);
 
-    // Valeurs dérivées
-    const isLoggedIn = session?.isLoggedIn ?? false;
-    const isExpired = session?.isExpired ?? false;
-    const user = session ? clientSessionService.toUserEntity(session) : null;
+    // Initialisation et polling pour la vérification automatique
+    useEffect(() => {
+        // Vérification initiale
+        checkAndRefreshTokens();
 
-    const contextValue: SessionContextType = {
-        session,
-        isLoading,
-        isLoggedIn,
-        user,
-        isExpired,
-        refreshSession,
-    };
+        // Polling interval pour vérifier périodiquement
+        let interval: NodeJS.Timeout | undefined;
+        if (refetchInterval > 0) {
+            interval = setInterval(
+                checkAndRefreshTokens,
+                refetchInterval * 1000
+            );
+        }
 
-    return (
-        <SessionContext.Provider value={contextValue}>
-            {children}
-        </SessionContext.Provider>
-    );
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [checkAndRefreshTokens, refetchInterval]);
+
+    // Event listeners pour la vérification
+    useEffect(() => {
+        // Vérification au focus de la fenêtre
+        const handleFocus = () => {
+            checkAndRefreshTokens();
+        };
+
+        // Vérification quand la page redevient visible
+        const handleVisibilityChange = () => {
+            if (!document.hidden) {
+                checkAndRefreshTokens();
+            }
+        };
+
+        window.addEventListener("focus", handleFocus);
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
+        return () => {
+            window.removeEventListener("focus", handleFocus);
+            document.removeEventListener(
+                "visibilitychange",
+                handleVisibilityChange
+            );
+        };
+    }, [checkAndRefreshTokens]);
+
+    return <>{children}</>;
 }
-
-/**
- * Hook pour utiliser le context de session
- * Remplace le hook useSession existant
- */
-export function useSessionContext(): SessionContextType {
-    const context = useContext(SessionContext);
-
-    if (context === undefined) {
-        throw new Error(
-            "useSessionContext must be used within a SessionProvider"
-        );
-    }
-
-    return context;
-}
-
-// Backward compatibility - garder l'ancien nom
-export const AuthProvider = SessionProvider;
