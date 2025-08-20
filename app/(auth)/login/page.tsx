@@ -1,12 +1,12 @@
 "use client";
 
-import { LoginForm } from "./components/login-form";
+import { LoginForm } from "./_components/login-form";
 
 export default function LoginPage() {
     return (
         <div className="flex h-screen w-full">
             {/* Partie gauche - Formulaire */}
-            <div className="flex w-full flex-col items-center justify-center bg-background p-8 md:w-1/2">
+            <div className="bg-background flex w-full flex-col items-center justify-center p-8 md:w-1/2">
                 <LoginForm />
             </div>
 

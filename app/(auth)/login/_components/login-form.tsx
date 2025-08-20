@@ -6,8 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { useForm } from "react-hook-form";
 
+import { signInAction } from "@/core/actions/auth/sign-in.action";
 import { Button } from "@/presentation/components/ui/button";
-import { Checkbox } from "@/presentation/components/ui/checkbox";
 import {
     Form,
     FormControl,
@@ -21,18 +21,6 @@ import { LoginInput, loginSchema } from "@/presentation/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { FormError } from "./form-error-message";
-
-interface LoginResponse {
-    success: boolean;
-    redirectTo?: string;
-    error?: string;
-    user?: {
-        id: number;
-        email: string;
-        active: boolean;
-        isAdmin: boolean;
-    };
-}
 
 export function LoginForm() {
     const router = useRouter();
@@ -54,46 +42,31 @@ export function LoginForm() {
         setIsPending(true);
 
         try {
-            // Récupérer le paramètre redirectTo depuis l'URL
+            const formData = new FormData();
+            formData.append("email", data.email);
+            formData.append("password", data.password);
+
+            // Ajouter le paramètre redirectTo si présent
             const redirectTo = searchParams.get("redirectTo");
-
-            // Construire l'URL avec les paramètres de redirection
-            const loginUrl = new URL("/api/auth/login", window.location.origin);
-
             if (redirectTo) {
-                loginUrl.searchParams.set("redirectTo", redirectTo);
+                formData.append("redirectTo", redirectTo);
             }
 
-            const response = await fetch(loginUrl.toString(), {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            });
+            const result = await signInAction(formData);
 
-            const result: LoginResponse = await response.json();
-
-            if (!result.success || !response.ok) {
-                setErrorMessage(
-                    result.error ||
-                        "Une erreur est survenue lors de la connexion"
-                );
-
+            if (result) {
+                setErrorMessage(result.error);
                 return;
             }
 
-            // Connexion réussie
-            console.log("Utilisateur connecté:", result.user);
-
-            // Utiliser l'URL de redirection fournie par l'API ou redirection par défaut selon le rôle
-            const redirectPath =
-                result.redirectTo || (result.user?.isAdmin ? "/admin" : "/");
-
-            router.push(redirectPath);
+            // Connexion réussie - la redirection est gérée par le server action
             router.refresh();
         } catch (error) {
             console.error("Erreur de connexion:", error);
+            if (error instanceof Error && error.message === "NEXT_REDIRECT") {
+                setErrorMessage(null);
+                return;
+            }
             setErrorMessage("Une erreur est survenue lors de la connexion");
         } finally {
             setIsPending(false);
@@ -159,7 +132,7 @@ export function LoginForm() {
                                             }
                                         />
                                         <button
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                            className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                                             tabIndex={-1}
                                             type="button"
                                             onClick={() =>
@@ -180,17 +153,8 @@ export function LoginForm() {
                     />
 
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                            <Checkbox id="remember" />
-                            <label
-                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                htmlFor="remember"
-                            >
-                                Se souvenir de moi
-                            </label>
-                        </div>
                         <Link
-                            className="text-sm text-primary hover:underline"
+                            className="text-primary text-sm hover:underline"
                             href="/forgot-password"
                         >
                             Mot de passe oublié?
@@ -207,7 +171,7 @@ export function LoginForm() {
                         {isPending ? (
                             <>
                                 <svg
-                                    className="-ml-1 mr-3 size-5 animate-spin text-white"
+                                    className="mr-3 -ml-1 size-5 animate-spin text-white"
                                     fill="none"
                                     viewBox="0 0 24 24"
                                     xmlns="http://www.w3.org/2000/svg"
@@ -235,7 +199,7 @@ export function LoginForm() {
                 </form>
             </Form>
 
-            <div className="mt-8 text-center text-xs text-muted-foreground">
+            <div className="text-muted-foreground mt-8 text-center text-xs">
                 En vous connectant, vous acceptez nos{" "}
                 <Link className="hover:underline" href="/terms-of-service">
                     Conditions d'utilisation
