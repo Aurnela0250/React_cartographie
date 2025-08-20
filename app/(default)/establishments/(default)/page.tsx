@@ -1,8 +1,8 @@
 import { Separator } from "@/presentation/components/ui/separator";
 import { SidebarTrigger } from "@/presentation/components/ui/sidebar";
 
-import { EstablishmentsListServer } from "./_components/establishments-list-server";
-import { EstablishmentsPagination } from "./_components/establishments-pagination";
+import { EstablishmentsListServer } from "../_components/establishments-list-server";
+import { EstablishmentsPagination } from "../_components/establishments-pagination";
 
 interface EstablishmentsPageProps {
     searchParams?:

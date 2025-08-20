@@ -1,20 +1,17 @@
 import React from "react";
 
-import { Separator } from "@/presentation/components/ui/separator";
 import {
     SidebarInset,
     SidebarProvider,
-    SidebarTrigger,
 } from "@/presentation/components/ui/sidebar";
 
-import { EstablishmentsFilterSidebar } from "./_components/establishments-filter-sidebar";
+import { EstablishmentsFilterSidebar } from "../_components/establishments-filter-sidebar";
 
 export default function EstablishmentsLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    console.log("Render Layout");
     return (
         <SidebarProvider
             style={
