@@ -12,7 +12,7 @@ export const getLevelsUseCase =
     async (
         token: string,
         options?: {
-            params: PaginationParams;
+            params?: PaginationParams;
         }
     ): Promise<PaginatedResult<Level>> => {
         // TODO: Check the permission if is valid

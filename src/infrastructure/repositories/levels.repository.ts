@@ -3,15 +3,19 @@ import { handleApiResponse, toCamelCaseRecursive } from "@/shared/utils";
 import { ILevelsRepository } from "@/src/application/repositories/levels.repository.interface";
 import { LevelFilter } from "@/src/entities/filters/level.filter";
 import { Level } from "@/src/entities/models/level.entity";
-import { PaginatedPlain, PaginatedResult, PaginationParams } from "@/src/entities/models/pagination";
+import {
+    PaginatedPlain,
+    PaginatedResult,
+    PaginationParams,
+} from "@/src/entities/models/pagination";
 
 export class LevelsRepository implements ILevelsRepository {
     async getLevels(
         token: string,
-        options?: { params: PaginationParams }
+        options?: { params?: PaginationParams }
     ): Promise<PaginatedResult<Level>> {
         const { params } = options || { params: { page: 1, perPage: 10 } };
-        const { page = 1, perPage = 10 } = params;
+        const { page, perPage } = params || { page: 1, perPage: 10 };
 
         const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/levels/?page=${page}&per_page=${perPage}`;
 
@@ -19,7 +23,7 @@ export class LevelsRepository implements ILevelsRepository {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
             next: {
-                tags: ["levels"],
+                tags: ["levels", `pagination:${page}-${perPage}`],
             },
         });
         const data = await handleApiResponse<PaginatedPlain<Level>>(response);
@@ -28,8 +32,21 @@ export class LevelsRepository implements ILevelsRepository {
 
         return result;
     }
-    getLevel(token: string, id: number): Promise<Level> {
-        throw new Error("Method not implemented.");
+    async getLevel(token: string, id: number): Promise<Level> {
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/levels/${id}`;
+
+        const response = await fetch(url, {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` },
+            next: {
+                tags: ["level", `id:${id}`],
+            },
+        });
+        const data = await handleApiResponse<Level>(response);
+
+        const result = toCamelCaseRecursive(data);
+
+        return result;
     }
     createLevel(
         token: string,
