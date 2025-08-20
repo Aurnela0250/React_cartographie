@@ -6,11 +6,11 @@ export interface IAuthRepository {
     signIn(data: {
         email: string;
         password: string;
-    }): Promise<{ accessToken: string; refreshToken: string }>;
+    }): Promise<{ accessToken: string; refreshToken: string; user: User }>;
     signOut(token: string, refreshToken: string): Promise<{ message: string }>;
     refresh(
         refreshToken: string
-    ): Promise<{ accessToken: string; refreshToken: string }>;
+    ): Promise<{ accessToken: string; refreshToken: string; user: User }>;
     me(token: string): Promise<User>;
     loginOAuth2(data: {
         username: string;

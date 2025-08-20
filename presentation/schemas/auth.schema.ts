@@ -5,10 +5,10 @@ import { z } from "zod";
  */
 export const loginSchema = z.object({
     email: z.string().email({
-        message: "Email is required",
+        message: "Veuillez saisir une adresse e-mail valide.",
     }),
     password: z.string().min(1, {
-        message: "Password is required",
+        message: "Veuillez saisir un mot de passe.",
     }),
 });
 
@@ -44,17 +44,17 @@ export type UserLogged = z.infer<typeof userLoggedSchema>;
 export const registerSchema = z
     .object({
         email: z.string().email({
-            message: "Email is required",
+            message: "Veuillez saisir une adresse e-mail valide.",
         }),
         password: z.string().min(8, {
-            message: "Password must be at least 8 characters",
+            message: "Le mot de passe doit contenir au moins 8 caractères.",
         }),
         confirmPassword: z.string().min(1, {
-            message: "Confirm password is required",
+            message: "Veuillez confirmer votre mot de passe.",
         }),
     })
     .refine((data) => data.password === data.confirmPassword, {
-        message: "Passwords do not match",
+        message: "Les mots de passe ne correspondent pas.",
         path: ["confirmPassword"],
     });
 
@@ -63,7 +63,7 @@ export const registerSchema = z
  */
 export const resetPasswordSchema = z.object({
     email: z.string().email({
-        message: "Email is required",
+        message: "Veuillez saisir une adresse e-mail valide.",
     }),
 });
 
@@ -73,13 +73,13 @@ export const resetPasswordSchema = z.object({
 export const newPasswordSchema = z
     .object({
         password: z.string().min(8, {
-            message: "Password must be at least 8 characters",
+            message: "Le mot de passe doit contenir au moins 8 caractères.",
         }),
         confirmPassword: z.string().min(1, {
-            message: "Confirm password is required",
+            message: "Veuillez confirmer votre mot de passe.",
         }),
     })
     .refine((data) => data.password === data.confirmPassword, {
-        message: "Passwords do not match",
+        message: "Les mots de passe ne correspondent pas.",
         path: ["confirmPassword"],
     });

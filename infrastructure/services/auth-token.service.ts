@@ -208,7 +208,6 @@ export class AuthTokenService {
                 const user = await this.authRepository.me(accessToken);
 
                 // Stocker l'utilisateur en cookie pour éviter des appels répétés
-                await this.storeUser(user);
 
                 return {
                     authenticated: true,
@@ -251,19 +250,7 @@ export class AuthTokenService {
             const newTokenData =
                 await this.authRepository.refresh(refreshToken);
 
-            // Stocker les nouveaux tokens
-            await this.setTokens(
-                newTokenData.accessToken,
-                newTokenData.refreshToken,
-                {
-                    exp: newTokenData.exp,
-                    iat: newTokenData.iat,
-                    userId: newTokenData.userId,
-                }
-            );
-
             // Stocker l'utilisateur
-            await this.storeUser(newTokenData.user);
 
             console.log("AuthTokenService: Refresh token réussi");
 
@@ -297,19 +284,7 @@ export class AuthTokenService {
                 password,
             });
 
-            // Stocker les tokens
-            await this.setTokens(
-                tokenData.accessToken,
-                tokenData.refreshToken,
-                {
-                    exp: tokenData.exp,
-                    iat: tokenData.iat,
-                    userId: tokenData.userId,
-                }
-            );
-
             // Stocker l'utilisateur
-            await this.storeUser(tokenData.user);
 
             return {
                 success: true,
@@ -354,42 +329,6 @@ export class AuthTokenService {
     }
 
     /**
-     * Stocke l'utilisateur dans les cookies
-     */
-    private async storeUser(user: User): Promise<void> {
-        try {
-            const cookieStore = await cookies();
-
-            // Cookie httpOnly pour la sécurité (utilisé côté serveur)
-            cookieStore.set("user", JSON.stringify(user), {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "strict",
-                maxAge: 7 * 24 * 60 * 60, // 7 jours
-                path: "/",
-            });
-
-            // Cookie accessible côté client pour l'interface utilisateur
-            const userSession = {
-                id: user.id,
-                email: user.email,
-                active: user.active,
-                isAdmin: user.isAdmin,
-            };
-
-            cookieStore.set("userSession", JSON.stringify(userSession), {
-                httpOnly: false, // Accessible côté client
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "strict",
-                maxAge: 7 * 24 * 60 * 60, // 7 jours
-                path: "/",
-            });
-        } catch (error) {
-            console.error("Erreur lors du stockage de l'utilisateur:", error);
-        }
-    }
-
-    /**
      * Nettoie tous les cookies d'authentification
      */
     async clearTokens(): Promise<void> {
@@ -398,78 +337,9 @@ export class AuthTokenService {
 
             cookieStore.delete("accessToken");
             cookieStore.delete("refreshToken");
-            cookieStore.delete("user");
             cookieStore.delete("tokenMeta");
-            cookieStore.delete("userSession");
-            cookieStore.delete("sessionStatus");
         } catch (error) {
             console.error("Erreur lors du nettoyage des tokens:", error);
-        }
-    }
-
-    /**
-     * Stocke les tokens dans les cookies
-     */
-    async setTokens(
-        accessToken: string,
-        refreshToken: string,
-        tokenMeta: TokenMeta
-    ): Promise<void> {
-        try {
-            const cookieStore = await cookies();
-
-            // Calculer la durée jusqu'à l'expiration
-            const getTimeUntilExpiry = (exp: number): number => {
-                const currentTimeUTC = Math.floor(Date.now() / 1000);
-
-                return Math.max(0, exp - currentTimeUTC);
-            };
-
-            // Stocker l'access token
-            cookieStore.set("accessToken", accessToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "strict",
-                maxAge: getTimeUntilExpiry(tokenMeta.exp),
-                path: "/",
-            });
-
-            // Stocker le refresh token
-            cookieStore.set("refreshToken", refreshToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                domain: "",
-                sameSite: "strict",
-                maxAge: 7 * 24 * 60 * 60, // 7 jours
-                path: "/",
-            });
-
-            // Stocker les métadonnées (httpOnly pour sécurité)
-            cookieStore.set("tokenMeta", JSON.stringify(tokenMeta), {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "strict",
-                maxAge: getTimeUntilExpiry(tokenMeta.exp),
-                path: "/",
-            });
-
-            // Stocker le statut de session accessible côté client
-            const sessionStatus = {
-                isLoggedIn: true,
-                exp: tokenMeta.exp,
-                userId: tokenMeta.userId,
-            };
-
-            cookieStore.set("sessionStatus", JSON.stringify(sessionStatus), {
-                httpOnly: false, // Accessible côté client
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "strict",
-                maxAge: getTimeUntilExpiry(tokenMeta.exp),
-                path: "/",
-            });
-        } catch (error) {
-            console.error("Erreur lors du stockage des tokens:", error);
-            throw error;
         }
     }
 }
