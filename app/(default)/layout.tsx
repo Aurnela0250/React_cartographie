@@ -1,6 +1,6 @@
 import React from "react";
 
-import Navbar from "@/presentation/components/features/navbar";
+import { NavBar } from "../_components/header";
 
 export default function DefaultLayout({
     children,
@@ -9,8 +9,8 @@ export default function DefaultLayout({
 }) {
     return (
         <>
-            <Navbar />
-            <main className="">{children}</main>
+            <NavBar />
+            <main className="pt-20">{children}</main>
         </>
     );
 }

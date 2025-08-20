@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import ClientProviders from "@/presentation/providers/client-providers";
+import { cn } from "@/shared/utils";
 
 import "@/styles/globals.css";
 
@@ -21,7 +22,9 @@ export default function RootLayout({
 }) {
     return (
         <html suppressHydrationWarning lang="fr">
-            <body className={inter.className}>
+            <body
+                className={cn(inter.className, "bg-background text-foreground")}
+            >
                 <ClientProviders>
                     <NuqsAdapter>{children}</NuqsAdapter>
                 </ClientProviders>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { LogOut } from "lucide-react";
 
-import { triggerSessionUpdate } from "@/lib/auth-client";
+import { triggerSessionUpdate } from "@/presentation/providers/session-provider";
 import { Button } from "@/presentation/components/ui/button";
 import {
     DropdownMenu,

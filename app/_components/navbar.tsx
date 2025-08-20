@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Menu } from "lucide-react";
 
 import { auth } from "@/lib/auth";
+import { ThemeToggle } from "@/presentation/components/features/theme-toggle";
 import { Button } from "@/presentation/components/ui/button";
 import {
     Sheet,
@@ -9,8 +10,7 @@ import {
     SheetTrigger,
 } from "@/presentation/components/ui/sheet";
 
-import NavbarUserMenu from "@/app/_components/navbar-user-menu";
-import { ThemeToggle } from "./theme-toggle";
+import NavbarUserMenu from "./navbar-user-menu";
 
 const navigation = [
     { name: "Accueil", href: "/" },
@@ -29,30 +29,32 @@ function MobileMenuContent({ navigation, session }: MobileMenuContentProps) {
             <div className="flex items-center justify-between">
                 <Link className="-m-1.5 p-1.5" href="/">
                     <span className="sr-only">Orientation Mada</span>
-                    <div className="text-xl font-bold text-primary">
+                    <div className="text-primary text-xl font-bold">
                         Orientation Mada
                     </div>
                 </Link>
             </div>
             <div className="mt-6 flow-root">
-                <div className="-my-6 divide-y divide-border">
+                <div className="divide-border -my-6 divide-y">
                     <div className="space-y-2 py-6">
                         {navigation.map((item) => (
                             <Link
                                 key={item.name}
-                                className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold text-foreground hover:bg-accent"
+                                className="text-foreground hover:bg-accent -mx-3 block rounded-lg px-3 py-2 text-base font-semibold"
                                 href={item.href}
                             >
                                 {item.name}
                             </Link>
                         ))}
                     </div>
-                    <div className="py-6 space-y-2">
+                    <div className="space-y-2 py-6">
                         <div className="-mx-3 flex items-center justify-between py-2">
-                            <span className="text-base font-semibold">Thème</span>
+                            <span className="text-base font-semibold">
+                                Thème
+                            </span>
                             <ThemeToggle />
                         </div>
-                        
+
                         {!session?.user && (
                             <>
                                 <Button
@@ -70,7 +72,7 @@ function MobileMenuContent({ navigation, session }: MobileMenuContentProps) {
                                 </Button>
                             </>
                         )}
-                        
+
                         {session?.user && (
                             <div className="-mx-3 py-2">
                                 <NavbarUserMenu />
@@ -85,9 +87,9 @@ function MobileMenuContent({ navigation, session }: MobileMenuContentProps) {
 
 export default async function Navbar() {
     const session = await auth();
-    
+
     return (
-        <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+        <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 border-b backdrop-blur">
             <nav
                 aria-label="Global"
                 className="flex items-center justify-between p-6 lg:px-8"
@@ -95,7 +97,7 @@ export default async function Navbar() {
                 <div className="flex lg:flex-1">
                     <Link className="-m-1.5 p-1.5" href="/">
                         <span className="sr-only">Orientation Mada</span>
-                        <div className="text-xl font-bold text-primary">
+                        <div className="text-primary text-xl font-bold">
                             Orientation Mada
                         </div>
                     </Link>
@@ -106,7 +108,7 @@ export default async function Navbar() {
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="-m-2.5 p-2.5 text-foreground"
+                                className="text-foreground -m-2.5 p-2.5"
                             >
                                 <span className="sr-only">Open main menu</span>
                                 <Menu aria-hidden="true" className="size-6" />
@@ -122,7 +124,7 @@ export default async function Navbar() {
                     {navigation.map((item) => (
                         <Link
                             key={item.name}
-                            className="text-sm font-semibold text-foreground hover:text-primary transition-colors"
+                            className="text-foreground hover:text-primary text-sm font-semibold transition-colors"
                             href={item.href}
                         >
                             {item.name}
@@ -131,7 +133,7 @@ export default async function Navbar() {
                 </div>
                 <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-2">
                     <ThemeToggle />
-                    
+
                     {!session?.user && (
                         <>
                             <Button
@@ -140,18 +142,14 @@ export default async function Navbar() {
                                 size="sm"
                                 className="text-sm font-semibold"
                             >
-                                <Link href="/login">
-                                    Connexion
-                                </Link>
+                                <Link href="/login">Connexion</Link>
                             </Button>
                             <Button
                                 asChild
                                 size="sm"
                                 className="text-sm font-semibold"
                             >
-                                <Link href="/register">
-                                    Inscription
-                                </Link>
+                                <Link href="/register">Inscription</Link>
                             </Button>
                         </>
                     )}

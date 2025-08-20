@@ -1,7 +1,8 @@
 "use client";
 
-import { triggerSessionUpdate } from "@/presentation/providers/session-provider";
+import { ThemeToggle } from "@/presentation/components/features/theme-toggle";
 import { Button } from "@/presentation/components/ui/button";
+import LogoutButton from "@/app/_components/logout-button";
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -13,8 +14,6 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/presentation/components/ui/popover";
-
-import { ThemeToggle } from "./theme-toggle";
 
 interface NavbarMobileMenuProps {
     navigationLinks: Array<{ href: string; label: string }>;
@@ -31,22 +30,7 @@ export default function NavbarMobileMenu({
     navigationLinks,
     isLoggedIn,
 }: NavbarMobileMenuProps) {
-    const handleLogout = async () => {
-        try {
-            const response = await fetch("/api/auth/logout", {
-                method: "POST",
-                credentials: "include",
-            });
 
-            if (response.ok) {
-                // Déclencher le refresh de session
-                triggerSessionUpdate();
-                window.location.href = "/login";
-            }
-        } catch (error) {
-            console.error("Erreur lors de la déconnexion:", error);
-        }
-    };
 
     return (
         <Popover>
@@ -65,15 +49,15 @@ export default function NavbarMobileMenu({
                         xmlns="http://www.w3.org/2000/svg"
                     >
                         <path
-                            className="ease-[cubic-bezier(.5,.85,.25,1.1)] origin-center translate-y-[-7px] transition-all duration-300 group-aria-expanded:translate-x-0 group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[315deg]"
+                            className="origin-center translate-y-[-7px] transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-x-0 group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[315deg]"
                             d="M4 12L20 12"
                         />
                         <path
-                            className="ease-[cubic-bezier(.5,.85,.25,1.8)] origin-center transition-all duration-300 group-aria-expanded:rotate-45"
+                            className="origin-center transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.8)] group-aria-expanded:rotate-45"
                             d="M4 12H20"
                         />
                         <path
-                            className="ease-[cubic-bezier(.5,.85,.25,1.1)] origin-center translate-y-[7px] transition-all duration-300 group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[135deg]"
+                            className="origin-center translate-y-[7px] transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[135deg]"
                             d="M4 12H20"
                         />
                     </svg>
@@ -141,12 +125,7 @@ export default function NavbarMobileMenu({
                                     </NavigationMenuLink>
                                 </NavigationMenuItem>
                                 <NavigationMenuItem className="w-full">
-                                    <button
-                                        className="flex w-full items-center gap-2 py-1.5 text-left"
-                                        onClick={handleLogout}
-                                    >
-                                        Se déconnecter
-                                    </button>
+                                    <LogoutButton variant="menu-item" showIcon={false} />
                                 </NavigationMenuItem>
                             </>
                         )}
