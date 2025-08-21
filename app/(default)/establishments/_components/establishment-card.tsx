@@ -1,71 +1,122 @@
-import { Building, MapPin, Users, Star } from "lucide-react";
+import Link from "next/link";
+import {
+    ArrowRight,
+    Building2,
+    Globe,
+    GraduationCap,
+    Mail,
+    MapPin,
+    Phone,
+} from "lucide-react";
 
-import { Badge } from "@/presentation/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/presentation/components/ui/card";
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+} from "@/presentation/components/ui/card";
+import type { Establishment } from "@/src/entities/models/establishment.entity";
 
 interface EstablishmentCardProps {
-    establishment: any;
+    establishment: Establishment;
 }
 
 export function EstablishmentCard({ establishment }: EstablishmentCardProps) {
     return (
-        <Card className="h-full hover:shadow-lg transition-shadow duration-200">
-            <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                        <CardTitle className="text-lg mb-2">
-                            {establishment.name || "Nom non disponible"}
-                        </CardTitle>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                            <MapPin className="size-4" />
-                            <span>{establishment.city?.name || "Ville non spécifiée"}</span>
+        <Link
+            href={`/establishments/${establishment.id}`}
+            className="block h-full"
+        >
+            <Card className="flex h-full cursor-pointer flex-col transition-shadow hover:shadow-lg">
+                {/* Header - Fixed height */}
+                <CardHeader className="h-24 flex-shrink-0 pb-3">
+                    <div className="flex h-full items-start justify-between">
+                        <Building2 className="text-primary h-8 w-8 flex-shrink-0" />
+                        <div className="flex flex-col items-end gap-1">
+                            <span className="bg-secondary text-secondary-foreground rounded-full px-2 py-1 text-xs">
+                                {establishment.acronym || "-"}
+                            </span>
+                            {establishment.formations &&
+                                establishment.formations.length > 0 && (
+                                    <span className="bg-primary/10 text-primary rounded-full px-2 py-1 text-xs">
+                                        {establishment.formations.length}{" "}
+                                        formation
+                                        {establishment.formations.length > 1
+                                            ? "s"
+                                            : ""}
+                                    </span>
+                                )}
                         </div>
                     </div>
-                    <div className="flex items-center gap-1 text-sm">
-                        <Star className="size-4 fill-yellow-400 text-yellow-400" />
-                        <span>4.5</span>
+                </CardHeader>
+
+                {/* Content - Flexible height */}
+                <CardContent className="flex flex-1 flex-col">
+                    {/* Title - Fixed height */}
+                    <h4 className="text-foreground mb-2 line-clamp-2 min-h-[3.5rem] text-lg font-semibold">
+                        {establishment.name || "Nom non disponible"}
+                    </h4>
+
+                    {/* Location - Fixed height */}
+                    <div className="text-muted-foreground mb-2 flex min-h-[1.5rem] items-center">
+                        <MapPin className="mr-1 h-4 w-4 flex-shrink-0" />
+                        <span className="line-clamp-1 text-sm">
+                            {establishment.address || "-"}
+                        </span>
                     </div>
-                </div>
-            </CardHeader>
-            
-            <CardContent className="pt-0">
-                <div className="space-y-3">
-                    {/* Description */}
-                    <p className="text-sm text-muted-foreground line-clamp-3">
-                        {establishment.description || "Description non disponible"}
+
+                    {/* Description - Flexible height */}
+                    <p className="text-muted-foreground mb-4 line-clamp-3 flex-1 text-sm">
+                        {establishment.description ||
+                            "Description non disponible"}
                     </p>
-                    
-                    {/* Domains */}
-                    <div className="flex flex-wrap gap-1">
-                        {establishment.domains?.slice(0, 3).map((domain: any, index: number) => (
-                            <Badge key={index} variant="secondary" className="text-xs">
-                                {domain.name}
-                            </Badge>
-                        )) || (
-                            <Badge variant="secondary" className="text-xs">
-                                Domaine non spécifié
-                            </Badge>
+
+                    {/* Formations - Show first 3 */}
+                    {establishment.formations &&
+                        establishment.formations.length > 0 && (
+                            <div className="mb-4 flex flex-wrap gap-2">
+                                {establishment.formations
+                                    .slice(0, 3)
+                                    .map((formation: any, index: number) => (
+                                        <span
+                                            key={formation.id || index}
+                                            className="bg-muted text-muted-foreground inline-flex items-center rounded-full px-2 py-1 text-xs"
+                                        >
+                                            <GraduationCap className="mr-1 h-3 w-3" />
+                                            {formation.domain ||
+                                                formation.name ||
+                                                `Formation ${index + 1}`}
+                                        </span>
+                                    ))}
+                                {establishment.formations.length > 3 && (
+                                    <span className="text-muted-foreground text-xs">
+                                        +{establishment.formations.length - 3}{" "}
+                                        autres
+                                    </span>
+                                )}
+                            </div>
                         )}
-                        {establishment.domains?.length > 3 && (
-                            <Badge variant="outline" className="text-xs">
-                                +{establishment.domains.length - 3}
-                            </Badge>
-                        )}
+                </CardContent>
+
+                {/* Footer - Fixed height */}
+                <CardFooter className="border-border h-12 flex-shrink-0 items-center justify-between border-t pt-4">
+                    <div className="text-muted-foreground flex space-x-3">
+                        {establishment.contacts &&
+                            establishment.contacts.length > 0 && (
+                                <Phone className="h-4 w-4" />
+                            )}
+                        {establishment.emails &&
+                            establishment.emails.length > 0 && (
+                                <Mail className="h-4 w-4" />
+                            )}
+                        {establishment.website && <Globe className="h-4 w-4" />}
                     </div>
-                    
-                    {/* Stats */}
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                            <Users className="size-4" />
-                            <span>{establishment.studentsCount || "N/A"} étudiants</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                            <Building className="size-4" />
-                            <span>{establishment.type || "Public"}</span>
-                        </div>
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
+                    <span className="text-primary flex items-center gap-1 text-sm font-medium hover:underline">
+                        Voir détails
+                        <ArrowRight className="h-3 w-3" />
+                    </span>
+                </CardFooter>
+            </Card>
+        </Link>
     );
 }

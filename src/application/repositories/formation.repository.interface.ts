@@ -1,15 +1,19 @@
-import { Formation } from "@/core/entities/formation.entity";
-import { PaginatedResult, PaginationParams } from "@/core/entities/pagination";
-
-import { FormationFilter } from "../filters/formation.filter";
+import { FormationFilter } from "@/src/entities/filters/formation.filter";
+import { Formation } from "@/src/entities/models/formation.entity";
+import {
+    PaginatedResult,
+    PaginationParams,
+} from "@/src/entities/models/pagination";
 
 export interface IFormationRepository {
-    getAll(
+    getFormations(
         token: string,
-        param: PaginationParams
+        options?: {
+            params?: PaginationParams;
+        }
     ): Promise<PaginatedResult<Formation>>;
-    get(token: string, id: number): Promise<Formation>;
-    create(
+    getFormation(token: string, id: number): Promise<Formation>;
+    createFormation(
         token: string,
         data: {
             name: string;
@@ -21,7 +25,7 @@ export interface IFormationRepository {
             authorizationId?: number;
         }
     ): Promise<Formation>;
-    update(
+    updateFormation(
         token: string,
         id: number,
         data: {
@@ -34,9 +38,12 @@ export interface IFormationRepository {
             authorizationId?: number;
         }
     ): Promise<Formation>;
-    delete(token: string, id: number): Promise<boolean>;
-    filter(
+    deleteFormation(token: string, id: number): Promise<boolean>;
+    filterFormations(
         token: string,
-        filters: FormationFilter
+        options?: {
+            params?: PaginationParams;
+            filters?: FormationFilter;
+        }
     ): Promise<PaginatedResult<Formation>>;
 }

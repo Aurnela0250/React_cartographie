@@ -9,7 +9,7 @@ import {
     SheetTrigger,
 } from "@/presentation/components/ui/sheet";
 
-import NavbarUserMenu from "./navbar-user-menu";
+import NavbarUserMenu from "@/app/_components/navbar-user-menu";
 import { ThemeToggle } from "./theme-toggle";
 
 const navigation = [
@@ -73,7 +73,7 @@ function MobileMenuContent({ navigation, session }: MobileMenuContentProps) {
                         
                         {session?.user && (
                             <div className="-mx-3 py-2">
-                                <NavbarUserMenu user={session.user} />
+                                <NavbarUserMenu />
                             </div>
                         )}
                     </div>
@@ -156,7 +156,7 @@ export default async function Navbar() {
                         </>
                     )}
 
-                    {session?.user && <NavbarUserMenu user={session.user} />}
+                    {session?.user && <NavbarUserMenu />}
                 </div>
             </nav>
         </header>

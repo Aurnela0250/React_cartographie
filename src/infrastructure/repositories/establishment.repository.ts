@@ -11,14 +11,44 @@ import {
 import { Rate } from "@/src/entities/models/rate.entity";
 
 export class EstablishmentRepository implements IEstablishmentRepository {
-    getEstablishments(
+    async getEstablishments(
         token: string,
         options?: { params: PaginationParams }
     ): Promise<PaginatedResult<Establishment>> {
-        throw new Error("Method not implemented.");
+        const { params } = options || { params: { page: 1, perPage: 10 } };
+        const { page, perPage } = params || { page: 1, perPage: 10 };
+
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/establishments/?page=${page}&per_page=${perPage}`;
+
+        const response = await fetch(url, {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` },
+            next: {
+                tags: ["establishments", `pagination:${page}-${perPage}`],
+            },
+        });
+        const data =
+            await handleApiResponse<PaginatedPlain<Establishment>>(response);
+
+        const result = toCamelCaseRecursive(data);
+
+        return result;
     }
-    getEstablishment(token: string, id: number): Promise<Establishment> {
-        throw new Error("Method not implemented.");
+    async getEstablishment(token: string, id: number): Promise<Establishment> {
+        const url = `${env.API_PREFIX_URL}/${env.API_VERSION}/establishments/${id}`;
+
+        const response = await fetch(url, {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` },
+            next: {
+                tags: ["establishment", `id:${id}`],
+            },
+        });
+        const data = await handleApiResponse<Establishment>(response);
+
+        const result = toCamelCaseRecursive(data);
+
+        return result;
     }
     createEstablishment(
         token: string,

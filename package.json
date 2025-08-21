@@ -90,6 +90,7 @@
         "@eslint/migrate-config": "^1.4.0",
         "@ianvs/prettier-plugin-sort-imports": "^4.4.1",
         "@oxlint/migrate": "^0.16.2",
+        "@playwright/test": "^1.55.0",
         "@tanstack/eslint-plugin-query": "^5.74.7",
         "@trivago/prettier-plugin-sort-imports": "^5.2.2",
         "@types/node": "^22",

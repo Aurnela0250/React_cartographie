@@ -3,9 +3,9 @@
 import { ReactNode, useEffect } from "react";
 import { toast, Toaster } from "sonner";
 
-import { SessionProvider } from "@/lib/auth-client";
 // import { Toaster } from "@/presentation/components/ui/toaster";
 import QueryProvider from "@/presentation/providers/query-provider";
+import { SessionProvider } from "@/presentation/providers/session-provider";
 import { ThemeProvider } from "@/presentation/providers/theme-provider";
 import { ReactPlugin } from "@21st-extension/react";
 import { TwentyFirstToolbar } from "@21st-extension/toolbar-next";
@@ -43,7 +43,6 @@ export default function ClientProviders({ children }: ClientProvidersProps) {
             <TwentyFirstToolbar config={{ plugins: [ReactPlugin] }} />
             <SessionProvider
                 refetchInterval={5 * 60} // 5 minutes comme Auth.js
-                refetchOnWindowFocus={true}
             >
                 <QueryProvider>
                     <ThemeProvider

@@ -1,6 +1,6 @@
 "use client";
 
-import { triggerSessionUpdate } from "@/lib/auth-client";
+import { triggerSessionUpdate } from "@/presentation/providers/session-provider";
 import { Button } from "@/presentation/components/ui/button";
 import {
     NavigationMenu,

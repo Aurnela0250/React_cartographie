@@ -39,7 +39,7 @@ function parseIdsFromParam(param?: string | string[]): number[] | undefined {
         .filter((n) => Number.isFinite(n));
 }
 
-async function getEstablishments(params: {
+async function filterEstablishments(params: {
     page?: number;
     perPage?: number;
     cities?: string | string[];
@@ -100,7 +100,7 @@ async function EstablishmentsList({
           : 1;
 
     try {
-        const result = await getEstablishments({
+        const result = await filterEstablishments({
             page,
             perPage: 12,
             cities: resolvedSearchParams?.cities,

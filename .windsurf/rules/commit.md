@@ -1,7 +1,5 @@
 ---
-trigger: always_on
-description:
-globs:
+trigger: manual
 ---
 
 # Bonnes Pratiques de Commit Messages Git 🚀

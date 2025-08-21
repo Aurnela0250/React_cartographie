@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orientation Mada - Navbar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        @import "tailwindcss";
+        @import "tw-animate-css";
+
+        @custom-variant dark (&:is(.dark *));
+
+        :root {
+            --background: oklch(0.9818 0.0054 95.0986);
+            --foreground: oklch(0.3438 0.0269 95.7226);
+            --card: oklch(0.9818 0.0054 95.0986);
+            --card-foreground: oklch(0.1908 0.002 106.5859);
+            --popover: oklch(1 0 0);
+            --popover-foreground: oklch(0.2671 0.0196 98.939);
+            --primary: oklch(0.6171 0.1375 39.0427);
+            --primary-foreground: oklch(1 0 0);
+            --secondary: oklch(0.9245 0.0138 92.9892);
+            --secondary-foreground: oklch(0.4334 0.0177 98.6048);
+            --muted: oklch(0.9341 0.0153 90.239);
+            --muted-foreground: oklch(0.6059 0.0075 97.4233);
+            --accent: oklch(0.9245 0.0138 92.9892);
+            --accent-foreground: oklch(0.2671 0.0196 98.939);
+            --destructive: oklch(0.1908 0.002 106.5859);
+            --destructive-foreground: oklch(1 0 0);
+            --border: oklch(0.8847 0.0069 97.3627);
+            --input: oklch(0.7621 0.0156 98.3528);
+            --ring: oklch(0.6171 0.1375 39.0427);
+            --chart-1: oklch(0.5583 0.1276 42.9956);
+            --chart-2: oklch(0.6898 0.1581 290.4107);
+            --chart-3: oklch(0.8816 0.0276 93.128);
+            --chart-4: oklch(0.8822 0.0403 298.1792);
+            --chart-5: oklch(0.5608 0.1348 42.0584);
+            --sidebar: oklch(0.9663 0.008 98.8792);
+            --sidebar-foreground: oklch(0.359 0.0051 106.6524);
+            --sidebar-primary: oklch(0.6171 0.1375 39.0427);
+            --sidebar-primary-foreground: oklch(0.9881 0 0);
+            --sidebar-accent: oklch(0.9245 0.0138 92.9892);
+            --sidebar-accent-foreground: oklch(0.325 0 0);
+            --sidebar-border: oklch(0.9401 0 0);
+            --sidebar-ring: oklch(0.7731 0 0);
+            --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+            --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+            --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            --radius: 0.5rem;
+            --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+            --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+            --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+            --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+            --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
+            --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
+            --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
+            --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+            --tracking-normal: 0em;
+            --spacing: 0.25rem;
+        }
+
+        .dark {
+            --background: oklch(0.2679 0.0036 106.6427);
+            --foreground: oklch(0.8074 0.0142 93.0137);
+            --card: oklch(0.2679 0.0036 106.6427);
+            --card-foreground: oklch(0.9818 0.0054 95.0986);
+            --popover: oklch(0.3085 0.0035 106.6039);
+            --popover-foreground: oklch(0.9211 0.004 106.4781);
+            --primary: oklch(0.6724 0.1308 38.7559);
+            --primary-foreground: oklch(1 0 0);
+            --secondary: oklch(0.9818 0.0054 95.0986);
+            --secondary-foreground: oklch(0.3085 0.0035 106.6039);
+            --muted: oklch(0.2213 0.0038 106.707);
+            --muted-foreground: oklch(0.7713 0.0169 99.0657);
+            --accent: oklch(0.213 0.0078 95.4245);
+            --accent-foreground: oklch(0.9663 0.008 98.8792);
+            --destructive: oklch(0.6368 0.2078 25.3313);
+            --destructive-foreground: oklch(1 0 0);
+            --border: oklch(0.3618 0.0101 106.8928);
+            --input: oklch(0.4336 0.0113 100.2195);
+            --ring: oklch(0.6724 0.1308 38.7559);
+            --chart-1: oklch(0.5583 0.1276 42.9956);
+            --chart-2: oklch(0.6898 0.1581 290.4107);
+            --chart-3: oklch(0.213 0.0078 95.4245);
+            --chart-4: oklch(0.3074 0.0516 289.323);
+            --chart-5: oklch(0.5608 0.1348 42.0584);
+            --sidebar: oklch(0.2357 0.0024 67.7077);
+            --sidebar-foreground: oklch(0.8074 0.0142 93.0137);
+            --sidebar-primary: oklch(0.325 0 0);
+            --sidebar-primary-foreground: oklch(0.9881 0 0);
+            --sidebar-accent: oklch(0.168 0.002 106.6177);
+            --sidebar-accent-foreground: oklch(0.8074 0.0142 93.0137);
+            --sidebar-border: oklch(0.9401 0 0);
+            --sidebar-ring: oklch(0.7731 0 0);
+        }
+
+        @layer base {
+            * {
+                border-color: oklch(var(--border));
+            }
+            body {
+                background-color: oklch(var(--background));
+                color: oklch(var(--foreground));
+                font-family: var(--font-sans);
+                letter-spacing: var(--tracking-normal);
+            }
+        }
+
+        /* Custom animations */
+        .nav-link {
+            transition: all 200ms ease-out;
+        }
+        .nav-link:hover {
+            color: oklch(var(--primary));
+            transform: translateY(-1px);
+        }
+        
+        .logo-hover {
+            transition: all 300ms ease-out;
+        }
+        .logo-hover:hover {
+            transform: scale(1.05);
+            color: oklch(var(--primary));
+        }
+        
+        .mobile-menu {
+            transition: all 300ms ease-out;
+        }
+        .mobile-menu.open {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        .mobile-menu.closed {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        
+        .avatar-hover {
+            transition: all 200ms ease-out;
+        }
+        .avatar-hover:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .dropdown {
+            transition: all 250ms ease-out;
+        }
+        .dropdown.show {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+        .dropdown.hide {
+            transform: translateY(-10px) scale(0.95);
+            opacity: 0;
+        }
+        
+        .theme-toggle {
+            transition: all 300ms ease-out;
+        }
+        .theme-toggle:hover {
+            transform: rotate(180deg);
+        }
+        
+        .btn-primary {
+            transition: all 200ms ease-out;
+            background-color: oklch(var(--primary));
+            color: oklch(var(--primary-foreground));
+        }
+        .btn-primary:hover {
+            background-color: oklch(var(--primary) / 0.9);
+            transform: scale(1.02);
+            box-shadow: var(--shadow-md);
+        }
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-secondary {
+            transition: all 200ms ease-out;
+            background-color: oklch(var(--secondary));
+            color: oklch(var(--secondary-foreground));
+            border: 1px solid oklch(var(--border));
+        }
+        .btn-secondary:hover {
+            background-color: oklch(var(--accent));
+            transform: scale(1.02);
+            box-shadow: var(--shadow-md);
+        }
+        .btn-secondary:active {
+            transform: scale(0.98);
+        }
+        
+        .overlay {
+            transition: all 200ms ease-out;
+        }
+        .overlay.show {
+            opacity: 0.5;
+            backdrop-filter: blur(4px);
+        }
+        .overlay.hide {
+            opacity: 0;
+            backdrop-filter: blur(0px);
+        }
+        
+        .hamburger {
+            transition: all 250ms ease-out;
+        }
+        .hamburger.open {
+            transform: rotate(90deg);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div class="container mx-auto px-4">
+            <div class="flex h-16 items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="/" class="logo-hover flex items-center space-x-2 text-xl font-bold text-primary">
+                        <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Orientation Mada</span>
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="/" class="nav-link text-sm font-medium text-muted-foreground hover:text-primary">
+                        Accueil
+                    </a>
+                    <a href="/establishments" class="nav-link text-sm font-medium text-muted-foreground hover:text-primary">
+                        Établissements
+                    </a>
+                    <a href="/map" class="nav-link text-sm font-medium text-muted-foreground hover:text-primary">
+                        Carte
+                    </a>
+                </div>
+
+                <!-- Desktop Right Section -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <!-- Theme Toggle -->
+                    <button id="theme-toggle" class="theme-toggle p-2 rounded-md hover:bg-accent">
+                        <i data-lucide="sun" class="h-5 w-5 dark:hidden"></i>
+                        <i data-lucide="moon" class="h-5 w-5 hidden dark:block"></i>
+                    </button>
+
+                    <!-- Auth Buttons (when not logged in) -->
+                    <div id="auth-buttons" class="flex items-center space-x-2">
+                        <button class="btn-secondary px-4 py-2 rounded-md text-sm font-medium">
+                            Connexion
+                        </button>
+                        <button class="btn-primary px-4 py-2 rounded-md text-sm font-medium">
+                            Inscription
+                        </button>
+                    </div>
+
+                    <!-- User Avatar (when logged in) -->
+                    <div id="user-avatar" class="relative hidden">
+                        <button id="avatar-button" class="avatar-hover flex items-center space-x-2 p-1 rounded-full hover:bg-accent">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" 
+                                 alt="User Avatar" class="h-8 w-8 rounded-full">
+                            <i data-lucide="chevron-down" class="h-4 w-4 text-muted-foreground"></i>
+                        </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div id="avatar-dropdown" class="dropdown hide absolute right-0 mt-2 w-56 rounded-md border bg-popover p-1 shadow-lg">
+                            <div class="px-3 py-2 border-b border-border">
+                                <p class="text-sm font-medium">John Doe</p>
+                                <p class="text-xs text-muted-foreground">john.doe@email.com</p>
+                            </div>
+                            <div class="py-1">
+                                <a href="/profile" class="flex items-center px-3 py-2 text-sm rounded-sm hover:bg-accent">
+                                    <i data-lucide="user" class="h-4 w-4 mr-2"></i>
+                                    Mon Profil
+                                </a>
+                                <button class="flex items-center w-full px-3 py-2 text-sm rounded-sm hover:bg-accent text-left">
+                                    <i data-lucide="log-out" class="h-4 w-4 mr-2"></i>
+                                    Déconnexion
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center space-x-2">
+                    <!-- Theme Toggle Mobile -->
+                    <button id="theme-toggle-mobile" class="theme-toggle p-2 rounded-md hover:bg-accent">
+                        <i data-lucide="sun" class="h-5 w-5 dark:hidden"></i>
+                        <i data-lucide="moon" class="h-5 w-5 hidden dark:block"></i>
+                    </button>
+                    
+                    <!-- User Avatar Mobile (when logged in) -->
+                    <button id="avatar-mobile" class="avatar-hover p-1 rounded-full hover:bg-accent hidden">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face" 
+                             alt="User Avatar" class="h-6 w-6 rounded-full">
+                    </button>
+                    
+                    <!-- Hamburger Menu -->
+                    <button id="mobile-menu-button" class="hamburger p-2 rounded-md hover:bg-accent">
+                        <i data-lucide="menu" class="h-6 w-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-overlay" class="overlay hide fixed inset-0 bg-black/50 md:hidden z-40"></div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="mobile-menu closed fixed top-0 right-0 h-full w-80 bg-background border-l border-border md:hidden z-50">
+            <div class="flex flex-col h-full">
+                <!-- Mobile Menu Header -->
+                <div class="flex items-center justify-between p-4 border-b border-border">
+                    <span class="text-lg font-semibold">Menu</span>
+                    <button id="mobile-menu-close" class="p-2 rounded-md hover:bg-accent">
+                        <i data-lucide="x" class="h-6 w-6"></i>
+                    </button>
+                </div>
+
+                <!-- User Info (when logged in) -->
+                <div id="mobile-user-info" class="hidden p-4 border-b border-border bg-muted/50">
+                    <div class="flex items-center space-x-3">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=48&h=48&fit=crop&crop=face" 
+                             alt="User Avatar" class="h-12 w-12 rounded-full">
+                        <div>
+                            <p class="font-medium">John Doe</p>
+                            <p class="text-sm text-muted-foreground">john.doe@email.com</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Navigation Links -->
+                <div class="flex-1 py-4">
+                    <div class="space-y-1 px-4">
+                        <a href="/" class="flex items-center px-3 py-3 text-base font-medium rounded-md hover:bg-accent">
+                            <i data-lucide="home" class="h-5 w-5 mr-3"></i>
+                            Accueil
+                        </a>
+                        <a href="/establishments" class="flex items-center px-3 py-3 text-base font-medium rounded-md hover:bg-accent">
+                            <i data-lucide="building" class="h-5 w-5 mr-3"></i>
+                            Établissements
+                        </a>
+                        <a href="/map" class="flex items-center px-3 py-3 text-base font-medium rounded-md hover:bg-accent">
+                            <i data-lucide="map" class="h-5 w-5 mr-3"></i>
+                            Carte
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Mobile Auth/User Actions -->
+                <div class="border-t border-border p-4">
+                    <!-- Auth Buttons (when not logged in) -->
+                    <div id="mobile-auth-buttons" class="space-y-2">
+                        <button class="btn-secondary w-full px-4 py-3 rounded-md text-base font-medium">
+                            Connexion
+                        </button>
+                        <button class="btn-primary w-full px-4 py-3 rounded-md text-base font-medium">
+                            Inscription
+                        </button>
+                    </div>
+
+                    <!-- User Actions (when logged in) -->
+                    <div id="mobile-user-actions" class="hidden space-y-1">
+                        <a href="/profile" class="flex items-center px-3 py-3 text-base font-medium rounded-md hover:bg-accent">
+                            <i data-lucide="user" class="h-5 w-5 mr-3"></i>
+                            Mon Profil
+                        </a>
+                        <button class="flex items-center w-full px-3 py-3 text-base font-medium rounded-md hover:bg-accent text-left">
+                            <i data-lucide="log-out" class="h-5 w-5 mr-3"></i>
+                            Déconnexion
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Demo Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-4xl font-bold mb-6">Bienvenue sur Orientation Mada</h1>
+            <p class="text-lg text-muted-foreground mb-8">
+                Découvrez les meilleurs établissements d'enseignement à Madagascar et trouvez votre voie.
+            </p>
+            
+            <!-- Demo Controls -->
+            <div class="bg-card border border-border rounded-lg p-6 mb-8">
+                <h2 class="text-xl font-semibold mb-4">Contrôles de démonstration</h2>
+                <div class="flex flex-wrap gap-4">
+                    <button id="toggle-auth" class="btn-primary px-4 py-2 rounded-md">
+                        Simuler connexion/déconnexion
+                    </button>
+                    <button id="toggle-theme-demo" class="btn-secondary px-4 py-2 rounded-md">
+                        Basculer le thème
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content sections -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-card border border-border rounded-lg p-6">
+                    <h3 class="text-lg font-semibold mb-2">Établissements</h3>
+                    <p class="text-muted-foreground">Explorez notre base de données complète d'établissements d'enseignement.</p>
+                </div>
+                <div class="bg-card border border-border rounded-lg p-6">
+                    <h3 class="text-lg font-semibold mb-2">Carte Interactive</h3>
+                    <p class="text-muted-foreground">Localisez facilement les établissements près de chez vous.</p>
+                </div>
+                <div class="bg-card border border-border rounded-lg p-6">
+                    <h3 class="text-lg font-semibold mb-2">Orientation</h3>
+                    <p class="text-muted-foreground">Recevez des conseils personnalisés pour votre parcours éducatif.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // State management
+        let isLoggedIn = false;
+        let isDarkMode = document.documentElement.classList.contains('dark');
+
+        // DOM elements
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeToggleMobile = document.getElementById('theme-toggle-mobile');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenuClose = document.getElementById('mobile-menu-close');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+        const avatarButton = document.getElementById('avatar-button');
+        const avatarDropdown = document.getElementById('avatar-dropdown');
+        const toggleAuthButton = document.getElementById('toggle-auth');
+        const toggleThemeDemo = document.getElementById('toggle-theme-demo');
+
+        // Theme toggle functionality
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            document.documentElement.classList.toggle('dark', isDarkMode);
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        }
+
+        // Auth state toggle
+        function toggleAuthState() {
+            isLoggedIn = !isLoggedIn;
+            updateAuthUI();
+        }
+
+        // Update UI based on auth state
+        function updateAuthUI() {
+            const authButtons = document.getElementById('auth-buttons');
+            const userAvatar = document.getElementById('user-avatar');
+            const mobileAuthButtons = document.getElementById('mobile-auth-buttons');
+            const mobileUserActions = document.getElementById('mobile-user-actions');
+            const mobileUserInfo = document.getElementById('mobile-user-info');
+            const avatarMobile = document.getElementById('avatar-mobile');
+
+            if (isLoggedIn) {
+                // Desktop
+                authButtons.classList.add('hidden');
+                userAvatar.classList.remove('hidden');
+                
+                // Mobile
+                mobileAuthButtons.classList.add('hidden');
+                mobileUserActions.classList.remove('hidden');
+                mobileUserInfo.classList.remove('hidden');
+                avatarMobile.classList.remove('hidden');
+            } else {
+                // Desktop
+                authButtons.classList.remove('hidden');
+                userAvatar.classList.add('hidden');
+                
+                // Mobile
+                mobileAuthButtons.classList.remove('hidden');
+                mobileUserActions.classList.add('hidden');
+                mobileUserInfo.classList.add('hidden');
+                avatarMobile.classList.add('hidden');
+            }
+        }
+
+        // Mobile menu functionality
+        function openMobileMenu() {
+            mobileMenu.classList.remove('closed');
+            mobileMenu.classList.add('open');
+            mobileOverlay.classList.remove('hide');
+            mobileOverlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileMenu() {
+            mobileMenu.classList.remove('open');
+            mobileMenu.classList.add('closed');
+            mobileOverlay.classList.remove('show');
+            mobileOverlay.classList.add('hide');
+            document.body.style.overflow = '';
+        }
+
+        // Avatar dropdown functionality
+        function toggleAvatarDropdown() {
+            const isVisible = avatarDropdown.classList.contains('show');
+            if (isVisible) {
+                avatarDropdown.classList.remove('show');
+                avatarDropdown.classList.add('hide');
+            } else {
+                avatarDropdown.classList.remove('hide');
+                avatarDropdown.classList.add('show');
+            }
+        }
+
+        // Event listeners
+        themeToggle.addEventListener('click', toggleTheme);
+        themeToggleMobile.addEventListener('click', toggleTheme);
+        mobileMenuButton.addEventListener('click', openMobileMenu);
+        mobileMenuClose.addEventListener('click', closeMobileMenu);
+        mobileOverlay.addEventListener('click', closeMobileMenu);
+        avatarButton.addEventListener('click', toggleAvatarDropdown);
+        toggleAuthButton.addEventListener('click', toggleAuthState);
+        toggleThemeDemo.addEventListener('click', toggleTheme);
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!avatarButton.contains(e.target) && !avatarDropdown.contains(e.target)) {
+                avatarDropdown.classList.remove('show');
+                avatarDropdown.classList.add('hide');
+            }
+        });
+
+        // Close mobile menu on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeMobileMenu();
+                avatarDropdown.classList.remove('show');
+                avatarDropdown.classList.add('hide');
+            }
+        });
+
+        // Initialize theme from localStorage
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            isDarkMode = savedTheme === 'dark';
+            document.documentElement.classList.toggle('dark', isDarkMode);
+        }
+
+        // Initialize UI
+        updateAuthUI();
+    </script>
+</body>
+</html>

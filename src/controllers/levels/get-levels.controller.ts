@@ -13,7 +13,7 @@ export const getLevelsController =
     async (
         token: string | undefined,
         options?: {
-            params: PaginationParams;
+            params?: PaginationParams;
         }
     ): Promise<PaginatedResult<Level>> => {
         if (!token) {

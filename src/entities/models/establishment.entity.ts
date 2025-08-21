@@ -7,6 +7,7 @@ export const EstablishmentSchema = z.object({
     acronym: z.string().optional(),
     address: z.string().optional(),
     contacts: z.array(z.string()).optional(),
+    emails: z.array(z.string()).optional(),
     website: z.string().url().optional(),
     description: z.string().optional(),
     latitude: z.number().optional(),

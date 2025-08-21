@@ -37,8 +37,6 @@ export default async function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
-    console.log("Middleware: Vérification d'authentification pour", path);
-
     // Utiliser isAuthenticated qui gère automatiquement le refresh
     const authService = AuthTokenService.getInstance();
     const authResult = await authService.isAuthenticated();
@@ -68,6 +66,6 @@ export const config = {
          * - fichiers statiques (_next/static, images, favicon)
          * - routes publiques et API auth (gérées dans le code)
          */
-        "/((?!_next/static|_next/image|favicon.ico|public|.*\\.).*)",
+        "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     ],
 };

@@ -1,12 +1,15 @@
 import { LevelFilter } from "@/src/entities/filters/level.filter";
 import { Level } from "@/src/entities/models/level.entity";
-import { PaginatedResult, PaginationParams } from "@/src/entities/models/pagination";
+import {
+    PaginatedResult,
+    PaginationParams,
+} from "@/src/entities/models/pagination";
 
 export interface ILevelsRepository {
     getLevels(
         token: string,
         options?: {
-            params: PaginationParams;
+            params?: PaginationParams;
         }
     ): Promise<PaginatedResult<Level>>;
     getLevel(token: string, id: number): Promise<Level>;
@@ -29,8 +32,8 @@ export interface ILevelsRepository {
     filterLevels(
         token: string,
         options?: {
-            params: PaginationParams;
-            filters: LevelFilter;
+            params?: PaginationParams;
+            filters?: LevelFilter;
         }
     ): Promise<PaginatedResult<Level>>;
 }
