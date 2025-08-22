@@ -34,7 +34,7 @@ async function getEstablishment(id: number) {
             error instanceof UnauthenticatedError ||
             error instanceof AuthenticationError
         ) {
-            redirect("/login");
+            redirect("/sign-in");
         }
         throw error;
     }
