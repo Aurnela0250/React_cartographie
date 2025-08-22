@@ -7,6 +7,7 @@ import {
     UnauthenticatedError,
 } from "@/src/entities/errors/auth";
 import type { User } from "@/src/entities/models/user";
+
 import UserMenuDropdown from "./user-menu-dropdown";
 
 /**
@@ -31,7 +32,7 @@ async function getUserInfo(): Promise<User | null> {
             error instanceof UnauthenticatedError ||
             error instanceof AuthenticationError
         ) {
-            redirect("/login");
+            redirect("/sign-in");
         }
         throw error;
     }
@@ -43,11 +44,11 @@ async function getUserInfo(): Promise<User | null> {
  */
 export default async function NavbarUserMenu() {
     const user = await getUserInfo();
-    
+
     if (!user) {
-        redirect("/login");
+        redirect("/sign-in");
     }
-    
+
     return <UserMenuDropdown user={user} />;
 }
 

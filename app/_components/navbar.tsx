@@ -62,7 +62,7 @@ function MobileMenuContent({ navigation, session }: MobileMenuContentProps) {
                                     variant="secondary"
                                     className="-mx-3 w-full justify-start rounded-lg px-3 py-2.5 text-base font-semibold"
                                 >
-                                    <Link href="/login">Connexion</Link>
+                                    <Link href="/sign-in">Connexion</Link>
                                 </Button>
                                 <Button
                                     asChild
@@ -142,7 +142,7 @@ export default async function Navbar() {
                                 size="sm"
                                 className="text-sm font-semibold"
                             >
-                                <Link href="/login">Connexion</Link>
+                                <Link href="/sign-in">Connexion</Link>
                             </Button>
                             <Button
                                 asChild

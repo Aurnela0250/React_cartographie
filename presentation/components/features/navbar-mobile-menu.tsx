@@ -1,6 +1,5 @@
 "use client";
 
-import { triggerSessionUpdate } from "@/presentation/providers/session-provider";
 import { Button } from "@/presentation/components/ui/button";
 import {
     NavigationMenu,
@@ -13,6 +12,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/presentation/components/ui/popover";
+import { triggerSessionUpdate } from "@/presentation/providers/session-provider";
 
 import { ThemeToggle } from "./theme-toggle";
 
@@ -41,7 +41,7 @@ export default function NavbarMobileMenu({
             if (response.ok) {
                 // Déclencher le refresh de session
                 triggerSessionUpdate();
-                window.location.href = "/login";
+                window.location.href = "/sign-in";
             }
         } catch (error) {
             console.error("Erreur lors de la déconnexion:", error);
@@ -65,15 +65,15 @@ export default function NavbarMobileMenu({
                         xmlns="http://www.w3.org/2000/svg"
                     >
                         <path
-                            className="ease-[cubic-bezier(.5,.85,.25,1.1)] origin-center translate-y-[-7px] transition-all duration-300 group-aria-expanded:translate-x-0 group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[315deg]"
+                            className="origin-center translate-y-[-7px] transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-x-0 group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[315deg]"
                             d="M4 12L20 12"
                         />
                         <path
-                            className="ease-[cubic-bezier(.5,.85,.25,1.8)] origin-center transition-all duration-300 group-aria-expanded:rotate-45"
+                            className="origin-center transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.8)] group-aria-expanded:rotate-45"
                             d="M4 12H20"
                         />
                         <path
-                            className="ease-[cubic-bezier(.5,.85,.25,1.1)] origin-center translate-y-[7px] transition-all duration-300 group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[135deg]"
+                            className="origin-center translate-y-[7px] transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[135deg]"
                             d="M4 12H20"
                         />
                     </svg>
@@ -106,7 +106,7 @@ export default function NavbarMobileMenu({
                                 <NavigationMenuItem className="w-full">
                                     <NavigationMenuLink
                                         className="py-1.5"
-                                        href="/login"
+                                        href="/sign-in"
                                     >
                                         Connexion
                                     </NavigationMenuLink>

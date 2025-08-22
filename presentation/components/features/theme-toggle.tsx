@@ -1,14 +1,20 @@
 "use client";
 
+import { useEffect, useId, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
 
-import { Button } from "@/presentation/components/ui/button";
+import { Label } from "@/presentation/components/ui/label";
+import {
+    Switch,
+    SwitchIndicator,
+    SwitchWrapper,
+} from "@/presentation/components/ui/switch";
 
 export function ThemeToggle() {
     const { setTheme, resolvedTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
+    const id = useId();
 
     // Fix hydration issue
     useEffect(() => {
@@ -17,28 +23,46 @@ export function ThemeToggle() {
 
     if (!mounted) {
         return (
-            <Button variant="ghost" size="sm" className="size-8 px-0">
-                <Sun className="size-4" />
-                <span className="sr-only">Basculer le thème</span>
-            </Button>
+            <div className="flex w-full items-center justify-between">
+                <Label htmlFor={id}>Thème</Label>
+                <SwitchWrapper permanent={true}>
+                    <Switch
+                        id={id}
+                        size="lg"
+                        checked={resolvedTheme === "dark"}
+                    />
+                    <SwitchIndicator state="on">
+                        <Sun className="text-muted-foreground size-4" />
+                    </SwitchIndicator>
+                    <SwitchIndicator state="off">
+                        <Moon className="text-muted-foreground size-4" />
+                    </SwitchIndicator>
+                </SwitchWrapper>
+            </div>
         );
     }
 
+    const handleThemeChange = () => {
+        setTheme(resolvedTheme === "dark" ? "light" : "dark");
+    };
+
     return (
-        <Button
-            variant="ghost"
-            size="sm"
-            className="size-8 px-0"
-            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-        >
-            {resolvedTheme === "dark" ? (
-                <Sun className="size-4" />
-            ) : (
-                <Moon className="size-4" />
-            )}
-            <span className="sr-only">
-                Basculer vers le mode {resolvedTheme === "dark" ? "clair" : "sombre"}
-            </span>
-        </Button>
+        <div className="flex w-full items-center justify-between">
+            <Label htmlFor={id}>Thème</Label>
+            <SwitchWrapper permanent={true}>
+                <Switch
+                    id={id}
+                    size="lg"
+                    checked={resolvedTheme === "dark"}
+                    onCheckedChange={handleThemeChange}
+                />
+                <SwitchIndicator state="on">
+                    <Sun className="text-muted-foreground size-4" />
+                </SwitchIndicator>
+                <SwitchIndicator state="off">
+                    <Moon className="text-muted-foreground size-4" />
+                </SwitchIndicator>
+            </SwitchWrapper>
+        </div>
     );
 }

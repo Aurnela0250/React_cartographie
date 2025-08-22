@@ -1,8 +1,8 @@
 "use client";
 
+import LogoutButton from "@/app/_components/logout-button";
 import { ThemeToggle } from "@/presentation/components/features/theme-toggle";
 import { Button } from "@/presentation/components/ui/button";
-import LogoutButton from "@/app/_components/logout-button";
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -30,8 +30,6 @@ export default function NavbarMobileMenu({
     navigationLinks,
     isLoggedIn,
 }: NavbarMobileMenuProps) {
-
-
     return (
         <Popover>
             <PopoverTrigger asChild>
@@ -90,7 +88,7 @@ export default function NavbarMobileMenu({
                                 <NavigationMenuItem className="w-full">
                                     <NavigationMenuLink
                                         className="py-1.5"
-                                        href="/login"
+                                        href="/sign-in"
                                     >
                                         Connexion
                                     </NavigationMenuLink>
@@ -125,7 +123,10 @@ export default function NavbarMobileMenu({
                                     </NavigationMenuLink>
                                 </NavigationMenuItem>
                                 <NavigationMenuItem className="w-full">
-                                    <LogoutButton variant="menu-item" showIcon={false} />
+                                    <LogoutButton
+                                        variant="menu-item"
+                                        showIcon={false}
+                                    />
                                 </NavigationMenuItem>
                             </>
                         )}
