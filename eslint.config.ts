@@ -57,7 +57,6 @@ export default tseslint.config(
             "plugin:react-hooks/recommended",
             "plugin:jsx-a11y/recommended",
             "plugin:@typescript-eslint/recommended",
-            "plugin:tailwindcss/recommended",
             "next",
             "prettier",
             "next/typescript",
@@ -65,7 +64,6 @@ export default tseslint.config(
         plugins: [
             "react",
             "unused-imports",
-            "tailwindcss",
             "import",
             "@typescript-eslint",
             "jsx-a11y",
@@ -82,10 +80,6 @@ export default tseslint.config(
         settings: {
             react: {
                 version: "detect",
-            },
-            tailwindcss: {
-                callees: ["cn"],
-                config: "tailwind.config.js",
             },
             next: {
                 rootDir: ["./"],
