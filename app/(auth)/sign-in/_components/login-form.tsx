@@ -21,6 +21,7 @@ import { LoginInput, loginSchema } from "@/presentation/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { FormError } from "./form-error-message";
+import { GoogleSignInButton } from "./google-sign-in-button";
 
 export function LoginForm() {
     const router = useRouter();
@@ -58,9 +59,6 @@ export function LoginForm() {
                 setErrorMessage(result.error);
                 return;
             }
-
-            // Connexion réussie - la redirection est gérée par le server action
-            router.refresh();
         } catch (error) {
             console.error("Erreur de connexion:", error);
             if (error instanceof Error && error.message === "NEXT_REDIRECT") {
@@ -198,6 +196,8 @@ export function LoginForm() {
                     </Button>
                 </form>
             </Form>
+
+            <GoogleSignInButton />
 
             <div className="text-muted-foreground mt-8 text-center text-xs">
                 En vous connectant, vous acceptez nos{" "}
