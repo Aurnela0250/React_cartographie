@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { User, UserSchema } from "@/src/entities/models/user";
 
@@ -53,7 +54,6 @@ export function useCurrentUser({
                     setUser(null);
                     return;
                 }
-
                 // Parser et valider les données utilisateur
                 const userData = JSON.parse(userCookie);
                 const validatedUser = await UserSchema.parseAsync(userData);
@@ -71,6 +71,7 @@ export function useCurrentUser({
                 } else {
                     setUser(null);
                 }
+                toast.error(errorMessage);
             } finally {
                 setIsLoading(false);
             }

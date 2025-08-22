@@ -2,9 +2,8 @@ import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { DEFAULT_LOGOUT_REDIRECT } from "@/core/constants/route";
 import { User, UserSchema } from "@/src/entities/models/user";
-
-import { DEFAULT_LOGOUT_REDIRECT } from "../constants/route";
 
 function _getCurrentUser(options: { redirectIfNotFound: true }): Promise<User>;
 function _getCurrentUser(options?: {

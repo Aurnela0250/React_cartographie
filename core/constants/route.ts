@@ -10,12 +10,7 @@ export const publicRoutes = ["/", "/establishments", "/map"];
  * These routes will redirect logged in users to /dashboard
  * @type {string[]}
  */
-export const authRoutes = [
-    "/login",
-    "/register",
-    "/forgot-password",
-    "/reset-password",
-];
+export const authRoutes = ["/sign-in", "/sign-up"];
 
 /**
  * The prefix for API authentication routes
@@ -29,4 +24,4 @@ export const apiAuthPrefix = "/api/auth";
  * @type {string}
  */
 export const DEFAULT_LOGIN_REDIRECT = "/";
-export const DEFAULT_LOGOUT_REDIRECT = "/login";
+export const DEFAULT_LOGOUT_REDIRECT = "/sign-in";

@@ -6,7 +6,7 @@ export async function getTokenServerSide(): Promise<string> {
     const { accessToken } = await getAuthTokens();
 
     if (!accessToken) {
-        redirect("/login");
+        redirect("/sign-in");
     }
 
     return accessToken;

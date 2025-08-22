@@ -154,9 +154,20 @@ export async function signInActionWithData(data: {
             }
         );
 
+        // Définir le cookie de user
+        cookieStore.set(result.userCookie.name, result.userCookie.value, {
+            secure: result.userCookie.attributes.secure,
+            path: result.userCookie.attributes.path,
+            domain: result.userCookie.attributes.domain,
+            sameSite: result.userCookie.attributes.sameSite,
+            httpOnly: result.userCookie.attributes.httpOnly,
+            maxAge: result.userCookie.attributes.maxAge,
+            expires: result.userCookie.attributes.expires,
+        });
+
         return {
             success: true,
-            redirectTo: data.redirectTo || "/",
+            redirectTo: data.redirectTo || DEFAULT_LOGIN_REDIRECT,
         };
     } catch (error) {
         console.error("Erreur lors de la connexion:", error);

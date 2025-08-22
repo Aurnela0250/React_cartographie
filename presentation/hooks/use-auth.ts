@@ -107,7 +107,7 @@ export function useAuth(): UseAuthReturn {
             setUser(null);
 
             // Rediriger vers la page de connexion
-            router.push("/login");
+            router.push("/sign-in");
             router.refresh();
         }
     }, [router]);

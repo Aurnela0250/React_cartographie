@@ -1,61 +1,68 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { AuthTokenService } from "@/infrastructure/services/auth-token.service";
-
-// Routes qui ne nécessitent pas d'authentification
-const publicPaths = ["/", "/login", "/register"];
-// Endpoints d'auth qui n'ont pas besoin de token
-const authApiPathsWithoutToken = [
-    "/api/auth/login",
-    "/api/auth/logout",
-    "/api/auth/refresh",
-];
-// Routes API publiques (qui ne nécessitent pas d'authentification)
-const publicApiPaths: string[] = [
-    // Ajoutez ici les routes API publiques si nécessaire
-    // "/api/public/health",
-];
+import { getCurrentUser } from "@/core/auth/get-current-user";
+import { authRoutes, DEFAULT_LOGIN_REDIRECT } from "@/core/constants/route";
 
 export default async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
 
-    // Permettre l'accès aux routes vraiment publiques et aux API d'auth sans token
-    if (
-        publicPaths.some((p) => path === p || (p === "/" && path === "/")) ||
-        authApiPathsWithoutToken.some((p) => path.startsWith(p)) ||
-        publicApiPaths.some((p) => path.startsWith(p)) ||
-        path.startsWith("/_next") ||
-        path.startsWith("/favicon.ico") ||
-        path.startsWith("/public")
-    ) {
-        return NextResponse.next();
-    }
+    console.log("Middleware: Vérification de la route", path);
 
-    // Le middleware ne vérifie que les routes de navigation (pas les API)
-    // Les API routes gèrent leur propre authentification
+    // Ignorer les requêtes qui commencent par des 'api/' - elles ont leur propre système de protection
     if (path.startsWith("/api/")) {
         return NextResponse.next();
     }
 
-    // Utiliser isAuthenticated qui gère automatiquement le refresh
-    const authService = AuthTokenService.getInstance();
-    const authResult = await authService.isAuthenticated();
-
-    if (!authResult.authenticated) {
-        console.log(
-            "Middleware: Utilisateur non authentifié, redirection vers login"
-        );
-
-        const loginUrl = new URL("/login", request.url);
-
-        loginUrl.searchParams.set("redirectTo", request.url);
-        loginUrl.searchParams.set("toast", "session-expired");
-
-        return NextResponse.redirect(loginUrl);
+    // Ignorer les fichiers statiques
+    if (
+        path.startsWith("/_next") ||
+        path.startsWith("/favicon.ico") ||
+        path.startsWith("/public") ||
+        path.includes(".")
+    ) {
+        return NextResponse.next();
     }
 
-    console.log("Middleware: Utilisateur authentifié, accès autorisé");
+    // Vérifier si l'utilisateur est connecté
+    const user = await getCurrentUser();
+    const isAuthenticated = !!user;
+    const isAuthRoute = authRoutes.includes(path);
 
+    // Si l'utilisateur est connecté et essaie d'accéder aux routes auth
+    if (isAuthenticated && isAuthRoute) {
+        console.log(
+            "Middleware: Utilisateur connecté, redirection depuis route auth"
+        );
+        return NextResponse.redirect(
+            new URL(DEFAULT_LOGIN_REDIRECT, request.url)
+        );
+    }
+
+    // Si l'utilisateur n'est pas connecté et essaie d'accéder à une route protégée
+    if (!isAuthenticated && !isAuthRoute) {
+        console.log(
+            "Middleware: Utilisateur non connecté, redirection vers sign-in"
+        );
+
+        const signInUrl = new URL("/sign-in", request.url);
+        signInUrl.searchParams.set("redirectTo", request.url);
+
+        return NextResponse.redirect(signInUrl);
+    }
+
+    // Vérifier les routes admin si l'utilisateur est connecté
+    if (isAuthenticated && path.startsWith("/admin")) {
+        if (!user?.isAdmin) {
+            console.log(
+                "Middleware: Accès admin refusé - utilisateur non admin"
+            );
+            return NextResponse.redirect(
+                new URL(DEFAULT_LOGIN_REDIRECT, request.url)
+            );
+        }
+    }
+
+    console.log("Middleware: Accès autorisé");
     return NextResponse.next();
 }
 
