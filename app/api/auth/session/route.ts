@@ -5,7 +5,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getInjection } from "@/di/container";
 import { env } from "@/env.mjs";
 import { Cookie } from "@/src/entities/models/cookie";
-import { UserSchema } from "@/src/entities/models/user";
 
 /**
  * Endpoint /api/auth/session pour la validation et le refresh automatique des tokens
@@ -120,4 +119,7 @@ async function clearAuthCookies(cookieStore: ReadonlyRequestCookies) {
     cookieStore.delete("accessToken");
     cookieStore.delete("refreshToken");
     cookieStore.delete("user");
+    // Supprimer également les cookies de session côté client si présents
+    cookieStore.delete("userSession");
+    cookieStore.delete("sessionStatus");
 }

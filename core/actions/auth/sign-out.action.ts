@@ -23,8 +23,25 @@ export const signOutAction = async () => {
             refreshToken,
         });
 
-        redirect("/login");
+        // Supprimer tous les cookies d'authentification
+        cookieStore.delete("accessToken");
+        cookieStore.delete("refreshToken"); 
+        cookieStore.delete("user");
+        // Nettoyer aussi les cookies session visibles côté client
+        cookieStore.delete("userSession");
+        cookieStore.delete("sessionStatus");
+
+        redirect("/sign-in");
     } catch (error) {
+        // Même en cas d'erreur, supprimer les cookies locaux
+        const cookieStore = await cookies();
+        cookieStore.delete("accessToken");
+        cookieStore.delete("refreshToken");
+        cookieStore.delete("user");
+        // Nettoyer aussi les cookies session visibles côté client
+        cookieStore.delete("userSession");
+        cookieStore.delete("sessionStatus");
+
         if (error instanceof Error && error.message === "NEXT_REDIRECT") {
             throw error; // Re-lancer pour que Next.js gère la redirection
         }
@@ -33,7 +50,7 @@ export const signOutAction = async () => {
             error instanceof UnauthenticatedError ||
             error instanceof AuthenticationError
         ) {
-            redirect("/login");
+            redirect("/sign-in");
         }
         throw error;
     }
