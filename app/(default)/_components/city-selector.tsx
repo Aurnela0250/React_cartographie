@@ -33,7 +33,7 @@ async function getCitiesForSelector() {
             error instanceof UnauthenticatedError ||
             error instanceof AuthenticationError
         ) {
-            redirect("/login");
+            redirect("/sign-in");
         }
         throw error;
     }
@@ -65,7 +65,7 @@ async function filterCitiesForSelector() {
             error instanceof UnauthenticatedError ||
             error instanceof AuthenticationError
         ) {
-            redirect("/login");
+            redirect("/sign-in");
         }
         throw error;
     }
