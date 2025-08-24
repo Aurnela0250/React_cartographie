@@ -9,6 +9,7 @@ import {
 
 import { DomainsFilterClient } from "./domains-filter-client";
 import type { FilterOption } from "./filter-types";
+import { DEFAULT_LOGOUT_REDIRECT } from "@/core/constants/route";
 
 async function getDomainsForFilter() {
     try {
@@ -34,7 +35,7 @@ async function getDomainsForFilter() {
             error instanceof UnauthenticatedError ||
             error instanceof AuthenticationError
         ) {
-            redirect("/sign-in");
+            redirect(DEFAULT_LOGOUT_REDIRECT);
         }
         throw error;
     }
