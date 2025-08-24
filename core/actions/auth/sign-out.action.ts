@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { DEFAULT_LOGOUT_REDIRECT } from "@/core/constants/route";
 import { getInjection } from "@/di/container";
 import {
     AuthenticationError,
@@ -25,13 +26,13 @@ export const signOutAction = async () => {
 
         // Supprimer tous les cookies d'authentification
         cookieStore.delete("accessToken");
-        cookieStore.delete("refreshToken"); 
+        cookieStore.delete("refreshToken");
         cookieStore.delete("user");
         // Nettoyer aussi les cookies session visibles côté client
         cookieStore.delete("userSession");
         cookieStore.delete("sessionStatus");
 
-        redirect("/sign-in");
+        redirect(DEFAULT_LOGOUT_REDIRECT);
     } catch (error) {
         // Même en cas d'erreur, supprimer les cookies locaux
         const cookieStore = await cookies();
@@ -50,7 +51,7 @@ export const signOutAction = async () => {
             error instanceof UnauthenticatedError ||
             error instanceof AuthenticationError
         ) {
-            redirect("/sign-in");
+            redirect(DEFAULT_LOGOUT_REDIRECT);
         }
         throw error;
     }

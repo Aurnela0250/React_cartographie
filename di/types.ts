@@ -10,6 +10,8 @@ import { IRegionsRepository } from "@/src/application/repositories/region.reposi
 import { IAuthService } from "@/src/application/services/auth.service.interface";
 import { IGetUserInfoUseCase } from "@/src/application/use-cases/auth/get-user-info.use-case";
 import { IRefreshTokenUseCase } from "@/src/application/use-cases/auth/refresh-token.use-case";
+import { IRequestOtpUseCase } from "@/src/application/use-cases/auth/request-otp.use-case";
+import { ISignInOtpUseCase } from "@/src/application/use-cases/auth/sign-in-otp.use-case";
 import { ISignInUseCase } from "@/src/application/use-cases/auth/sign-in.use-case";
 import { ISignOutUseCase } from "@/src/application/use-cases/auth/sign-out.use-case";
 import { ISignUpUseCase } from "@/src/application/use-cases/auth/sign-up.use-case";
@@ -27,6 +29,8 @@ import { IGetMentionUseCase } from "@/src/application/use-cases/mentions/get-men
 import { IGetRegionsUseCase } from "@/src/application/use-cases/regions/get-regions.use-case";
 import { IGetUserInfoController } from "@/src/controllers/auth/get-user-info.controller";
 import { IRefreshTokenController } from "@/src/controllers/auth/refresh-token.controller";
+import { IRequestOtpController } from "@/src/controllers/auth/request-otp.controller";
+import { ISignInOtpController } from "@/src/controllers/auth/sign-in-otp.controller";
 import { ISignInController } from "@/src/controllers/auth/sign-in.controller";
 import { ISignOutController } from "@/src/controllers/auth/sign-out.controller";
 import { ISignUpController } from "@/src/controllers/auth/sign-up.controller";
@@ -78,6 +82,8 @@ export const DI_SYMBOLS = {
     IGetMentionUseCase: Symbol.for("IGetMentionUseCase"),
     //? Auth
     ISignInUseCase: Symbol.for("ISignInUseCase"),
+    IRequestOtpUseCase: Symbol.for("IRequestOtpUseCase"),
+    ISignInOtpUseCase: Symbol.for("ISignInOtpUseCase"),
     ISignUpUseCase: Symbol.for("ISignUpUseCase"),
     ISignOutUseCase: Symbol.for("ISignOutUseCase"),
     IRefreshTokenUseCase: Symbol.for("IRefreshTokenUseCase"),
@@ -110,6 +116,8 @@ export const DI_SYMBOLS = {
     IGetMentionController: Symbol.for("IGetMentionController"),
     //? Auth
     ISignInController: Symbol.for("ISignInController"),
+    IRequestOtpController: Symbol.for("IRequestOtpController"),
+    ISignInOtpController: Symbol.for("ISignInOtpController"),
     ISignUpController: Symbol.for("ISignUpController"),
     ISignOutController: Symbol.for("ISignOutController"),
     IRefreshTokenController: Symbol.for("IRefreshTokenController"),
@@ -154,6 +162,8 @@ export interface DI_RETURN_TYPES {
     IGetMentionUseCase: IGetMentionUseCase;
     //? Auth
     ISignInUseCase: ISignInUseCase;
+    IRequestOtpUseCase: IRequestOtpUseCase;
+    ISignInOtpUseCase: ISignInOtpUseCase;
     ISignUpUseCase: ISignUpUseCase;
     ISignOutUseCase: ISignOutUseCase;
     IRefreshTokenUseCase: IRefreshTokenUseCase;
@@ -182,6 +192,8 @@ export interface DI_RETURN_TYPES {
     IGetMentionController: IGetMentionController;
     //? Auth
     ISignInController: ISignInController;
+    IRequestOtpController: IRequestOtpController;
+    ISignInOtpController: ISignInOtpController;
     ISignUpController: ISignUpController;
     ISignOutController: ISignOutController;
     IRefreshTokenController: IRefreshTokenController;

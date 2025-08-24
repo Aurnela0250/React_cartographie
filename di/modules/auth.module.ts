@@ -3,11 +3,15 @@ import { refreshTokenUseCase } from "@/src/application/use-cases/auth/refresh-to
 import { signInUseCase } from "@/src/application/use-cases/auth/sign-in.use-case";
 import { signOutUseCase } from "@/src/application/use-cases/auth/sign-out.use-case";
 import { signUpUseCase } from "@/src/application/use-cases/auth/sign-up.use-case";
+import { requestOtpUseCase } from "@/src/application/use-cases/auth/request-otp.use-case";
+import { signInOtpUseCase } from "@/src/application/use-cases/auth/sign-in-otp.use-case";
 import { getUserInfoController } from "@/src/controllers/auth/get-user-info.controller";
 import { refreshTokenController } from "@/src/controllers/auth/refresh-token.controller";
 import { signInController } from "@/src/controllers/auth/sign-in.controller";
 import { signOutController } from "@/src/controllers/auth/sign-out.controller";
 import { signUpController } from "@/src/controllers/auth/sign-up.controller";
+import { requestOtpController } from "@/src/controllers/auth/request-otp.controller";
+import { signInOtpController } from "@/src/controllers/auth/sign-in-otp.controller";
 import { AuthRepository } from "@/src/infrastructure/repositories/auth.repository";
 import { AuthService } from "@/src/infrastructure/services/auth.service";
 import { createModule } from "@evyweb/ioctopus";
@@ -30,6 +34,31 @@ export const createAuthModule = () => {
     authModule
         .bind(DI_SYMBOLS.ISignInController)
         .toHigherOrderFunction(signInController, [DI_SYMBOLS.ISignInUseCase]);
+
+    // OTP: Request code
+    authModule
+        .bind(DI_SYMBOLS.IRequestOtpUseCase)
+        .toHigherOrderFunction(requestOtpUseCase, [DI_SYMBOLS.IAuthRepository]);
+
+    authModule
+        .bind(DI_SYMBOLS.IRequestOtpController)
+        .toHigherOrderFunction(requestOtpController, [
+            DI_SYMBOLS.IRequestOtpUseCase,
+        ]);
+
+    // OTP: Sign in with code
+    authModule
+        .bind(DI_SYMBOLS.ISignInOtpUseCase)
+        .toHigherOrderFunction(signInOtpUseCase, [
+            DI_SYMBOLS.IAuthRepository,
+            DI_SYMBOLS.IAuthService,
+        ]);
+
+    authModule
+        .bind(DI_SYMBOLS.ISignInOtpController)
+        .toHigherOrderFunction(signInOtpController, [
+            DI_SYMBOLS.ISignInOtpUseCase,
+        ]);
 
     authModule
         .bind(DI_SYMBOLS.ISignUpUseCase)

@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { getCurrentUser } from "@/core/auth/get-current-user";
-import { authRoutes, DEFAULT_LOGIN_REDIRECT } from "@/core/constants/route";
+import {
+    authRoutes,
+    DEFAULT_LOGIN_REDIRECT,
+    DEFAULT_LOGOUT_REDIRECT,
+} from "@/core/constants/route";
 
 export default async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
@@ -29,6 +33,7 @@ export default async function middleware(request: NextRequest) {
     const isAuthRoute = authRoutes.includes(path);
 
     // Si l'utilisateur est connecté et essaie d'accéder aux routes auth
+
     if (isAuthenticated && isAuthRoute) {
         console.log(
             "Middleware: Utilisateur connecté, redirection depuis route auth"
@@ -44,7 +49,7 @@ export default async function middleware(request: NextRequest) {
             "Middleware: Utilisateur non connecté, redirection vers sign-in"
         );
 
-        const signInUrl = new URL("/sign-in", request.url);
+        const signInUrl = new URL(DEFAULT_LOGOUT_REDIRECT, request.url);
         signInUrl.searchParams.set("redirectTo", request.url);
 
         return NextResponse.redirect(signInUrl);

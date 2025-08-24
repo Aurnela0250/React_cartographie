@@ -72,16 +72,22 @@ export function useGoogleAuth(): UseGoogleAuthReturn {
             );
 
             if (!popup) {
-                throw new GoogleAuthPopupBlockedError();
+                // Ne pas throw: on met à jour l'état et on sort
+                setError("La fenêtre d'authentification a été bloquée par le navigateur.");
+                setIsLoading(false);
+                return;
             }
 
             // Attendre que la popup se ferme ou que l'authentification soit terminée
-            const authData = await new Promise<GoogleAuthResponse>(
-                (resolve, reject) => {
+            const authResult = await new Promise<
+                | { ok: true; data: GoogleAuthResponse }
+                | { ok: false; error: Error }
+            >((resolve) => {
                     const checkClosed = setInterval(() => {
                         if (popup.closed) {
                             clearInterval(checkClosed);
-                            reject(new GoogleAuthCancelledError());
+                            // Ne pas rejeter: signaler via resolve
+                            resolve({ ok: false, error: new GoogleAuthCancelledError() });
                         }
                     }, 1000);
 
@@ -98,7 +104,7 @@ export function useGoogleAuth(): UseGoogleAuthReturn {
                             ) {
                                 return;
                             }
-                        } catch (_) {
+                        } catch (_error) {
                             // Si NEXT_PUBLIC_API_BASE_URL est invalide, on ne valide que l'origine courante
                             if (event.origin !== window.location.origin) return;
                         }
@@ -110,7 +116,7 @@ export function useGoogleAuth(): UseGoogleAuthReturn {
                                 messageHandler
                             );
                             popup.close();
-                            resolve(event.data.payload);
+                            resolve({ ok: true, data: event.data.payload });
                         } else if (event.data.type === "GOOGLE_AUTH_ERROR") {
                             clearInterval(checkClosed);
                             window.removeEventListener(
@@ -118,12 +124,14 @@ export function useGoogleAuth(): UseGoogleAuthReturn {
                                 messageHandler
                             );
                             popup.close();
-                            reject(
-                                new GoogleAuthError(
+                            console.log("Data error : ", event.data.error);
+                            resolve({
+                                ok: false,
+                                error: new GoogleAuthError(
                                     event.data.error ||
                                         "Erreur d'authentification Google"
-                                )
-                            );
+                                ),
+                            });
                         }
                     };
 
@@ -140,12 +148,28 @@ export function useGoogleAuth(): UseGoogleAuthReturn {
                             if (!popup.closed) {
                                 popup.close();
                             }
-                            reject(new GoogleAuthTimeoutError());
+                            resolve({ ok: false, error: new GoogleAuthTimeoutError() });
                         },
                         5 * 60 * 1000
                     );
+                });
+
+            // Vérifier le résultat d'auth popup sans throw
+            if (!authResult.ok) {
+                // Cas annulé / erreur / timeout
+                if (authResult.error instanceof GoogleAuthCancelledError) {
+                    setError(null); // pas d'erreur visible si l'utilisateur annule
+                } else {
+                    setError(
+                        authResult.error?.message ||
+                            "Une erreur est survenue lors de l'authentification Google"
+                    );
                 }
-            );
+                setIsLoading(false);
+                return;
+            }
+
+            const authData = authResult.data;
 
             // Traiter les données d'authentification avec le server action
             const redirectTo = searchParams.get("redirectTo");
@@ -156,10 +180,13 @@ export function useGoogleAuth(): UseGoogleAuthReturn {
             });
 
             if (!result.success) {
-                throw new GoogleAuthError(
+                // Ne pas throw: on surface l'erreur et on sort
+                setError(
                     result.error ||
                         "Erreur lors du traitement de l'authentification Google"
                 );
+                setIsLoading(false);
+                return;
             }
 
             // Naviguer vers la destination après création des cookies
@@ -170,14 +197,8 @@ export function useGoogleAuth(): UseGoogleAuthReturn {
                 router.replace("/");
             }
         } catch (authError) {
+            // Dernier filet de sécurité, pas de throw
             console.error("Erreur d'authentification Google:", authError);
-            if (
-                authError instanceof Error &&
-                authError.message === "NEXT_REDIRECT"
-            ) {
-                setError(null);
-                return;
-            }
             setError(
                 authError instanceof Error
                     ? authError.message

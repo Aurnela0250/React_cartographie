@@ -10,6 +10,8 @@ import { ThemeProvider } from "@/presentation/providers/theme-provider";
 import { ReactPlugin } from "@21st-extension/react";
 import { TwentyFirstToolbar } from "@21st-extension/toolbar-next";
 
+import { TailwindIndicator } from "../components/tailwind-indicator";
+
 interface ClientProvidersProps {
     children: ReactNode;
 }
@@ -55,6 +57,7 @@ export default function ClientProviders({ children }: ClientProvidersProps) {
                         <Toaster richColors />
                         {/* <ChatAI /> */}
                     </ThemeProvider>
+                    <TailwindIndicator />
                 </QueryProvider>
             </SessionProvider>
         </>
