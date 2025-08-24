@@ -82,7 +82,7 @@ export function useCities(): UseCitiesReturn {
 // Authentification et redirection automatique
 if (error instanceof UnauthenticatedError ||
     error instanceof AuthenticationError) {
-    redirect("/sign-in");
+   redirect(DEFAULT_LOGOUT_REDIRECT);
 }
 ```
 
