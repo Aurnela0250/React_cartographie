@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { DEFAULT_LOGOUT_REDIRECT } from "@/core/constants/route";
 import { getInjection } from "@/di/container";
 import {
     AuthenticationError,
@@ -33,7 +34,7 @@ async function getLevelsForSelector() {
             error instanceof UnauthenticatedError ||
             error instanceof AuthenticationError
         ) {
-            redirect("/sign-in");
+            redirect(DEFAULT_LOGOUT_REDIRECT);
         }
         throw error;
     }

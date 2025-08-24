@@ -1,11 +1,9 @@
 "use client";
 
-import {
-    SelectorOption,
-    useSelectorsStore,
-} from "@/app/(default)/_components/selectors.store";
-import { Label } from "@/presentation/components/ui/label";
-import MultipleSelector from "@/presentation/components/ui/multiselect";
+import { Trophy } from "lucide-react";
+
+import { SelectorClient } from "./selector-client";
+import { SelectorOption, useSelectorsStore } from "./selectors.store";
 
 interface LevelSelectorClientProps {
     availableLevels: SelectorOption[];
@@ -13,28 +11,26 @@ interface LevelSelectorClientProps {
 
 /**
  * Client wrapper for LevelSelector that handles interactivity via Zustand store
- * Available levels come from server props, selected levels managed by Zustand
+ * Available levels come from server props, selected level managed by Zustand
  */
 export function LevelSelectorClient({
     availableLevels,
 }: LevelSelectorClientProps) {
-    const { selectedLevels, setSelectedLevels } = useSelectorsStore();
+    const { selectedLevel, setSelectedLevel } = useSelectorsStore();
 
     return (
-        <div className="space-y-2">
-            <Label htmlFor="level-selector">Niveaux</Label>
-            <MultipleSelector
-                commandProps={{
-                    label: "Sélectionner des niveaux",
-                }}
-                defaultOptions={availableLevels}
-                value={selectedLevels}
-                placeholder="Sélectionner des niveaux"
-                emptyIndicator={
-                    <p className="text-center text-sm">Aucun niveau trouvé</p>
-                }
-                onChange={setSelectedLevels}
-            />
-        </div>
+        <SelectorClient
+            icon={
+                <Trophy
+                    size={16}
+                    aria-hidden="true"
+                    className="text-muted-foreground/80"
+                />
+            }
+            placeholder="Sélectionner un niveau"
+            options={availableLevels}
+            value={selectedLevel?.value}
+            onChangeAction={setSelectedLevel}
+        />
     );
 }

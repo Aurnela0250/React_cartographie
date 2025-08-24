@@ -11,43 +11,29 @@ import { Button } from "@/presentation/components/ui/button";
  * Uses Zustand store to build query parameters dynamically
  */
 export function SearchButton() {
-    const { selectedCities, selectedDomains, selectedLevels } =
-        useSelectorsStore();
+    console.log("SearchButton Rendu");
+    const { selectedCity, selectedDomain, selectedLevel } = useSelectorsStore();
 
     // Generate URL search parameters from selected options
     const generateSearchParams = () => {
         const params = new URLSearchParams();
 
-        // Add cities to params
-        if (selectedCities.length > 0) {
-            const citiesParam = selectedCities
-                .map(
-                    (city) => `${city.value}:${encodeURIComponent(city.label)}`
-                )
-                .join(",");
-            params.set("cities", citiesParam);
+        // Add city to params
+        if (selectedCity) {
+            const cityParam = `${selectedCity.value}:${encodeURIComponent(selectedCity.label)}`;
+            params.set("cities", cityParam);
         }
 
-        // Add domains to params
-        if (selectedDomains.length > 0) {
-            const domainsParam = selectedDomains
-                .map(
-                    (domain) =>
-                        `${domain.value}:${encodeURIComponent(domain.label)}`
-                )
-                .join(",");
-            params.set("domains", domainsParam);
+        // Add domain to params
+        if (selectedDomain) {
+            const domainParam = `${selectedDomain.value}:${encodeURIComponent(selectedDomain.label)}`;
+            params.set("domains", domainParam);
         }
 
-        // Add levels to params
-        if (selectedLevels.length > 0) {
-            const levelsParam = selectedLevels
-                .map(
-                    (level) =>
-                        `${level.value}:${encodeURIComponent(level.label)}`
-                )
-                .join(",");
-            params.set("levels", levelsParam);
+        // Add level to params
+        if (selectedLevel) {
+            const levelParam = `${selectedLevel.value}:${encodeURIComponent(selectedLevel.label)}`;
+            params.set("levels", levelParam);
         }
 
         // Always include pagination defaults
@@ -62,7 +48,7 @@ export function SearchButton() {
     const establishmentsUrl = `/establishments${searchParams ? `?${searchParams}` : ""}`;
 
     return (
-        <Button asChild size="lg" className="w-full lg:w-full">
+        <Button asChild size="lg" className="w-full md:rounded-full lg:w-full">
             <Link href={establishmentsUrl}>
                 <Search className="size-4 sm:mr-2" />
                 <span className="hidden sm:inline">Rechercher</span>

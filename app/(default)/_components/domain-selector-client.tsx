@@ -1,11 +1,9 @@
 "use client";
 
-import {
-    SelectorOption,
-    useSelectorsStore,
-} from "@/app/(default)/_components/selectors.store";
-import { Label } from "@/presentation/components/ui/label";
-import MultipleSelector from "@/presentation/components/ui/multiselect";
+import { GraduationCap } from "lucide-react";
+
+import { SelectorClient } from "./selector-client";
+import { SelectorOption, useSelectorsStore } from "./selectors.store";
 
 interface DomainSelectorClientProps {
     availableDomains: SelectorOption[];
@@ -18,23 +16,21 @@ interface DomainSelectorClientProps {
 export function DomainSelectorClient({
     availableDomains,
 }: DomainSelectorClientProps) {
-    const { selectedDomains, setSelectedDomains } = useSelectorsStore();
+    const { selectedDomain, setSelectedDomain } = useSelectorsStore();
 
     return (
-        <div className="space-y-2">
-            <Label htmlFor="domain-selector">Domaines d'études</Label>
-            <MultipleSelector
-                commandProps={{
-                    label: "Sélectionner des domaines",
-                }}
-                defaultOptions={availableDomains}
-                value={selectedDomains}
-                placeholder="Sélectionner des domaines"
-                emptyIndicator={
-                    <p className="text-center text-sm">Aucun domaine trouvé</p>
-                }
-                onChange={setSelectedDomains}
-            />
-        </div>
+        <SelectorClient
+            icon={
+                <GraduationCap
+                    size={16}
+                    aria-hidden="true"
+                    className="text-muted-foreground/80"
+                />
+            }
+            placeholder="Sélectionner un domaine"
+            options={availableDomains}
+            value={selectedDomain?.value}
+            onChangeAction={setSelectedDomain}
+        />
     );
 }

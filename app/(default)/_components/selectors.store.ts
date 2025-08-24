@@ -9,14 +9,14 @@ export interface SelectorOption {
 
 interface SelectorsState {
     // Selected values (only user selections)
-    selectedCities: SelectorOption[];
-    selectedDomains: SelectorOption[];
-    selectedLevels: SelectorOption[];
+    selectedCity: SelectorOption | null;
+    selectedDomain: SelectorOption | null;
+    selectedLevel: SelectorOption | null;
     
     // Actions for user selections
-    setSelectedCities: (cities: SelectorOption[]) => void;
-    setSelectedDomains: (domains: SelectorOption[]) => void;
-    setSelectedLevels: (levels: SelectorOption[]) => void;
+    setSelectedCity: (city: SelectorOption | null) => void;
+    setSelectedDomain: (domain: SelectorOption | null) => void;
+    setSelectedLevel: (level: SelectorOption | null) => void;
     
     // Reset all selections
     resetSelections: () => void;
@@ -26,25 +26,25 @@ export const useSelectorsStore = create<SelectorsState>()(
     devtools(
         (set) => ({
             // Initial state - only user selections
-            selectedCities: [],
-            selectedDomains: [],
-            selectedLevels: [],
+            selectedCity: null,
+            selectedDomain: null,
+            selectedLevel: null,
             
             // Actions for user selections only
-            setSelectedCities: (cities) => 
-                set({ selectedCities: cities }, false, 'setSelectedCities'),
+            setSelectedCity: (city) => 
+                set({ selectedCity: city }, false, 'setSelectedCity'),
             
-            setSelectedDomains: (domains) => 
-                set({ selectedDomains: domains }, false, 'setSelectedDomains'),
+            setSelectedDomain: (domain) => 
+                set({ selectedDomain: domain }, false, 'setSelectedDomain'),
             
-            setSelectedLevels: (levels) => 
-                set({ selectedLevels: levels }, false, 'setSelectedLevels'),
+            setSelectedLevel: (level) => 
+                set({ selectedLevel: level }, false, 'setSelectedLevel'),
             
             resetSelections: () => 
                 set({ 
-                    selectedCities: [], 
-                    selectedDomains: [], 
-                    selectedLevels: [] 
+                    selectedCity: null, 
+                    selectedDomain: null, 
+                    selectedLevel: null 
                 }, false, 'resetSelections'),
         }),
         {
