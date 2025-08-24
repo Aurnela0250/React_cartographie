@@ -57,8 +57,8 @@ export class AuthService implements IAuthService {
             attributes: {
                 httpOnly: env.NODE_ENV === "production",
                 path: "/",
-                maxAge: accessTokenPayload.exp - Math.floor(Date.now() / 1000),
-                expires: new Date(accessTokenPayload.exp * 1000),
+                maxAge: refreshTokenPayload.exp - Math.floor(Date.now() / 1000),
+                expires: new Date(refreshTokenPayload.exp * 1000),
                 sameSite: "lax",
                 secure: env.NODE_ENV === "production",
             },

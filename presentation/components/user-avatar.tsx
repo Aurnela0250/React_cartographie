@@ -4,11 +4,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 type UserAvatarProps = {
     email: string;
-    image?: string;
+    image?: string | null;
 };
 
 function UserAvatar({ email, image }: UserAvatarProps) {
-    const avatarUri = `https://api.dicebear.com/9.x/thumbs/svg?${email}`;
+    const avatarUri = `https://api.dicebear.com/9.x/thumbs/svg?seed=${email}`;
 
     const finalImage = image ?? avatarUri;
 

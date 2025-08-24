@@ -29,8 +29,6 @@ export const NavBar = () => {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
-
-    console.log(user);
     return (
         <header>
             <nav
@@ -104,7 +102,6 @@ export const NavBar = () => {
                                 </ul>
                             </div>
                             <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
-                                <ThemeToggle />
                                 {isLoading ? (
                                     <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
                                         <Skeleton className="h-10 w-10 rounded-full" />
@@ -113,12 +110,13 @@ export const NavBar = () => {
                                     <ProfileDropdown user={user} />
                                 ) : (
                                     <>
+                                        <ThemeToggle />
                                         <Button
                                             asChild
                                             variant="outline"
                                             size="sm"
                                         >
-                                            <Link href="/login">
+                                            <Link href="/sign-in">
                                                 <span>Connexion</span>
                                             </Link>
                                         </Button>

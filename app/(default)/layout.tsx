@@ -10,7 +10,7 @@ export default function DefaultLayout({
     return (
         <>
             <NavBar />
-            <main className="pt-20">{children}</main>
+            <main className="overflow-hidden">{children}</main>
         </>
     );
 }

@@ -9,6 +9,56 @@ import { Token } from "@/src/entities/models/token";
 import { User } from "@/src/entities/models/user";
 
 export class AuthRepository implements IAuthRepository {
+    async requestOtp(data: {
+        email: string;
+    }): Promise<{ message: string; expiresInMinutes: number }> {
+        const apiUrl = `${env.API_PREFIX_URL}/${env.API_VERSION}/auth/request-passwordless-otp`;
+
+        const payload = toSnakeCaseRecursive(data);
+        const response = await fetch(apiUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include", // Important pour les cookies de session
+            body: JSON.stringify(payload),
+        });
+
+        const dataResponse = await handleApiResponse<{
+            message: string;
+            expiresInMinutes: number;
+        }>(response);
+
+        const result = toCamelCaseRecursive(dataResponse);
+
+        return result;
+    }
+    async signInOtp(data: {
+        email: string;
+        otp: string;
+    }): Promise<{ accessToken: string; refreshToken: string; user: User }> {
+        const apiUrl = `${env.API_PREFIX_URL}/${env.API_VERSION}/auth/verify-passwordless-otp`;
+
+        const payload = toSnakeCaseRecursive(data);
+        const response = await fetch(apiUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include", // Important pour les cookies de session
+            body: JSON.stringify(payload),
+        });
+
+        const dataResponse = await handleApiResponse<{
+            accessToken: string;
+            refreshToken: string;
+            user: User;
+        }>(response);
+
+        const result = toCamelCaseRecursive(dataResponse);
+
+        return result;
+    }
     async signUp(data: { email: string; password: string }): Promise<User> {
         const apiUrl = `${env.API_PREFIX_URL}/${env.API_VERSION}/auth/signup`;
 

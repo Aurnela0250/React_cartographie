@@ -1,6 +1,6 @@
 import * as React from "react";
 import Link from "next/link";
-import { FileText, LogOut, Settings, User as UserIcon } from "lucide-react";
+import { FileText, LogOut, Settings } from "lucide-react";
 
 import { signOutAction } from "@/core/actions/auth/sign-out.action";
 import {
@@ -13,6 +13,7 @@ import {
 import UserAvatar from "@/presentation/components/user-avatar";
 import { cn } from "@/shared/utils";
 import { User } from "@/src/entities/models/user";
+import { ThemeToggle } from "@/presentation/components/features/theme-toggle";
 
 interface MenuItem {
     label: string;
@@ -33,11 +34,6 @@ export default function ProfileDropdown({
     const [isOpen, setIsOpen] = React.useState(false);
 
     const menuItems: MenuItem[] = [
-        {
-            label: "Profile",
-            href: "/profile",
-            icon: <UserIcon className="h-4 w-4" />,
-        },
         {
             label: "Settings",
             href: "/settings",
@@ -63,7 +59,7 @@ export default function ProfileDropdown({
                             <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-white dark:bg-zinc-900">
                                 <UserAvatar
                                     email={user.email}
-                                    image={undefined}
+                                    image={user.picture}
                                 />
                             </div>
                         </button>
@@ -80,7 +76,7 @@ export default function ProfileDropdown({
                                 <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-white dark:bg-zinc-900">
                                     <UserAvatar
                                         email={user.email}
-                                        image={undefined}
+                                        image={user.picture}
                                     />
                                 </div>
                             </div>
@@ -102,6 +98,9 @@ export default function ProfileDropdown({
                         <DropdownMenuSeparator className="my-2 bg-gradient-to-r from-transparent via-zinc-200 to-transparent dark:via-zinc-800" />
 
                         <div className="space-y-1">
+                            <div className="px-2 py-1">
+                                <ThemeToggle />
+                            </div>
                             {menuItems.map((item) => (
                                 <DropdownMenuItem key={item.label} asChild>
                                     <Link

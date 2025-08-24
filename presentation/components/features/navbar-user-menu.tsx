@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { LogOut } from "lucide-react";
 
-import { triggerSessionUpdate } from "@/presentation/providers/session-provider";
 import { Button } from "@/presentation/components/ui/button";
 import {
     DropdownMenu,
@@ -14,6 +13,7 @@ import {
     DropdownMenuTrigger,
 } from "@/presentation/components/ui/dropdown-menu";
 import UserAvatar from "@/presentation/components/user-avatar";
+import { triggerSessionUpdate } from "@/presentation/providers/session-provider";
 
 interface NavbarUserMenuProps {
     user: {
@@ -35,7 +35,7 @@ export default function NavbarUserMenu({ user }: NavbarUserMenuProps) {
             if (response.ok) {
                 // Déclencher le refresh de session pour tous les onglets
                 triggerSessionUpdate();
-                window.location.href = "/login";
+                window.location.href = "/sign-in";
             }
         } catch (error) {
             console.error("Erreur lors de la déconnexion:", error);
@@ -55,10 +55,10 @@ export default function NavbarUserMenu({ user }: NavbarUserMenuProps) {
             <DropdownMenuContent forceMount align="end">
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">
+                        <p className="text-sm leading-none font-medium">
                             {user.email.split("@")[0]}
                         </p>
-                        <p className="text-xs leading-none text-muted-foreground">
+                        <p className="text-muted-foreground text-xs leading-none">
                             {user.email}
                         </p>
                     </div>

@@ -8,14 +8,8 @@ import { TestimonialsSection } from "./_components/testimonials-section";
 
 export default function HomePage() {
     return (
-        <main className="bg-background min-h-screen">
+        <main className="position-relative bg-accent min-h-screen space-y-10 pt-24 md:pt-36">
             <HeroSection />
-            <KeyFeaturesSection />
-            <InteractiveMapSection />
-            <FeaturedEstablishmentsSection />
-            <TestimonialsSection />
-            <InformationSection />
-            <CTASection />
         </main>
     );
 }

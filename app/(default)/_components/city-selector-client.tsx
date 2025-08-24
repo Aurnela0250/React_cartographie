@@ -1,11 +1,9 @@
 "use client";
 
-import {
-    SelectorOption,
-    useSelectorsStore,
-} from "@/app/(default)/_components/selectors.store";
-import { Label } from "@/presentation/components/ui/label";
-import MultipleSelector from "@/presentation/components/ui/multiselect";
+import { MapPin } from "lucide-react";
+
+import { SelectorClient } from "./selector-client";
+import { SelectorOption, useSelectorsStore } from "./selectors.store";
 
 interface CitySelectorClientProps {
     availableCities: SelectorOption[];
@@ -13,28 +11,26 @@ interface CitySelectorClientProps {
 
 /**
  * Client wrapper for CitySelector that handles interactivity via Zustand store
- * Available cities come from server props, selected cities managed by Zustand
+ * Available cities come from server props, selected city managed by Zustand
  */
 export function CitySelectorClient({
     availableCities,
 }: CitySelectorClientProps) {
-    const { selectedCities, setSelectedCities } = useSelectorsStore();
+    const { selectedCity, setSelectedCity } = useSelectorsStore();
 
     return (
-        <div className="space-y-2">
-            <Label htmlFor="city-selector">Villes</Label>
-            <MultipleSelector
-                commandProps={{
-                    label: "Sélectionner des villes",
-                }}
-                defaultOptions={availableCities}
-                value={selectedCities}
-                placeholder="Sélectionner des villes"
-                emptyIndicator={
-                    <p className="text-center text-sm">Aucune ville trouvée</p>
-                }
-                onChange={setSelectedCities}
-            />
-        </div>
+        <SelectorClient
+            icon={
+                <MapPin
+                    size={16}
+                    aria-hidden="true"
+                    className="text-muted-foreground/80"
+                />
+            }
+            placeholder="Sélectionner une ville"
+            options={availableCities}
+            value={selectedCity?.value}
+            onChangeAction={setSelectedCity}
+        />
     );
 }

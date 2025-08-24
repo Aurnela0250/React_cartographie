@@ -1,14 +1,15 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { DEFAULT_LOGOUT_REDIRECT } from "@/core/constants/route";
 import { getInjection } from "@/di/container";
 import {
     AuthenticationError,
     UnauthenticatedError,
 } from "@/src/entities/errors/auth";
 
-import type { FilterOption } from "./filter-types";
 import { EstablishmentTypesFilterClient } from "./establishment-types-filter-client";
+import type { FilterOption } from "./filter-types";
 
 async function getEstablishmentTypesForFilter(): Promise<FilterOption[]> {
     try {
@@ -36,7 +37,7 @@ async function getEstablishmentTypesForFilter(): Promise<FilterOption[]> {
             error instanceof UnauthenticatedError ||
             error instanceof AuthenticationError
         ) {
-            redirect("/login");
+            redirect(DEFAULT_LOGOUT_REDIRECT);
         }
         throw error;
     }

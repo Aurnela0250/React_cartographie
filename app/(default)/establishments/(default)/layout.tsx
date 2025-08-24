@@ -25,7 +25,7 @@ export default function EstablishmentsLayout({
         >
             {/* Static Sidebar with filters (Server Component with nested client parts) */}
             <EstablishmentsFilterSidebar
-                className="top-20 z-40 h-[calc(100vh-5rem)]"
+                className="z-40 mt-20 h-[calc(100vh-5rem)]"
                 variant="floating"
             />
 

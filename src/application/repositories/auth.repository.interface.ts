@@ -7,6 +7,13 @@ export interface IAuthRepository {
         email: string;
         password: string;
     }): Promise<{ accessToken: string; refreshToken: string; user: User }>;
+    requestOtp(data: {
+        email: string;
+    }): Promise<{ message: string; expiresInMinutes: number }>;
+    signInOtp(data: {
+        email: string;
+        otp: string;
+    }): Promise<{ accessToken: string; refreshToken: string; user: User }>;
     signOut(token: string, refreshToken: string): Promise<{ message: string }>;
     refresh(
         refreshToken: string

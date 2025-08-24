@@ -9,6 +9,7 @@ import {
 
 import type { FilterOption } from "./filter-types";
 import { LevelsFilterClient } from "./levels-filter-client";
+import { DEFAULT_LOGOUT_REDIRECT } from "@/core/constants/route";
 
 async function getLevelsForFilter(): Promise<FilterOption[]> {
     try {
@@ -34,7 +35,7 @@ async function getLevelsForFilter(): Promise<FilterOption[]> {
             error instanceof UnauthenticatedError ||
             error instanceof AuthenticationError
         ) {
-            redirect("/login");
+            redirect(DEFAULT_LOGOUT_REDIRECT);
         }
         throw error;
     }

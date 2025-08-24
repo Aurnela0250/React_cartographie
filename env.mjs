@@ -11,6 +11,7 @@ export const env = createEnv({
     },
     client: {
         API_PREFIX_URL: z.string().default("http://localhost:8000/api"),
+        NEXT_PUBLIC_API_BASE_URL: z.string().default("http://localhost:8000"),
         API_VERSION: z.string().default("v1"),
         MAP_API_KEY: z.string().default("get_your_own_D6rA4zTHduk6KOKTXzGB"),
         NEXT_PUBLIC_MAP_API_KEY: z.string().min(1),

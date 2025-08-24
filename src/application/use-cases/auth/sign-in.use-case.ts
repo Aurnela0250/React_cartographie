@@ -1,7 +1,6 @@
 import { IAuthRepository } from "@/src/application/repositories/auth.repository.interface";
 import { IAuthService } from "@/src/application/services/auth.service.interface";
 import { Cookie } from "@/src/entities/models/cookie";
-import { User } from "@/src/entities/models/user";
 
 export type ISignInUseCase = ReturnType<typeof signInUseCase>;
 

@@ -12,6 +12,7 @@ import { EstablishmentContact } from "./establishment-contact";
 import { EstablishmentFormations } from "./establishment-formations";
 import { EstablishmentHeaderCard } from "./establishment-header-card";
 import { EstablishmentInfoSkeleton } from "./establishment-info-skeleton";
+import { DEFAULT_LOGOUT_REDIRECT } from "@/core/constants/route";
 
 interface EstablishmentInfoProps {
     establishmentId: number;
@@ -34,7 +35,7 @@ async function getEstablishment(id: number) {
             error instanceof UnauthenticatedError ||
             error instanceof AuthenticationError
         ) {
-            redirect("/login");
+            redirect(DEFAULT_LOGOUT_REDIRECT);
         }
         throw error;
     }

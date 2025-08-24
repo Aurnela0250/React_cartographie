@@ -1,9 +1,5 @@
 import { env } from "@/env.mjs";
-import {
-    handleApiResponse,
-    toCamelCaseRecursive,
-    toSnakeCaseRecursive,
-} from "@/shared/utils";
+import { handleApiResponse, toCamelCaseRecursive } from "@/shared/utils";
 import { IMentionsRepository } from "@/src/application/repositories/mention.repository.interface";
 import { MentionFilter } from "@/src/entities/filters/mention.filter";
 import { Mention } from "@/src/entities/models/mention.entity";

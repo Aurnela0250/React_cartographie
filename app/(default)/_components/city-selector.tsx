@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { DEFAULT_LOGOUT_REDIRECT } from "@/core/constants/route";
 import { getInjection } from "@/di/container";
 import {
     AuthenticationError,
@@ -9,35 +10,6 @@ import {
 
 import { CitySelectorClient } from "./city-selector-client";
 
-async function getCitiesForSelector() {
-    try {
-        const cookieStore = await cookies();
-        const accessToken = cookieStore.get("accessToken")?.value;
-        const getCitiesController = getInjection("IGetCitiesController");
-
-        const result = await getCitiesController(accessToken, {
-            params: {
-                perPage: 100,
-                page: 1,
-            },
-        });
-
-        const { items } = result;
-
-        return items.map((city) => ({
-            value: city.id?.toString() || "",
-            label: city.name || "",
-        }));
-    } catch (error) {
-        if (
-            error instanceof UnauthenticatedError ||
-            error instanceof AuthenticationError
-        ) {
-            redirect("/login");
-        }
-        throw error;
-    }
-}
 async function filterCitiesForSelector() {
     try {
         const cookieStore = await cookies();
@@ -65,7 +37,7 @@ async function filterCitiesForSelector() {
             error instanceof UnauthenticatedError ||
             error instanceof AuthenticationError
         ) {
-            redirect("/login");
+            redirect(DEFAULT_LOGOUT_REDIRECT);
         }
         throw error;
     }

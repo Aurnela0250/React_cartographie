@@ -6,8 +6,10 @@ export const UserSchema = z.object({
     email: z.string().email(),
     active: z.boolean(),
     isAdmin: z.boolean(),
-    createdBy: z.number().positive(),
-    updatedBy: z.number().positive(),
+    emailVerified: z.boolean(),
+    picture: z.string().nullable().optional(),
+    createdBy: z.number().positive().nullable().optional(),
+    updatedBy: z.number().positive().nullable().optional(),
     createdAt: z.string(),
     updatedAt: z.string(),
 });

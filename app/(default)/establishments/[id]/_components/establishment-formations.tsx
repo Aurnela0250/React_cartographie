@@ -11,6 +11,7 @@ import {
 import type { Establishment } from "@/src/entities/models/establishment.entity";
 import type { Formation } from "@/src/entities/models/formation.entity";
 import type { Level } from "@/src/entities/models/level.entity";
+import { DEFAULT_LOGOUT_REDIRECT } from "@/core/constants/route";
 
 interface EstablishmentFormationsProps {
     establishment: Establishment;
@@ -41,7 +42,7 @@ async function filterFormations(establishmentId: number) {
             error instanceof UnauthenticatedError ||
             error instanceof AuthenticationError
         ) {
-            redirect("/login");
+            redirect(DEFAULT_LOGOUT_REDIRECT);
         }
         throw error;
     }
