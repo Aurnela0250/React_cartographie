@@ -42,7 +42,7 @@ export default function ClientProviders({ children }: ClientProvidersProps) {
 
     return (
         <>
-            <TwentyFirstToolbar config={{ plugins: [ReactPlugin] }} />
+            {/* <TwentyFirstToolbar config={{ plugins: [ReactPlugin] }} /> */}
             <SessionProvider
                 refetchInterval={5 * 60} // 5 minutes comme Auth.js
             >
